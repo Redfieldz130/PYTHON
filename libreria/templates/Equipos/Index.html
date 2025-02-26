@@ -1,0 +1,87 @@
+{% extends "Paginas/Base.html" %}
+
+{% block titulo %} Aplicación de Inventario {% endblock %}
+
+{% block contenido %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card border-0 shadow-lg rounded-4 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
+                
+                <!-- Encabezado con color sólido para mayor contraste -->
+                <div class="card-header text-center bg-primary text-white py-4">
+                    <h5 class="mb-0 font-weight-bold">Inventario de Equipos</h5>
+                </div>
+
+                <div class="card-body bg-light">
+                    <h4 class="card-title text-center text-primary mb-4">Lista de Equipos</h4>
+
+                    <table class="table table-hover text-center text-dark">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Modelo</th>
+                                <th>Tipo</th>
+                                <th>Marca</th>
+                                <th>Serial</th>
+                                <th>Observaciones</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Predator Gaming</td>
+                                <td>Laptop</td>
+                                <td>Asus</td>
+                                <td>daww213124214</td>
+                                <td>Averiada</td>
+                                <td>
+                                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill">No disponible</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <button class="btn btn-outline-primary btn-sm transition-shadow hover-shadow-lg">Editar</button>
+                                        <button class="btn btn-outline-danger btn-sm transition-shadow hover-shadow-lg">Borrar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>ThinkPad X1</td>
+                                <td>Laptop</td>
+                                <td>Lenovo</td>
+                                <td>abc123456</td>
+                                <td>Funciona bien</td>
+                                <td>
+                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill">Disponible</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <button class="btn btn-outline-primary btn-sm transition-shadow hover-shadow-lg">Editar</button>
+
+                                        <button class="btn btn-outline-danger btn-sm transition-shadow hover-shadow-lg">Borrar</button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    
+
+                    <div class="text-center mt-5">
+                        <!-- Botón de añadir equipos  -->
+
+                        <a href="{% url 'crear' %}" class="btn btn-primary btn-lg rounded-pill text-uppercase">Añadir Nuevo Equipo</a>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "Paginas/Base.html" %}
+
+{% block titulo %}    Agregar nuevo Equipo    {% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+    <div class="card-header">Agregar un nuevo equipo</div>
+    <div class="card-body">
+        <h4 class="card-title">Datos del equipo</h4>
+        {% include "Equipos/Form.html" %}
+    </div>
+    
+</div>
+
+
+{% endblock %}
