@@ -1,17 +1,48 @@
 {% extends "Paginas/Base.html" %}
 
-{% block titulo %}    Agregar nuevo Equipo    {% endblock %}
+{% block titulo %}Agregar nuevo Equipo{% endblock %}
 
 {% block contenido %}
+<div class="d-flex justify-content-center align-items-center vh-400">
+    <div class="card shadow p-6" style="width: 900px;">
+        <div class="card-header text-center">
+            <h4>Agregar un nuevo equipo</h4>
+            
+        </div>
+        <div class="card-body">
+            <form enctype="multipart/form-data" method="post">
+                {% csrf_token %} 
+                <div class="mb-3">
+                    <label for="Marca" class="form-label">Marca</label>
+                    <input type="text" class="form-control" name="Marca" id="Marca" placeholder="">
+                </div> 
 
-<div class="card">
-    <div class="card-header">Agregar un nuevo equipo</div>
-    <div class="card-body">
-        <h4 class="card-title">Datos del equipo</h4>
-        {% include "Equipos/Form.html" %}
+                <div class="mb-3">
+                    <label for="Tipo" class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="Tipo" id="Tipo" placeholder="">
+                </div>
+
+                <div class="mb-3">
+                    <label for="serial" class="form-label">Serial</label>
+                    <input type="text" class="form-control" name="serial" id="serial" placeholder="">
+                </div> 
+
+                <div class="mb-3">
+                    <label for="Modelo" class="form-label">Modelo</label>
+                    <input type="text" class="form-control" name="Modelo" id="Modelo" placeholder="">
+                </div>
+
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <input type="text" class="form-control" name="observaciones" id="observaciones" placeholder="">
+                </div> 
+
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
     </div>
-    
 </div>
-
-
 {% endblock %}
+

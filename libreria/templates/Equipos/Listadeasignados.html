@@ -1,0 +1,46 @@
+{% extends "Paginas/Base.html" %}
+
+{% block titulo %}Asignar equipo{% endblock %}
+
+{% block contenido %}
+<div class="d-flex justify-content-center align-items-center vh-400">
+    <div class="card shadow p-6" style="width: 900px;">
+        <div class="card-header text-center">
+            <h4>Agregar un nuevo equipo</h4>
+        </div>
+        <div class="card-body">
+            <form enctype="multipart/form-data" method="post">
+                {% csrf_token %} 
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre del colaborador</label>
+                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="">
+                </div> 
+
+                <div class="mb-3">
+                    <label for="correo" class="form-label">Correo Institucional</label>
+                    <input type="text" class="form-control" name="Tipo" id="correo" placeholder="">
+                </div>
+
+                <div class="mb-3">
+                    <label for="equipo" class="form-label">Equipo</label>
+                    <input type="text" class="form-control" name="equipo" id="equipo" placeholder="">
+                </div> 
+
+                <div class="mb-3">
+                    <label for="serial" class="form-label">serial</label>
+                    <input type="text" class="form-control" name="serial" id="serial" placeholder="">
+                </div>
+
+                <div class="mb-3">
+                    <label for="Tipo" class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="Tipo" id="Tipo" placeholder="">
+                </div> 
+
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
