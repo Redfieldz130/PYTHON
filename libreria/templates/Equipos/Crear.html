@@ -7,19 +7,20 @@
     <div class="card shadow p-6" style="width: 900px;">
         <div class="card-header text-center">
             <h4>Agregar un nuevo equipo</h4>
-            
         </div>
         <div class="card-body">
-            <form enctype="multipart/form-data" method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %} 
+
+                <!-- Opción 1: Mostrar campos con Bootstrap -->
                 <div class="mb-3">
-                    <label for="Marca" class="form-label">Marca</label>
-                    <input type="text" class="form-control" name="Marca" id="Marca" placeholder="">
+                    <label for="marca" class="form-label">Marca</label>
+                    <input type="text" class="form-control" name="marca" id="marca" placeholder="">
                 </div> 
 
                 <div class="mb-3">
-                    <label for="Tipo" class="form-label">Tipo</label>
-                    <input type="text" class="form-control" name="Tipo" id="Tipo" placeholder="">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="tipo" id="tipo" placeholder="">
                 </div>
 
                 <div class="mb-3">
@@ -28,8 +29,8 @@
                 </div> 
 
                 <div class="mb-3">
-                    <label for="Modelo" class="form-label">Modelo</label>
-                    <input type="text" class="form-control" name="Modelo" id="Modelo" placeholder="">
+                    <label for="modelo" class="form-label">Modelo</label>
+                    <input type="text" class="form-control" name="modelo" id="modelo" placeholder="">
                 </div>
 
                 <div class="mb-3">

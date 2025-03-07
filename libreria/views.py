@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EquipoForm
 from .models import Equipo
+
 def Inicio(request):
     return render(request, 'Paginas/inicio.html')
 
@@ -13,19 +14,28 @@ def listar_equipos(request):
 
 def crear_equipos(request):
     if request.method == 'POST':
-        formulario = EquipoForm(request.POST, request.FILES or None)
+        formulario = EquipoForm(request.POST, request.FILES)  # No necesitas `or None`
         if formulario.is_valid():
-            formulario.save()
-            return redirect('listar_equipos')  # Redirige a la lista de equipos
+            formulario.save()  # Guarda los datos en la BD
+            return redirect('equipos')  # Redirige al listado de equipos
     else:
         formulario = EquipoForm()
 
     return render(request, 'Equipos/Crear.html', {'formulario': formulario})
 
-def Editar(request):
-    return render(request, 'Equipos/Editar.html')
+def editar_equipo(request, id):
+    equipo = get_object_or_404(Equipo, id=id)
+    if request.method == 'POST':
+        formulario = EquipoForm(request.POST, request.FILES, instance=equipo)
+        if formulario.is_valid():
+            formulario.save()
+            return redirect('equipos')  # Redirige a la lista de equipos
+    else:
+        formulario = EquipoForm(instance=equipo)
 
-def Asignar(request):
+    return render(request, 'Equipos/Editar.html', {'formulario': formulario, 'equipo': equipo})
+
+def asignar(request):
     return render(request, 'Equipos/Asignar.html')
 
 def Listadeasignados(request):
