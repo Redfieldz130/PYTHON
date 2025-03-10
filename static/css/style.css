@@ -1,4 +1,6 @@
-/* Estilos personalizados */
+/* Estilos generales */
+
+
 body {
     background: #f4f7fa; /* Fondo claro */
     color: #333;
@@ -6,11 +8,18 @@ body {
     padding-bottom: 80px; /* Espacio para que el footer no tape contenido */
 }
 
+/* Barra de navegación */
 .navbar {
-    background-color: #007bff; /* Azul para el header */
+    background-color: #343a40; /* Fondo oscuro para el navbar */
     border-radius: 0;
     box-shadow: none;
     width: 100%;
+}
+/* Barra de navegación */
+
+
+.nav-link {
+    color: #ffffff !important; /* Blanco para el texto */
 }
 
 .navbar-brand {
@@ -37,6 +46,7 @@ body {
     border-color: #ffffff;
 }
 
+/* Contenedor */
 .container {
     background: #ffffff;
     padding: 30px;
@@ -45,6 +55,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Encabezado de tarjeta */
 .card-header {
     background: #007bff;
     color: white;
@@ -59,6 +70,7 @@ body {
     border-radius: 10px;
 }
 
+/* Estilo para el pie de página */
 .footer {
     background-color: #007bff;
     color: white;
