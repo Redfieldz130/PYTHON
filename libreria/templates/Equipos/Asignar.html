@@ -9,6 +9,18 @@
             <h4>Asignar un nuevo equipo</h4>
         </div>
         <div class="card-body">
+            
+            <!-- Mensajes de error o éxito -->
+            {% if messages %}
+                <div class="alert alert-dismissible">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
@@ -45,6 +57,7 @@
                         <th>Nombre del colaborador</th>
                         <th>Correo Institucional</th>
                         <th>Equipo</th>
+                        <th>Acciones</th> <!-- Columna para el botón de desasignar -->
                     </tr>
                 </thead>
                 <tbody>
@@ -53,6 +66,10 @@
                             <td>{{ asignacion.colaborador_nombre }}</td>
                             <td>{{ asignacion.correo_institucional }}</td>
                             <td>{{ asignacion.equipo.nombre }} - {{ asignacion.equipo.tipo }}</td>
+                            <td>
+                                <!-- Enlace para desasignar -->
+                                <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger">Desasignar</a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -62,3 +79,4 @@
     </div>
 </div>
 {% endblock %}
+

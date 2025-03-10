@@ -4,12 +4,33 @@ from django.utils import timezone
 
 
 class Equipo(models.Model):
-    id = models.AutoField(primary_key=True)
-    modelo = models.CharField(max_length=100, verbose_name='Modelo')
-    marca = models.CharField(max_length=100, verbose_name='Marca')
-    serial = models.CharField(max_length=100, unique=True, verbose_name='Serial')
-    observaciones = models.TextField(blank=True, null=True, verbose_name='Observaciones')  # Cambiado a TextField
-    tipo = models.CharField(max_length=50, null=True, blank=True, verbose_name='Tipo')
+    ESTADOS = [
+        ('Disponible', 'Disponible'),
+        ('Asignado', 'Asignado'),
+    ]
+    modelo = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=50)
+    marca = models.CharField(max_length=50)
+    serial = models.CharField(max_length=50, unique=True)
+    observaciones = models.TextField(blank=True, null=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='Disponible')
+
+    
+
+    def asignar(self):
+        """Método para marcar como Asignado."""
+        self.estado = 'Asignado'
+        self.save()
+
+    def liberar(self):
+        """Método para marcar como Disponible."""
+        self.estado = 'Disponible'
+        self.save()
+
+    def __str__(self):
+        return f"{self.modelo} - {self.marca} ({self.estado})"
+
+    
 
 class Asignacion(models.Model):
     equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
@@ -18,5 +39,6 @@ class Asignacion(models.Model):
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.colaborador_nombre} - {self.equipo.nombre}"
+        return f"{self.colaborador_nombre} - {self.equipo.modelo} {self.equipo.marca}"
+
     

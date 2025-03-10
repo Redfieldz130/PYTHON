@@ -1,9 +1,58 @@
 {% extends "Paginas/Base.html" %}
 
-{% block titulo %}    Editar Equipo   {% endblock %}
+{% block titulo %}Editar Equipo{% endblock %}
 
-{% block titulo %}
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
+                <div class="card-header text-center bg-primary text-white py-4">
+                    <h5 class="mb-0">Editar Equipo</h5>
+                </div>
 
-Formulario para Editar
+                <div class="card-body bg-light">
+                    <h4 class="card-title text-center text-primary mb-4">Formulario de Edición</h4>
 
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="modelo" class="form-label">Modelo</label>
+                            <input type="text" class="form-control" name="modelo" id="modelo" value="{{ equipo.modelo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Tipo</label>
+                            <input type="text" class="form-control" name="tipo" id="tipo" value="{{ equipo.tipo }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="marca" class="form-label">Marca</label>
+                            <input type="text" class="form-control" name="marca" id="marca" value="{{ equipo.marca }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="serial" class="form-label">Serial</label>
+                            <input type="text" class="form-control" name="serial" id="serial" value="{{ equipo.serial }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" name="observaciones" id="observaciones" required>{{ equipo.observaciones }}</textarea>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

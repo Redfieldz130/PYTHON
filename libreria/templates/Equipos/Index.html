@@ -1,14 +1,12 @@
 {% extends "Paginas/Base.html" %}
 
-{% block titulo %} Aplicación de Inventario {% endblock %}
+{% block titulo %}Aplicación de Inventario{% endblock %}
 
 {% block contenido %}
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card border-0 shadow-lg rounded-4 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
-                
                 <!-- Encabezado con color sólido para mayor contraste -->
                 <div class="card-header text-center bg-primary text-white py-4">
                     <h5 class="mb-0 font-weight-bold">Inventario de Equipos</h5>
@@ -17,56 +15,77 @@
                 <div class="card-body bg-light">
                     <h4 class="card-title text-center text-primary mb-4">Lista de Equipos</h4>
 
+                    <!-- Mensajes de éxito -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
                     <!-- Filtro de búsqueda -->
                     <div class="mb-4">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por Modelo, Marca o serial" onkeyup="searchTable()">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por Modelo, Marca o Serial" oninput="searchTable()">
                     </div>
 
-                    <table class="table table-hover text-center text-dark" id="equiposTable">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>ID</th>
-                                <th>Modelo</th>
-                                <th>Tipo</th>
-                                <th>Marca</th>
-                                <th>Serial</th>
-                                <th>Observaciones</th>
-                                
-                                <th>Estado</th>
-                                
-                                <th>Acciones</th>
-                                
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center text-dark" id="equiposTable">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Modelo</th>
+                                    <th>Tipo</th>
+                                    <th>Marca</th>
+                                    <th>Serial</th>
+                                    
+                                    <th>Observaciones</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipo in equipos %}
+                                <tr id="equipo-{{ equipo.id }}">
+                                    <td>{{ equipo.id }}</td>
+                                    <td>{{ equipo.modelo }}</td>
+                                    <td>{{ equipo.tipo }}</td>
+                                    <td>{{ equipo.marca }}</td>
+                                    <td>{{ equipo.serial }}</td>
+                                    <td>{{ equipo.observaciones }}</td>
+                                    <td id="estado-{{ equipo.id }}">
+                                        <span class="badge {% if equipo.estado == 'Disponible' %} bg-success {% else %} bg-danger {% endif %} text-white px-3 py-2 rounded-pill">
+                                            {{ equipo.estado }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <!-- Enlace de editar equipo -->
+                                            <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for equipo in equipos %}
-                            <tr>
-                                <td>{{equipo.id}}</td>
-                                <td>{{equipo.modelo}}</td>
-                                <td>{{equipo.tipo}}</td>
-                                <td>{{equipo.marca}}</td>
-                                <td>{{equipo.serial}}</td>
-                                <td>{{equipo.observaciones}}</td>
-                                <td>
-                                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill">Asignado</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-3">
-                                        <button class="btn btn-outline-primary btn-sm transition-shadow hover-shadow-lg">Editar</button>
-                                        <button class="btn btn-outline-danger btn-sm transition-shadow hover-shadow-lg">Borrar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-  
-                            <!-- Añadir más filas según sea necesario -->
-                        </tbody>
-                    </table>
+                                            <!-- Formulario para borrar equipo -->
+                                            <form action="{% url 'borrar_equipo' equipo.id %}" method="POST" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash-alt"></i> Borrar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="text-center mt-5">
                         <!-- Botón de añadir equipos -->
-                        <a href="{% url 'crear_equipo' %}" class="btn btn-primary btn-lg rounded-pill text-uppercase">Añadir Nuevo Equipo</a>
+                        <a href="{% url 'crear_equipo' %}" class="btn btn-primary btn-lg rounded-pill text-uppercase">
+                            Añadir Nuevo Equipo
+                        </a>
                     </div>
                 </div>
             </div>
@@ -76,45 +95,15 @@
 
 <script>
     function searchTable() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("equiposTable");
-        tr = table.getElementsByTagName("tr");
+        let input = document.getElementById("searchInput").value.toUpperCase();
+        let rows = document.querySelectorAll("#equiposTable tbody tr");
 
-        // Si el campo de búsqueda está vacío, mostramos todas las filas
-        if (filter === "") {
-            for (i = 0; i < tr.length; i++) {
-                tr[i].style.display = "";
-            }
-        } else {
-            // Si hay algo en el campo de búsqueda, filtramos las filas
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td");
-                if (td) {
-                    let found = false;
-                    // Comprobamos si el texto en cualquier columna coincide con el filtro
-                    for (var j = 0; j < td.length; j++) {
-                        if (td[j]) {
-                            txtValue = td[j].textContent || td[j].innerText;
-                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                                found = true;
-                                break; // Si encontramos una coincidencia, detenemos la búsqueda
-                            }
-                        }
-                    }
-                    // Mostramos o escondemos la fila
-                    if (found) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
+        rows.forEach(row => {
+            let text = row.innerText.toUpperCase();
+            row.style.display = text.includes(input) ? "" : "none";
+        });
     }
 </script>
 
 {% endblock %}
-
 
