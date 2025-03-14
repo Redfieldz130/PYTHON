@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    {% load static %} <!-- Carga la etiqueta 'static' -->
-
-    <title>{% block titulo %} Inventario del Departamento de Tecnología {% endblock %}</title>
-
+    {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-    <!-- Vinculando el archivo CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block titulo %} Inventario del Departamento de Tecnología {% endblock %}</title>
 
-    <!-- Bootstrap 5 CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+   
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.0">
 </head>
+
 <body>
 
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="#">Inventario del Departamento de Tecnología</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto"> <!-- Clase ms-auto para mover los elementos a la derecha -->
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'inicio' %}">Inicio</a>
                     </li>
@@ -37,10 +36,37 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a>
                     </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link" style="border: none; background: none; cursor: pointer;">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link">@{{ user.username }}</span>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">iniciar sesion</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!-- Mensajes flotantes -->
+    {% if messages %}
+        <div class="alert alert-success alert-flotante">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
 
     <!-- Contenido principal -->
     {% block contenido %}
@@ -54,7 +80,20 @@
         <p>| &copy; 2025 Departamento de Tecnología IDEICE | </p>
     </div>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- Bootstrap JS (para funcionalidad) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Seleccionar todos los mensajes flotantes
+            var alertFlotantes = document.querySelectorAll(".alert-flotante");
+            
+            // Iterar sobre los mensajes y aplicar desvanecimiento
+            alertFlotantes.forEach(function(alertFlotante) {
+                setTimeout(function() {
+                    alertFlotante.classList.add("hide");
+                }, 4000);  // Tiempo en milisegundos (4 segundos)
+            });
+        });
+    </script>
 </body>
 </html>

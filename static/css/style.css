@@ -1,63 +1,77 @@
-/* Estilos generales */
-
+/* Reset para evitar conflictos */
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+}
 
 body {
-    background: #f4f7fa; /* Fondo claro */
-    color: #333;
-    font-family: 'Arial', sans-serif;
-    padding-bottom: 80px; /* Espacio para que el footer no tape contenido */
+    display: grid;
+    grid-template-rows: auto 1fr auto; 
+    height: 100dvh;
 }
 
-/* Barra de navegación */
+/* Barra de navegación personalizada */
 .navbar {
-    background-color: #343a40; /* Fondo oscuro para el navbar */
-    border-radius: 0;
-    box-shadow: none;
-    width: 100%;
-}
-/* Barra de navegación */
-
-
-.nav-link {
-    color: #ffffff !important; /* Blanco para el texto */
+    background-color: #007bff; /* Azul personalizado */
+    z-index: 9999;
+    padding: 1rem;
 }
 
+/* Estilo para el logo o nombre del inventario */
 .navbar-brand {
     font-weight: bold;
-    font-size: 1.4rem;
-    color: #ffffff;
-    padding: 10px 15px;
-    border-radius: 5px;
+    font-size: 1.4rem; /* Título grande */
+    color: black !important; /* Nombre del inventario en negro */
+    padding: 5px 50px;
 }
 
-.nav-link {
-    color: #ffffff !important;
+/* Estilo para los enlaces del navbar */
+.navbar-nav .nav-link {
+    color: black !important; /* Letras negras */
     font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 10px 30px;
 }
 
-.nav-link:hover {
-    color: #007bff !important;
+/* Hover en los enlaces */
+.navbar-nav .nav-link:hover {
+    color: #0026ff !important;  /* Azul en hover */
     background-color: #ffffff !important;
 }
 
+/* Navbar en dispositivos pequeños */
 .navbar-toggler {
-    border-color: #ffffff;
+    border-color: white !important;
 }
 
-/* Contenedor */
+/* Contenedor principal */
 .container {
     background: #ffffff;
-    padding: 30px;
-    margin-top: 30px;
-    border-radius: 10px;
+    padding: 25px;
+    margin: 30px auto;
+    border-radius: 60px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 1400px;
+    flex-grow: 1;
 }
 
-/* Encabezado de tarjeta */
+/* Tarjetas */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajustar la tarjeta para que baje más en la sección de "Asignar" */
+.card-asignar {
+    margin-top: 50px; /* Aumenta el valor según lo que necesites */
+}
+
 .card-header {
-    background: #007bff;
+    background: #007bff; /* Azul */
     color: white;
     text-align: center;
     font-size: 1.3rem;
@@ -65,28 +79,124 @@ body {
     border-radius: 10px 10px 0 0;
 }
 
-.card {
-    border: none;
-    border-radius: 10px;
+/* Estilos de los formularios */
+.form-group {
+    margin-bottom: 1.5rem;
 }
 
-/* Estilo para el pie de página */
+label {
+    font-weight: bold;
+}
+
+input, select, textarea {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transition: background-color 0.3s ease;
+}
+
+/* Footer */
 .footer {
     background-color: #007bff;
     color: white;
     text-align: center;
     padding: 20px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    margin-top: 2em;
     width: 100%;
 }
 
-.footer a {
-    color: #ffffff;
-    text-decoration: none;
+
+.card {
+    max-width: 900px; /* Evita que la tarjeta se haga más ancha */
+    width: 100%;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.footer a:hover {
-    text-decoration: underline;
+/* Ajustar la tarjeta en el centro */
+.d-flex.justify-content-center.align-items-center {
+    min-height: 80vh;
+    padding-top: 20px;
+}
+
+/* Ajustar el tamaño de los encabezados */
+.card-header h4 {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+/* Estilo para el mensaje flotante */
+.alert-flotante {
+    position: fixed;
+    top: 300px; /* Ajusta este valor para mover el mensaje hacia abajo */
+    right: 20px;
+    z-index: 1051;
+    max-width: 400px;
+    width: 100%;
+    opacity: 1;
+    transition: opacity 1s ease;
+}
+
+
+
+/* Estilo para el mensaje flotante cuando se oculta */
+.alert-flotante.hide {
+    opacity: 0;
+}
+
+/* Ajustes en el tamaño de los mensajes flotantes */
+.alert-flotante p {
+    font-size: 1rem;
+    margin: 0;
+}
+.login{    
+    display:flex;
+    flex-direction: column;
+    gap:1em;
+    width:400px;
+    border:1px solid hsl(0 0% 60%);
+    padding:2em;
+    border-radius:.5em;
+    input{
+        border:none;
+        outline:none;
+        &[type="text"],
+        &[type="password"]
+        {
+            border:1px solid hsl(0 0% 60%);
+        }
+    }
+    .btn{
+        background: hsl(120, 90%, 27%);
+        color:#fff;
+        width:min-content;
+        align-self:flex-end;
+        cursor:pointer;
+        transition:all .3s ease;
+        &:hover{
+            background: hsl(120, 93%, 17%);            
+        }
+    }
 }

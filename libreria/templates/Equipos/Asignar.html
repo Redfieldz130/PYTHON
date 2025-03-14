@@ -3,23 +3,36 @@
 {% block titulo %}Asignar equipo{% endblock %}
 
 {% block contenido %}
-<div class="d-flex justify-content-center align-items-center vh-400">
+
+<div class="d-flex justify-content-center ">
     <div class="card shadow p-6" style="width: 900px;">
         <div class="card-header text-center">
             <h4>Asignar un nuevo equipo</h4>
         </div>
         <div class="card-body">
-            
+
             <!-- Mensajes de error o éxito -->
             {% if messages %}
-                <div class="alert alert-dismissible">
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
+                {% for message in messages %}
+                    <div class="alert alert-success alert-flotante">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Seleccionar todos los mensajes flotantes
+                    var alertFlotantes = document.querySelectorAll(".alert-flotante");
+                    
+                    // Iterar sobre los mensajes y aplicar desvanecimiento
+                    alertFlotantes.forEach(function(alertFlotante) {
+                        setTimeout(function() {
+                            alertFlotante.classList.add("hide");
+                        }, 4000);  // Tiempo en milisegundos (4 segundos)
+                    });
+                });
+            </script>
 
             <form method="post">
                 {% csrf_token %}
@@ -38,7 +51,9 @@
                     <select class="form-control" name="equipo" id="equipo" required>
                         <option value="">Seleccione un equipo</option>
                         {% for equipo in equipos %}
-                            <option value="{{ equipo.id }}">{{ equipo.nombre }} - {{ equipo.tipo }}</option>
+                            <option value="{{ equipo.id }}">
+                                {{ equipo.marca }} {{ equipo.modelo }} - {{ equipo.tipo }} (Serial: {{ equipo.serial }})
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -57,7 +72,8 @@
                         <th>Nombre del colaborador</th>
                         <th>Correo Institucional</th>
                         <th>Equipo</th>
-                        <th>Acciones</th> <!-- Columna para el botón de desasignar -->
+                        <th>Serial</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,9 +81,9 @@
                         <tr>
                             <td>{{ asignacion.colaborador_nombre }}</td>
                             <td>{{ asignacion.correo_institucional }}</td>
-                            <td>{{ asignacion.equipo.nombre }} - {{ asignacion.equipo.tipo }}</td>
+                            <td>{{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}</td>
+                            <td>{{ asignacion.equipo.serial }}</td>
                             <td>
-                                <!-- Enlace para desasignar -->
                                 <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger">Desasignar</a>
                             </td>
                         </tr>
@@ -79,4 +95,3 @@
     </div>
 </div>
 {% endblock %}
-

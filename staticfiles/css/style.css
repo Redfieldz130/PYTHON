@@ -1,86 +1,166 @@
-/* Estilos generales */
+/* Variables CSS */
+:root {
+    --primary-color: #007bff;
+    --dark-color: #343a40;
+    --light-color: #ffffff;
+    --background-color: #f4f7fa;
+    --container-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --footer-padding: 20px;
+}
 
-
-body {
-    background: #f4f7fa; /* Fondo claro */
-    color: #333;
+/* Reset ligero para evitar conflictos con Bootstrap */
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Arial', sans-serif;
-    padding-bottom: 80px; /* Espacio para que el footer no tape contenido */
+    background: var(--background-color);
+    color: #333;
 }
 
 /* Barra de navegación */
 .navbar {
-    background-color: #007bff; /* Azul para el header */
-    border-radius: 0;
-    box-shadow: none;
+    background-color: var(--dark-color);
     width: 100%;
+    padding: 15px;
 }
 
 .navbar-brand {
     font-weight: bold;
     font-size: 1.4rem;
-    color: #ffffff;
+    color: var(--light-color);
     padding: 10px 15px;
     border-radius: 5px;
 }
 
 .nav-link {
-    color: #ffffff !important;
+    color: var(--light-color);
     font-weight: bold;
     padding: 10px 15px;
     border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #007bff !important;
-    background-color: #ffffff !important;
+    color: var(--primary-color);
+    background-color: var(--light-color);
 }
 
 .navbar-toggler {
-    border-color: #ffffff;
+    border-color: var(--light-color);
 }
 
-/* Contenedor */
+/* Contenedor principal */
 .container {
-    background: #ffffff;
+    background: var(--container-bg);
     padding: 30px;
-    margin-top: 30px;
+    margin: 30px auto;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--card-shadow);
+    max-width: 1200px;
 }
 
-/* Encabezado de tarjeta */
+/* Tarjetas */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--card-shadow);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
 .card-header {
-    background: #007bff;
-    color: white;
+    background: var(--primary-color);
+    color: var(--light-color);
     text-align: center;
     font-size: 1.3rem;
     padding: 15px 0;
     border-radius: 10px 10px 0 0;
 }
 
-.card {
-    border: none;
-    border-radius: 10px;
-}
-
-/* Estilo para el pie de página */
+/* Footer */
 .footer {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--light-color);
     text-align: center;
-    padding: 20px;
+    padding: var(--footer-padding);
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
+    z-index: 10;
 }
 
-.footer a {
-    color: #ffffff;
-    text-decoration: none;
+/* Mejoras de accesibilidad */
+.nav-link:focus,
+.navbar-brand:focus,
+.card:focus {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
-.footer a:hover {
-    text-decoration: underline;
+/* Media Queries (Responsive Design) */
+@media (max-width: 1200px) {
+    .container {
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .navbar {
+        padding: 10px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .nav-link {
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 5px;
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .nav-link {
+        padding: 6px 10px;
+    }
+
+    .container {
+        padding: 15px;
+        margin: 15px;
+    }
+
+    .footer {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 8px 4px;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .nav-link {
+        padding: 5px 8px;
+    }
+
+    .container {
+        padding: 10px;
+        margin: 10px;
+    }
 }

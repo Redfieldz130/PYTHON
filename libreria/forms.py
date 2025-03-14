@@ -1,6 +1,6 @@
 from django import forms    
 from .models import Asignacion,Equipo
-
+from django.contrib.auth.forms import UserCreationForm
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
@@ -17,3 +17,6 @@ class AsignacionForm(forms.ModelForm):
         model = Asignacion
         fields = ['colaborador_nombre', 'correo_institucional', 'equipo']
         equipo = forms.ModelChoiceField(queryset=Equipo.objects.all(), empty_label="Seleccione un equipo")
+
+class CustomUserCreationForm(UserCreationForm):
+    pass

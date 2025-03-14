@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EquipoForm, AsignacionForm
+from .forms import EquipoForm, AsignacionForm, CustomUserCreationForm
 from .models import Equipo, Asignacion
 from django.contrib import messages
+import logging
 from django.http import JsonResponse
-
+from django.contrib.auth import authenticate, login
 # Vista para cambiar el estado del equipo
 def actualizar_estado(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
@@ -41,8 +42,18 @@ def crear_equipos(request):
     if request.method == 'POST':
         formulario = EquipoForm(request.POST, request.FILES)
         if formulario.is_valid():
-            formulario.save()  # Guarda el nuevo equipo
-            return redirect('equipos')  # Redirige al listado de equipos
+            # Verificar si el serial ya existe
+            serial = formulario.cleaned_data['serial']
+            if Equipo.objects.filter(serial=serial).exists():
+                # Si el serial ya existe, mostrar un mensaje de error
+                messages.error(request, "El serial ya está registrado.")
+            else:
+                # Guardar el nuevo equipo
+                formulario.save()
+                messages.success(request, "Equipo agregado exitosamente.")
+                return redirect('equipos')  # Redirige a la lista de equipos
+        else:
+            messages.error(request, "Serial duplicado.")
     else:
         formulario = EquipoForm()
 
@@ -71,38 +82,52 @@ def editar_equipo(request, equipo_id):
 from django.http import JsonResponse
 
 # Vista para asignar un equipo a un colaborador
+logger = logging.getLogger(__name__)
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Equipo, Asignacion
+
 def asignar(request):
-    equipos = Equipo.objects.all()  
-    asignaciones = Asignacion.objects.all()  
+    equipos = Equipo.objects.all()  # Obtén todos los equipos disponibles
+    asignaciones = Asignacion.objects.all()  # Obtén todas las asignaciones existentes
 
     if request.method == 'POST':
-        colaborador_nombre = request.POST['colaborador_nombre']
-        correo_institucional = request.POST['correo_institucional']
-        equipo_id = request.POST['equipo']
-        equipo = Equipo.objects.get(id=equipo_id)
+        # Obtener los datos del formulario
+        colaborador_nombre = request.POST.get('colaborador_nombre')
+        correo_institucional = request.POST.get('correo_institucional')
+        equipo_id = request.POST.get('equipo')
 
-        # Verifica si el equipo ya está asignado
-        if Asignacion.objects.filter(equipo=equipo).exists():
-            messages.error(request, f'El equipo "{equipo.modelo}" ya ha sido asignado y no puede ser asignado nuevamente.')
-        else:
-            # Cambiar el estado del equipo a 'Asignado'
-            equipo.estado = 'Asignado'
-            equipo.save()
+        try:
+            # Obtener el objeto del equipo seleccionado
+            equipo = Equipo.objects.get(id=equipo_id)
 
-            # Crea la asignación si el equipo no está asignado
-            Asignacion.objects.create(
-                colaborador_nombre=colaborador_nombre,
-                correo_institucional=correo_institucional,
-                equipo=equipo
-            )
-            messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado con éxito.')
+            # Verifica si el equipo ya está asignado
+            if Asignacion.objects.filter(equipo=equipo).exists():
+                messages.error(request, f'El equipo "{equipo.modelo}" ya ha sido asignado y no puede ser asignado nuevamente.')
+            else:
+                # Cambiar el estado del equipo a 'Asignado'
+                equipo.estado = 'Asignado'
+                equipo.save()
 
-        return redirect('asignar')  # Regresamos a la misma página para evitar la creación de un equipo innecesario
+                # Crear la asignación
+                Asignacion.objects.create(
+                    colaborador_nombre=colaborador_nombre,
+                    correo_institucional=correo_institucional,
+                    equipo=equipo
+                )
+                messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado con éxito.')
+
+        except Equipo.DoesNotExist:
+            messages.error(request, 'El equipo seleccionado no existe.')
+
+        return redirect('asignar')  # Redirigir de nuevo a la página de asignación para evitar envío repetido del formulario
 
     return render(request, 'Equipos/Asignar.html', {
         'equipos': equipos,
         'asignaciones': asignaciones,
     })
+
 
 
 # Vista para mostrar las asignaciones de equipos
@@ -138,3 +163,20 @@ def liberar_equipo(request, equipo_id):
     equipo.save()
     messages.success(request, f'Equipo {equipo.modelo} ahora está disponible.')
     return redirect('inventario')
+
+def registro(request):
+    data= {
+        'form': CustomUserCreationForm()
+    }
+    
+    if request.method== 'POST':
+        formulario = CustomUserCreationForm(data=request.POST)
+        if formulario.is_valid():
+            formulario.save()
+            user = authenticate(username=formulario.cleaned_data["username"], password=formulario.cleaned_data["password1"])
+            login(request, user)
+            messages.success(request, "has sido registado correctamente")
+            return redirect(to = "inicio")
+        data['form'] = formulario    
+    return render(request, 'registration/registro.html', data)
+
