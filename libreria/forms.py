@@ -1,17 +1,28 @@
 from django import forms    
 from .models import Asignacion,Equipo
 from django.contrib.auth.forms import UserCreationForm
+
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
-        fields = ['marca', 'tipo', 'serial', 'modelo', 'observaciones']  # Evita '__all__' si prefieres controlarlo
+        fields = ['marca', 'tipo', 'serial', 'modelo', 'observaciones']
         widgets = {
             'marca': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la marca'}),
-            'tipo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el tipo'}),
+            'tipo': forms.Select(attrs={'class': 'form-select'}),
             'serial': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el serial'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el modelo'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Ingrese observaciones'}),
         }
+
+
+    def clean_tipo(self):
+        tipo = self.cleaned_data['tipo']
+        tipos_validos = ['laptop_pc', 'celular', 'impresora', 'monitor']  # Coincide con el modelo
+        if tipo not in tipos_validos:
+            raise forms.ValidationError(f"'{tipo}' no es un tipo válido.")
+        return tipo
+
+
 class AsignacionForm(forms.ModelForm):
     class Meta:
         model = Asignacion

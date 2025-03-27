@@ -4,14 +4,13 @@
 
 {% block contenido %}
 
-<div class="d-flex justify-content-center ">
+<div class="d-flex justify-content-center">
     <div class="card shadow p-6" style="width: 900px;">
         <div class="card-header text-center">
-            <h4>Asignar un nuevo equipo</h4>
+            <h4>Asignacion de equipos</h4>
         </div>
         <div class="card-body">
 
-            <!-- Mensajes de error o éxito -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-success alert-flotante">
@@ -22,20 +21,19 @@
 
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                    // Seleccionar todos los mensajes flotantes
                     var alertFlotantes = document.querySelectorAll(".alert-flotante");
-                    
-                    // Iterar sobre los mensajes y aplicar desvanecimiento
                     alertFlotantes.forEach(function(alertFlotante) {
                         setTimeout(function() {
                             alertFlotante.classList.add("hide");
-                        }, 4000);  // Tiempo en milisegundos (4 segundos)
+                        }, 4000);
                     });
                 });
             </script>
 
+            {% if perms.libreria.asignar_equipo %}
             <form method="post">
                 {% csrf_token %}
+                
                 <div class="mb-3">
                     <label for="colaborador_nombre" class="form-label">Nombre del colaborador</label>
                     <input type="text" class="form-control" name="colaborador_nombre" id="colaborador_nombre" placeholder="Nombre del colaborador" required>
@@ -58,10 +56,24 @@
                     </select>
                 </div>
 
+                <!-- Campo para la fecha de entrega -->
+                <div class="mb-3">
+                    <label for="fecha_entrega" class="form-label">Fecha de entrega</label>
+                    <input type="date" class="form-control" name="fecha_entrega" id="fecha_entrega" value="{{ fecha_hoy }}" required>
+                </div>
+
+                <!-- Campo opcional para la fecha final si es préstamo temporal -->
+                <div class="mb-3">
+                    <label for="fecha_final" class="form-label">Fecha final (opcional, si es temporal)</label>
+                    <input type="date" class="form-control" name="fecha_final" id="fecha_final">
+                </div>
+
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Asignar equipo</button>
                 </div>
+
             </form>
+            {% endif %}
 
             <hr>
 
@@ -69,11 +81,15 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Nombre del colaborador</th>
-                        <th>Correo Institucional</th>
+                        <th>Colaborador</th>
+                        <th>Correo</th>
                         <th>Equipo</th>
                         <th>Serial</th>
+                        <th>Fecha de entrega</th>
+                        <th>Fecha final</th>
+                        {% if perms.libreria.asignar_equipo %}
                         <th>Acciones</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -83,9 +99,13 @@
                             <td>{{ asignacion.correo_institucional }}</td>
                             <td>{{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}</td>
                             <td>{{ asignacion.equipo.serial }}</td>
+                            <td>{{ asignacion.fecha_entrega }}</td>
+                            <td>{{ asignacion.fecha_final|default:"-" }}</td>
+                            {% if perms.libreria.asignar_equipo %}
                             <td>
                                 <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger">Desasignar</a>
                             </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -94,4 +114,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -3,43 +3,56 @@
 {% block titulo %}Agregar nuevo Equipo{% endblock %}
 
 {% block contenido %}
-    
-  
 <div class="d-flex justify-content-center align-items-center vh-400">
     <div class="card shadow p-6" style="width: 900px;">
         <div class="card-header text-center">
             <h4>Agregar un nuevo equipo</h4>
         </div>
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %} 
+            <!-- Mostrar los mensajes -->
+            {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-                <!-- Opción 1: Mostrar campos con Bootstrap -->
+            <!-- Formulario -->
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Campo Marca -->
                 <div class="mb-3">
                     <label for="marca" class="form-label">Marca</label>
-                    <input type="text" class="form-control" name="marca" id="marca" placeholder="">
-                </div> 
-
-                <div class="mb-3">
-                    <label for="tipo" class="form-label">Tipo</label>
-                    <input type="text" class="form-control" name="tipo" id="tipo" placeholder="">
+                    {{ formulario.marca }}
                 </div>
 
+                <!-- Campo Tipo -->
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo de Dispositivo</label>
+                    {{ formulario.tipo }}
+                </div>
+
+                <!-- Campo Serial -->
                 <div class="mb-3">
                     <label for="serial" class="form-label">Serial</label>
-                    <input type="text" class="form-control" name="serial" id="serial" placeholder="">
-                </div> 
-
-                <div class="mb-3">
-                    <label for="modelo" class="form-label">Modelo</label>
-                    <input type="text" class="form-control" name="modelo" id="modelo" placeholder="">
+                    {{ formulario.serial }}
                 </div>
 
+                <!-- Campo Modelo -->
+                <div class="mb-3">
+                    <label for="modelo" class="form-label">Modelo</label>
+                    {{ formulario.modelo }}
+                </div>
+
+                <!-- Campo Observaciones -->
                 <div class="mb-3">
                     <label for="observaciones" class="form-label">Observaciones</label>
-                    <input type="text" class="form-control" name="observaciones" id="observaciones" placeholder="">
-                </div> 
+                    {{ formulario.observaciones }}
+                </div>
 
+                <!-- Botón de envío -->
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
@@ -48,4 +61,3 @@
     </div>
 </div>
 {% endblock %}
-
