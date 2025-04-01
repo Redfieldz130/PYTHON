@@ -17,7 +17,7 @@ class EquipoForm(forms.ModelForm):
 
     def clean_tipo(self):
         tipo = self.cleaned_data['tipo']
-        tipos_validos = ['laptop_pc', 'celular', 'impresora', 'monitor']  # Coincide con el modelo
+        tipos_validos = ['laptop_pc', 'celular', 'imprecsora', 'monitor','cables','pc' ]  
         if tipo not in tipos_validos:
             raise forms.ValidationError(f"'{tipo}' no es un tipo válido.")
         return tipo

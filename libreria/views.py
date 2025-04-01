@@ -23,22 +23,28 @@ def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
 
 def listar_equipos(request):
-    equipos_laptop = Equipo.objects.filter(tipo='Laptop')
+    equipos_laptop = Equipo.objects.filter(tipo='Laptop_pc')
     equipos_celular = Equipo.objects.filter(tipo='Celular')
     equipos_impresora = Equipo.objects.filter(tipo='Impresora')
     equipos_monitor = Equipo.objects.filter(tipo='Monitor')
+    equipos_pc = Equipo.objects.filter(tipo='Pc')
+    equipos_cables = Equipo.objects.filter(tipo='cables')
 
     # Debug: Mostrar los equipos encontrados en consola
     print("Laptops:", list(equipos_laptop.values()))
     print("Celulares:", list(equipos_celular.values()))
     print("Impresoras:", list(equipos_impresora.values()))
     print("Monitores:", list(equipos_monitor.values()))
+    print("cables:", list(equipos_cables.values()))
+    print("pc:", list(equipos_pc.values()))
 
     return render(request, 'Equipos/Index.html', {
         'equipos_laptop': equipos_laptop,
         'equipos_celular': equipos_celular,
         'equipos_impresora': equipos_impresora,
         'equipos_monitor': equipos_monitor,
+        'equipos_pc': equipos_pc,
+        'equipos_cables': equipos_cables,
     })
 
 

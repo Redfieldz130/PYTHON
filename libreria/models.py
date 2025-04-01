@@ -11,6 +11,10 @@ class Equipo(models.Model):
         ('celular', 'Celular'),
         ('impresora', 'Impresora'),
         ('monitor', 'Monitor'),
+        ('cables', 'cables'),
+        ('pc', 'Pc'),
+        
+        
     ]
 
     modelo = models.CharField(max_length=100)

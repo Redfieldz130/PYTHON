@@ -20,7 +20,13 @@
             <!-- Botones de navegación entre pestañas -->
             <ul class="nav nav-tabs" id="equiposTabs">
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#laptops">Laptops</button>
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pc">PC</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cables">Cables</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#laptops">Laptops</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#celulares">Celulares</button>
@@ -35,8 +41,18 @@
 
             <!-- Contenido de las pestañas -->
             <div class="tab-content mt-3">
+                <!-- PC -->
+                <div class="tab-pane fade show active" id="pc">
+                    {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_pc titulo="PC" %}
+                </div>
+
+                <!-- Cables -->
+                <div class="tab-pane fade" id="cables">
+                    {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_cables titulo="Cables" %}
+                </div>
+
                 <!-- Laptops -->
-                <div class="tab-pane fade show active" id="laptops">
+                <div class="tab-pane fade" id="laptops">
                     {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_laptop titulo="Laptops" %}
                 </div>
 
@@ -63,13 +79,11 @@
                 </button>
             </div>
 
-             {% if perms.libreria.add_equipo %}
-            
+            {% if perms.libreria.add_equipo %}
             <div class="text-center mt-4">
                 <a href="{% url 'crear_equipo' %}" class="btn btn-primary btn-lg rounded-pill text-uppercase">
                     Añadir Nuevo Equipo
                 </a>
-
             </div>
             {% endif %}
         </div>
