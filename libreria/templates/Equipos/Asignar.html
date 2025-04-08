@@ -3,50 +3,49 @@
 {% block titulo %}Asignar equipo{% endblock %}
 
 {% block contenido %}
+<div class="container-fluid py-4">
+    <!-- Encabezado -->
+    <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
+        <h4 class="mb-0 font-weight-bold">Asignación de Equipos</h4>
+    </div>
 
-<div class="d-flex justify-content-center">
-    <div class="card shadow p-6" style="width: 900px;">
-        <div class="card-header text-center">
-            <h4>Asignacion de equipos</h4>
-        </div>
-        <div class="card-body">
+    <!-- Alertas -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-flotante mt-3">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success alert-flotante">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+    <!-- Botón para mostrar el formulario -->
+    {% if perms.libreria.asignar_equipo %}
+    <div class="text-center mt-4">
+        <button class="btn btn-primary btn-sm text-uppercase" onclick="toggleFormulario()">
+            Asignar Nuevo Equipo
+        </button>
+    </div>
+    {% endif %}
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    var alertFlotantes = document.querySelectorAll(".alert-flotante");
-                    alertFlotantes.forEach(function(alertFlotante) {
-                        setTimeout(function() {
-                            alertFlotante.classList.add("hide");
-                        }, 4000);
-                    });
-                });
-            </script>
-
-            {% if perms.libreria.asignar_equipo %}
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label for="colaborador_nombre" class="form-label">Nombre del colaborador</label>
-                    <input type="text" class="form-control" name="colaborador_nombre" id="colaborador_nombre" placeholder="Nombre del colaborador" required>
+    <!-- Formulario oculto inicialmente -->
+    <div id="formularioAsignacion" class="mt-4 d-none">
+        {% if perms.libreria.asignar_equipo %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="colaborador_nombre" class="form-label">Nombre y apellido del colaborador</label>
+                    <input type="text" class="form-control form-control-sm" name="colaborador_nombre" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="correo_institucional" class="form-label">Correo Institucional</label>
-                    <input type="email" class="form-control" name="correo_institucional" id="correo_institucional" placeholder="Correo institucional" required>
+                    <input type="email" class="form-control form-control-sm" name="correo_institucional" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="equipo" class="form-label">Seleccionar equipo</label>
-                    <select class="form-control" name="equipo" id="equipo" required>
+                    <select class="form-control form-control-sm" name="equipo" required>
                         <option value="">Seleccione un equipo</option>
                         {% for equipo in equipos %}
                             <option value="{{ equipo.id }}">
@@ -56,63 +55,84 @@
                     </select>
                 </div>
 
-                <!-- Campo para la fecha de entrega -->
-                <div class="mb-3">
+                <div class="col-md-3 mb-3">
                     <label for="fecha_entrega" class="form-label">Fecha de entrega</label>
-                    <input type="date" class="form-control" name="fecha_entrega" id="fecha_entrega" value="{{ fecha_hoy }}" required>
+                    <input type="date" class="form-control form-control-sm" name="fecha_entrega" value="{{ fecha_hoy }}" required>
                 </div>
 
-                <!-- Campo opcional para la fecha final si es préstamo temporal -->
-                <div class="mb-3">
-                    <label for="fecha_final" class="form-label">Fecha final (opcional, si es temporal)</label>
-                    <input type="date" class="form-control" name="fecha_final" id="fecha_final">
+                <div class="col-md-3 mb-3">
+                    <label for="fecha_final" class="form-label">Fecha final (opcional)</label>
+                    <input type="date" class="form-control form-control-sm" name="fecha_final">
                 </div>
+            </div>
 
-                <div class="mb-3 text-center">
-                    <button type="submit" class="btn btn-primary">Asignar equipo</button>
-                </div>
+            <div class="text-center mt-2">
+                <button type="submit" class="btn btn-success btn-sm text-uppercase">Guardar Asignación</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
 
-            </form>
-            {% endif %}
-
-            <hr>
-
-            <h4 class="mt-5">Equipos ya asignados</h4>
-            <table class="table table-striped">
-                <thead>
+    <!-- Tabla de asignaciones -->
+    <div class="mt-5">
+        <h5 class="text-center">Equipos ya asignados</h5>
+        <table class="table table-striped table-sm mt-3">
+            <thead>
+                <tr>
+                    <th>Colaborador</th>
+                    <th>Correo</th>
+                    <th>Equipo</th>
+                    <th>Serial</th>
+                    <th>MAC Address</th>
+                    <th>Fecha de entrega</th>
+                    <th>Fecha final</th>
+                    {% if perms.libreria.asignar_equipo %}
+                    <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for asignacion in asignaciones %}
                     <tr>
-                        <th>Colaborador</th>
-                        <th>Correo</th>
-                        <th>Equipo</th>
-                        <th>Serial</th>
-                        <th>Fecha de entrega</th>
-                        <th>Fecha final</th>
+                        <td>{{ asignacion.colaborador_nombre }}</td>
+                        <td>{{ asignacion.correo_institucional }}</td>
+                        <td>{{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}</td>
+                        <td>{{ asignacion.equipo.serial }}</td>
+                        <td>{{ asignacion.equipo.mac_address|default:"No disponible" }}</td>
+                        <td>{{ asignacion.fecha_entrega }}</td>
+                        <td>{{ asignacion.fecha_final|default:"-" }}</td>
                         {% if perms.libreria.asignar_equipo %}
-                        <th>Acciones</th>
+                        <td class="d-flex justify-content-center">
+                            <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">
+                                <i class="fas fa-times"></i>
+                            </a>
+                            <a href="{% url 'generar_constancia' asignacion.id %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-print"></i>
+                            </a>
+                        </td>
                         {% endif %}
                     </tr>
-                </thead>
-                <tbody>
-                    {% for asignacion in asignaciones %}
-                        <tr>
-                            <td>{{ asignacion.colaborador_nombre }}</td>
-                            <td>{{ asignacion.correo_institucional }}</td>
-                            <td>{{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}</td>
-                            <td>{{ asignacion.equipo.serial }}</td>
-                            <td>{{ asignacion.fecha_entrega }}</td>
-                            <td>{{ asignacion.fecha_final|default:"-" }}</td>
-                            {% if perms.libreria.asignar_equipo %}
-                            <td>
-                                <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger">Desasignar</a>
-                            </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+
+<script>
+    function toggleFormulario() {
+        const form = document.getElementById('formularioAsignacion');
+        form.classList.toggle('d-none');
+    }
+
+    // Alert flotante (autocierre)
+    document.addEventListener("DOMContentLoaded", function () {
+        var alertFlotantes = document.querySelectorAll(".alert-flotante");
+        alertFlotantes.forEach(function (alertFlotante) {
+            setTimeout(function () {
+                alertFlotante.classList.add("hide");
+            }, 4000);
+        });
+    });
+</script>
 
 {% endblock %}

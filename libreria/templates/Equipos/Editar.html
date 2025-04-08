@@ -3,54 +3,72 @@
 {% block titulo %}Editar Equipo{% endblock %}
 
 {% block contenido %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-0 shadow-lg rounded-4 bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
-                <div class="card-header text-center bg-primary text-white py-4">
-                    <h5 class="mb-0">Editar Equipo</h5>
+<div class="container-fluid py-4">
+    <!-- Encabezado compacto -->
+    <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
+        <h5 class="mb-0 font-weight-bold">Editar Equipo</h5>
+    </div>
+
+    <!-- Formulario de edición -->
+    <div class="content mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-flotante">
+                    {{ message }}
                 </div>
+            {% endfor %}
+        {% endif %}
 
-                <div class="card-body bg-light">
-                    <h4 class="card-title text-center text-primary mb-4">Formulario de Edición</h4>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var alertFlotantes = document.querySelectorAll(".alert-flotante");
+                alertFlotantes.forEach(function(alertFlotante) {
+                    setTimeout(function() {
+                        alertFlotante.classList.add("hide");
+                    }, 4000);
+                });
+            });
+        </script>
 
-                    {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-flotante">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="modelo" class="form-label">Modelo</label>
-                            <input type="text" class="form-control" name="modelo" id="modelo" value="{{ equipo.modelo }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tipo" class="form-label">Tipo</label>
-                            <input type="text" class="form-control" name="tipo" id="tipo" value="{{ equipo.tipo }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="marca" class="form-label">Marca</label>
-                            <input type="text" class="form-control" name="marca" id="marca" value="{{ equipo.marca }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="serial" class="form-label">Serial</label>
-                            <input type="text" class="form-control" name="serial" id="serial" value="{{ equipo.serial }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="observaciones" class="form-label">Observaciones</label>
-                            <textarea class="form-control" name="observaciones" id="observaciones" required>{{ equipo.observaciones }}</textarea>
-                        </div>
-                        <div class="mb-3 text-center">
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                        </div>
-                    </form>
-                </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="modelo" class="form-label">Modelo</label>
+                <input type="text" class="form-control form-control-sm" name="modelo" id="modelo" value="{{ equipo.modelo }}" required>
             </div>
-        </div>
+
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo</label>
+                <input type="text" class="form-control form-control-sm" name="tipo" id="tipo" value="{{ equipo.tipo }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <input type="text" class="form-control form-control-sm" name="marca" id="marca" value="{{ equipo.marca }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="serial" class="form-label">Serial</label>
+                <input type="text" class="form-control form-control-sm" name="serial" id="serial" value="{{ equipo.serial }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="serial" class="form-label">MAC Address</label>
+                <input type="text" class="form-control form-control-sm" name="serial" id="serial" value="{{ equipo.mac_address }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="observaciones" class="form-label">Observaciones</label>
+                <textarea class="form-control form-control-sm" name="observaciones" id="observaciones" required>{{ equipo.observaciones }}</textarea>
+            </div>
+            
+        
+
+            <div class="mb-3 text-center">
+                <button type="submit" class="btn btn-primary btn-sm text-uppercase">Guardar cambios</button>
+            </div>
+        </form>
     </div>
 </div>
+
 {% endblock %}

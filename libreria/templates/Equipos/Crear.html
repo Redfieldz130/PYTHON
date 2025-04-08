@@ -9,7 +9,7 @@
             <h4>Agregar un nuevo equipo</h4>
         </div>
         <div class="card-body">
-            <!-- Mostrar los mensajes -->
+
             {% if messages %}
                 <div class="alert alert-info">
                     {% for message in messages %}
@@ -18,41 +18,43 @@
                 </div>
             {% endif %}
 
-            <!-- Formulario -->
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <!-- Campo Marca -->
                 <div class="mb-3">
                     <label for="marca" class="form-label">Marca</label>
                     {{ formulario.marca }}
                 </div>
 
-                <!-- Campo Tipo -->
+               
                 <div class="mb-3">
                     <label for="tipo" class="form-label">Tipo de Dispositivo</label>
                     {{ formulario.tipo }}
                 </div>
 
-                <!-- Campo Serial -->
+                
                 <div class="mb-3">
                     <label for="serial" class="form-label">Serial</label>
                     {{ formulario.serial }}
                 </div>
 
-                <!-- Campo Modelo -->
+             
                 <div class="mb-3">
                     <label for="modelo" class="form-label">Modelo</label>
                     {{ formulario.modelo }}
                 </div>
 
-                <!-- Campo Observaciones -->
+
                 <div class="mb-3">
                     <label for="observaciones" class="form-label">Observaciones</label>
                     {{ formulario.observaciones }}
                 </div>
 
-                <!-- Botón de envío -->
+                <div class="mb-3">
+                    <label for="mac_address" class="form-label">Dirección MAC</label>
+                    {{ formulario.mac_address }}
+                </div>
+
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>

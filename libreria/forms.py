@@ -5,13 +5,15 @@ from django.contrib.auth.forms import UserCreationForm
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
-        fields = ['marca', 'tipo', 'serial', 'modelo', 'observaciones']
+        fields = ['marca', 'tipo', 'serial', 'modelo', 'observaciones', 'mac_address']
         widgets = {
             'marca': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la marca'}),
             'tipo': forms.Select(attrs={'class': 'form-select'}),
             'serial': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el serial'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el modelo'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Ingrese observaciones'}),
+            'mac_address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese la dirección MAC'}),
+            
         }
 
 

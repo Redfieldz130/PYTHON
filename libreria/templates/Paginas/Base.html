@@ -3,107 +3,207 @@
 <head>
     {% load static %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block titulo %} Inventario del Departamento de Tecnología {% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}Inventario del Departamento de Tecnología{% endblock %}</title>
 
-    <!-- Cargar Bootstrap desde CDN -->
+    <!-- Bootstrap y FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Cargar tu propio archivo CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.0">
-</head>
 
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #0b3771;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            padding-top: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hide {
+            transform: translateX(-100%);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: block;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #0b5ed7;
+        }
+
+        .banner {
+            height: 60px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            z-index: 999;
+            padding: 0 20px 0 260px;
+            transition: padding-left 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .banner.collapsed {
+            padding-left: 60px;
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease;
+            margin-left: 240px;
+            padding: 80px 20px 60px 20px;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color:#b76d0d;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 900;
+        }
+
+        .logo-img {
+            height: 40px;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #0d6efd;
+            cursor: pointer;
+        }
+    </style>
+</head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">Inventario del Departamento de Tecnología</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'inicio' %}">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'equipos' %}">Equipos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'asignar' %}">Asignaciones</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a>
-                    </li>
-
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link" style="border: none; background: none; cursor: pointer;">
-                                Cerrar sesión
-                            </button>
-                        </form>
-                    </li>
-                    <li class="nav-item">
-                        <span class="nav-link">{{ user.username }}</span>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mensajes de alerta -->
-        {% if messages %}
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-        {% for message in messages %}
-        <div class="toast align-items-center text-white bg-{{ message.tags|default:"info" }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    {{ message }}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-        {% endfor %}
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h5 class="text-center text-white">Inventario IDEICE</h5>
+        <hr class="text-white mx-3">
+        <a href="{% url 'inicio' %}" class="{% if request.path == '/' %}active{% endif %}"> 
+            <i class="fas fa-home fa-2px me-2"></i>Inicio</a>
+        <a href="{% url 'equipos' %}"><i class="fas fa-desktop me-2"></i>Equipos</a>
+        <a href="{% url 'asignar' %}"><i class="fas fa-tasks me-2"></i>Asignaciones</a>
+        <a href="{% url 'nosotros' %}"><i class="fas fa-users me-2"></i>Nosotros</a>
     </div>
-    {% endif %}
 
+    <!-- Banner -->
+    <div class="banner" id="banner">
+        <div class="d-flex align-items-center">
+            <button class="btn text-primary" onclick="toggleSidebar()">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+        </div>
+
+        <div class="position-absolute top-50 start-50 translate-middle">
+            <img src="https://ideice.gob.do/images/minerd-ideice-logo-v2.svg?20241015105300" alt="Logo" class="logo-img"style="height: 56px;">
+        </div>
+
+        <div class="ms-auto d-flex align-items-center">
+            {% if user.is_authenticated %}
+                <span class="text-dark me-3">
+                    <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+                </span>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-light">
+                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
+                </a>
+            {% endif %}
+        </div>
+    </div>
 
     <!-- Contenido principal -->
-    {% block contenido %}
-    <div class="container mt-4">
-        {% block cuerpo %} {% endblock %}
+    <div class="main-content" id="main-content">
+        <div class="container">
+            {% block contenido %}
+            {% block cuerpo %}{% endblock %}
+            {% endblock %}
+        </div>
     </div>
-    {% endblock %}
 
     <!-- Footer -->
     <div class="footer">
-        <p>| &copy; 2025 Departamento de Tecnología IDEICE | </p>
+        <p>| &copy; 2025 Departamento de Tecnología IDEICE |</p>
     </div>
 
-    <!-- Cargar Bootstrap JS y Popper desde CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script para ocultar las alertas después de un tiempo -->
+    <!-- Script de Sidebar -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Seleccionar todas las alertas
-            var alertas = document.querySelectorAll(".alert");
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const banner = document.getElementById('banner');
+            const mainContent = document.getElementById('main-content');
 
-            // Iterar sobre las alertas y aplicar el desvanecimiento
-            alertas.forEach(function(alerta) {
-                setTimeout(function() {
-                    alerta.classList.add("hide"); // Añadir clase para ocultar la alerta
-                }, 4000);  // Tiempo en milisegundos (4 segundos)
-            });
+            sidebar.classList.toggle('hide');
+            banner.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+    </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if messages %}
+                let messagesArr = [];
+                {% for message in messages %}
+                    messagesArr.push({
+                        title: "{% if message.tags == 'error' %}Error{% else %}Éxito{% endif %}",
+                        text: "{{ message|escapejs }}",
+                        icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
+                    });
+                {% endfor %}
+
+                if (messagesArr.length > 0) {
+                    let i = 0;
+                    function showNextMessage() {
+                        if (i < messagesArr.length) {
+                            Swal.fire(messagesArr[i]).then(() => {
+                                i++;
+                                showNextMessage();
+                            });
+                        }
+                    }
+                    showNextMessage();
+                }
+            {% endif %}
         });
     </script>
+
 </body>
 </html>

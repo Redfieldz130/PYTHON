@@ -7,9 +7,10 @@
                 <th>Modelo</th>
                 <th>Marca</th>
                 <th>Serial</th>
+                <th>MAC Address</th>  <!-- NUEVA COLUMNA -->
                 <th>Observaciones</th>
                 <th>Estado</th>
-                {% if perms.libreria.change_equipo %}
+                {% if perms.libreria.change_equipo or perms.libreria.delete_equipo %}
                 <th>Acciones</th>
                 {% endif %}
             </tr>
@@ -21,6 +22,7 @@
                     <td>{{ equipo.modelo }}</td>
                     <td>{{ equipo.marca }}</td>
                     <td>{{ equipo.serial }}</td>
+                    <td>{{ equipo.mac_address|default:"No disponible" }}</td> <!-- Evita errores si está vacío -->
                     <td>{{ equipo.observaciones }}</td>
                     <td>
                         {% if equipo.estado == 'Disponible' %}
@@ -29,18 +31,45 @@
                             <span class="badge bg-warning text-dark">{{ equipo.estado }}</span>
                         {% endif %}
                     </td>
+                    {% if perms.libreria.change_equipo or perms.libreria.delete_equipo %}
                     <td>
                         {% if perms.libreria.change_equipo %}
                         <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-warning btn-sm">Editar</a>
                         {% endif %}
                         {% if perms.libreria.delete_equipo %}
-                        <a href="{% url 'borrar_equipo' equipo.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este equipo?');">Eliminar</a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ equipo.id }})">
+                                Eliminar
+                            </button>
                         {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
             {% empty %}
-                <tr><td colspan="7" class="text-center">No hay {{ titulo|lower }} disponibles.</td></tr>
+                <tr><td colspan="8" class="text-center">No hay {{ titulo|lower }} disponibles.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+{% block extra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmDelete(equipoId) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¿Seguro que deseas eliminar este equipo?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let url = "{% url 'borrar_equipo' 0 %}".replace('0', equipoId);
+          window.location.href = url;
+        }
+      });
+    }
+  </script>
+{% endblock %}

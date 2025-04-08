@@ -23,7 +23,7 @@ class Equipo(models.Model):
     serial = models.CharField(max_length=50, unique=True)
     observaciones = models.TextField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=[('Disponible', 'Disponible'), ('Asignado', 'Asignado')], default='Disponible')
-
+    mac_address=models.CharField(max_length=17, unique=True, blank=True, null=True)
 
 
 
