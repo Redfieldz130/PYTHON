@@ -1,9 +1,10 @@
 {% extends "Paginas/Base.html" %}
 
 {% block titulo %}Aplicación de Inventario{% endblock %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% block JS %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {% if messages %}
         {% for message in messages %}
             <script>
@@ -11,110 +12,87 @@
                     title: "Mensaje",
                     text: "{{ message }}",
                     icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
-                })
-                .then(function(result){
-                    if(result.isConfirmed){
-                        window.location.href = "/eliminar-producto/{{ id }}/"; 
-                    }
                 });
             </script>
         {% endfor %}
     {% endif %}
-{% endblock  %}
+{% endblock %}
 
 {% block contenido %}
 <div class="container-fluid py-4">
-    <!-- Encabezado compactado -->
+    <!-- Encabezado -->
     <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
         <h4 class="mb-0 font-weight-bold">Inventario de Equipos</h4>
     </div>
 
-    <!-- Contenido de los equipos -->
+    <!-- Barra de búsqueda -->
     <div class="content mt-4">
         <div class="mb-4">
             <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar por Modelo, Marca o Serial" oninput="searchTable()">
         </div>
 
-        <!-- Navegación con las tabs -->
+        <!-- Tabs -->
         <ul class="nav nav-tabs" id="equiposTabs">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pc">PC</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cables">Cables</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#laptops">Laptops</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#celulares">Celulares</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#impresoras">Impresoras</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#monitores">Monitores</button>
-            </li>
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pc">PC</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#cables">Cables</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#laptops">Laptops</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#celulares">Celulares</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#impresoras">Impresoras</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#monitores">Monitores</button></li>
         </ul>
 
+        <!-- Contenido de cada tab -->
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active" id="pc">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_pc titulo="PC" %}
             </div>
-
             <div class="tab-pane fade" id="cables">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_cables titulo="Cables" %}
             </div>
-
             <div class="tab-pane fade" id="laptops">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_laptop titulo="Laptops" %}
             </div>
-
             <div class="tab-pane fade" id="celulares">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_celular titulo="Celulares" %}
             </div>
-
             <div class="tab-pane fade" id="impresoras">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_impresora titulo="Impresoras" %}
             </div>
-
             <div class="tab-pane fade" id="monitores">
                 {% include 'Equipos/partials/equipo_table.html' with equipos=equipos_monitor titulo="Monitores" %}
             </div>
         </div>
 
-        <!-- Botón de impresión -->
-        
+        <!-- Botones de acción -->
         <div class="text-center mt-3">
             <button id="printBtn" class="btn btn-secondary btn-sm rounded-pill text-uppercase">
-                <i class="fas fa-print "></i> 
+                <i class="fas fa-print"></i> Imprimir
             </button>
 
             {% if perms.libreria.add_equipo %}
             <a href="{% url 'crear_equipo' %}" class="btn btn-primary btn-sm rounded-pill text-uppercase ms-2" title="Añadir Nuevo Equipo">
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-plus"></i> Añadir
             </a>
             {% endif %}
         </div>
-
     </div>
 </div>
 
+<!-- Script para impresión y búsqueda -->
 <script>
-    document.getElementById("printBtn").addEventListener("click", function() {
+    document.getElementById("printBtn").addEventListener("click", function () {
         window.print();
     });
 
     function searchTable() {
         let input = document.getElementById("searchInput").value.toUpperCase();
-        let tables = ['laptopsTable', 'celularesTable', 'impresorasTable', 'monitoresTable'];
+        let tables = ['pcTable', 'cablesTable', 'laptopsTable', 'celularesTable', 'impresorasTable', 'monitoresTable'];
 
-        tables.forEach(function(tableId) {
+        tables.forEach(function (tableId) {
             let table = document.getElementById(tableId);
             if (table) {
                 let rows = table.querySelectorAll("tbody tr");
-
-                rows.forEach(function(row) {
+                rows.forEach(function (row) {
                     let text = row.innerText.toUpperCase();
                     row.style.display = text.includes(input) ? "" : "none";
                 });
@@ -122,5 +100,4 @@
         });
     }
 </script>
-
 {% endblock %}

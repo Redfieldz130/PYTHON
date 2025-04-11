@@ -1,9 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+import re
 
-
-
-from django.db import models
+def validate_mac_address(value):
+    """ Valida que el valor sea un MAC address válido. """
+    mac_address_regex = re.compile(r'^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$')
+    if not mac_address_regex.match(value):
+        raise ValidationError('El MAC address debe tener el formato correcto (XX:XX:XX:XX:XX:XX).')
 
 class Equipo(models.Model):
     TIPOS = [
@@ -13,23 +17,17 @@ class Equipo(models.Model):
         ('monitor', 'Monitor'),
         ('cables', 'cables'),
         ('pc', 'Pc'),
-        
-        
     ]
-
     modelo = models.CharField(max_length=100)
-    tipo = models.CharField(max_length=50, choices=TIPOS, default='laptop_pc')  
+    tipo = models.CharField(max_length=50, choices=TIPOS, default='laptop_pc')
     marca = models.CharField(max_length=50)
     serial = models.CharField(max_length=50, unique=True)
     observaciones = models.TextField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=[('Disponible', 'Disponible'), ('Asignado', 'Asignado')], default='Disponible')
-    mac_address=models.CharField(max_length=17, unique=True, blank=True, null=True)
-
-
+    mac_address = models.CharField(max_length=17, unique=True, blank=True, null=True, validators=[validate_mac_address])
 
     def __str__(self):
         return self.modelo
-
 
     
 

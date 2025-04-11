@@ -74,11 +74,13 @@ def editar_equipo(request, equipo_id):
         equipo.tipo = request.POST.get('tipo')
         equipo.marca = request.POST.get('marca')
         equipo.serial = request.POST.get('serial')
+        equipo.mac_address = request.POST.get('mac_address')  # Agregar el campo MAC Address
         equipo.observaciones = request.POST.get('observaciones')
         equipo.save()
         messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
         return redirect('equipos')
     return render(request, 'equipos/editar.html', {'equipo': equipo})
+
 
 def asignar(request):
     equipos = Equipo.objects.all()

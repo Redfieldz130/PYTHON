@@ -18,7 +18,7 @@
                 </div>
             {% endif %}
 
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" id="equipoForm">
                 {% csrf_token %}
 
                 <div class="mb-3">
@@ -26,24 +26,20 @@
                     {{ formulario.marca }}
                 </div>
 
-               
                 <div class="mb-3">
                     <label for="tipo" class="form-label">Tipo de Dispositivo</label>
                     {{ formulario.tipo }}
                 </div>
 
-                
                 <div class="mb-3">
                     <label for="serial" class="form-label">Serial</label>
                     {{ formulario.serial }}
                 </div>
 
-             
                 <div class="mb-3">
                     <label for="modelo" class="form-label">Modelo</label>
                     {{ formulario.modelo }}
                 </div>
-
 
                 <div class="mb-3">
                     <label for="observaciones" class="form-label">Observaciones</label>
@@ -52,14 +48,63 @@
 
                 <div class="mb-3">
                     <label for="mac_address" class="form-label">Dirección MAC</label>
-                    {{ formulario.mac_address }}
+                    <input type="text" name="mac_address" id="mac_address" class="form-control"
+                           placeholder="AA:BB:CC:DD:EE:FF" maxlength="17" required>
                 </div>
 
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
 {% endblock %}
+
+{% block JS %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const macInput = document.getElementById('mac_address');
+        const form = document.getElementById('equipoForm');
+
+        // Cuando el usuario empieza a escribir en el campo de la dirección MAC
+        macInput.addEventListener('input', function () {
+            // Eliminar caracteres que no sean hexadecimales
+            let val = macInput.value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
+
+            // Limitar a 12 caracteres
+            if (val.length > 12) val = val.slice(0, 12);
+
+            // Construir la dirección MAC con los dos puntos
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 2 === 0) formatted += ':'; // Insertar ':' después de cada par
+                formatted += val[i];
+            }
+
+            // Asignar el valor formateado al campo de texto
+            macInput.value = formatted;
+        });
+
+        form.addEventListener('submit', function (e) {
+            const mac = macInput.value.trim();
+            const macRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/; // Regex para validar la dirección MAC
+
+            // Validar si el formato de la dirección MAC es correcto
+            if (!macRegex.test(mac)) {
+                e.preventDefault(); // Prevenir el envío del formulario si el formato es incorrecto
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Formato inválido',
+                    text: 'La dirección MAC debe tener el formato AA:BB:CC:DD:EE:FF',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+
