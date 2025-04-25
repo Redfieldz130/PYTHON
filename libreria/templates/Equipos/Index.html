@@ -65,9 +65,10 @@
 
         <!-- Botones de acción -->
         <div class="text-center mt-3">
-            <button id="printBtn" class="btn btn-secondary btn-sm rounded-pill text-uppercase">
-                <i class="fas fa-print"></i> Imprimir
-            </button>
+            
+            <a href="{% url 'exportar_equipos_asignados' %}" class="btn btn-success btn-sm rounded-pill text-uppercase ms-2" title="Exportar Equipos Asignados a Excel">
+                <i class="fas fa-file-excel"></i> Exportar Inventario
+            </a>
 
             {% if perms.libreria.add_equipo %}
             <a href="{% url 'crear_equipo' %}" class="btn btn-primary btn-sm rounded-pill text-uppercase ms-2" title="Añadir Nuevo Equipo">

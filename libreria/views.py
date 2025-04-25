@@ -8,8 +8,62 @@ from io import BytesIO
 from datetime import datetime
 from django.utils import timezone
 from reportlab.pdfgen import canvas
-
 from docx import Document
+from django.http import HttpResponse
+from openpyxl import Workbook
+from django.views.decorators.csrf import csrf_exempt
+
+def eliminar_equipos_seleccionados(request):
+    if request.method == 'POST':
+        equipo_ids = request.POST.getlist('equipos_seleccionados')  # Obtener los ids seleccionados
+        equipos = Equipo.objects.filter(id__in=equipo_ids)
+
+        # Si no hay equipos seleccionados
+        if not equipos.exists():
+            messages.error(request, 'No se seleccionaron equipos para eliminar.')
+            return redirect('equipos')  # Redirigir si no se seleccionaron equipos
+
+        # Eliminar los equipos seleccionados
+        equipos.delete()
+
+        # Mensaje de éxito
+        messages.success(request, 'Los equipos seleccionados fueron eliminados con éxito.')
+        return redirect('equipos')  # Redirigir a la lista de equipos
+
+    return redirect('equipos')  # Si no es POST, redirigir
+
+
+def exportar_inventario_equipos(request):
+    equipos = Equipo.objects.all()
+
+    workbook = Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Inventario de Equipos"
+
+    # Encabezados de la tabla
+    headers = ['ID', 'Tipo', 'Marca', 'Modelo', 'Serial', 'MAC Address', 'Estado', 'Observaciones']
+    worksheet.append(headers)
+
+    # Llenar datos
+    for equipo in equipos:
+        worksheet.append([
+            equipo.id,
+            equipo.get_tipo_display(),  # Para mostrar el nombre legible
+            equipo.marca,
+            equipo.modelo,
+            equipo.serial,
+            equipo.mac_address if equipo.mac_address else 'N/A',
+            equipo.estado,
+            equipo.observaciones if equipo.observaciones else 'Sin observaciones'
+        ])
+
+    # Preparar la respuesta HTTP con el Excel
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename=Inventario_Equipos.xlsx'
+    workbook.save(response)
+    return response
 
 def actualizar_estado(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
@@ -218,10 +272,10 @@ def generar_constancia(request, asignacion_id):
 
     nombre_empleado = asignacion.colaborador_nombre
     equipo = asignacion.equipo
-    fecha_entrega = asignacion.fecha_entrega.strftime("%d de %B de %Y")  # Formato: 04 de abril de 2025
+    fecha_entrega = asignacion.fecha_entrega.strftime("%d de %B de %Y")
 
-    # Si fecha_final es None, asigna "No aplica" en su lugar
     fecha_final = asignacion.fecha_final.strftime("%d de %B de %Y") if asignacion.fecha_final else "No aplica"
+    mac_address = equipo.mac_address if equipo.mac_address else "No disponible"
 
     plantilla_path = 'C:/Users/efrain.delacruz/Desktop/PYTHON-1/static/Word.docx'
     doc = Document(plantilla_path)
@@ -229,14 +283,16 @@ def generar_constancia(request, asignacion_id):
     reemplazar_texto(doc, '{{ nombreempleado }}', nombre_empleado)
     reemplazar_texto(doc, '{{ equipodescripcion }}', f'{equipo.marca} {equipo.modelo}')
     reemplazar_texto(doc, '{{ equiposerial }}', equipo.serial)
+    reemplazar_texto(doc, '{{ macaddress }}', mac_address)  # NUEVO
     reemplazar_texto(doc, '{{ fecha_entrega }}', fecha_entrega)
-    reemplazar_texto(doc, '{{ fecha_final }}', fecha_final)  # Ahora maneja correctamente la fecha final
+    reemplazar_texto(doc, '{{ fecha_final }}', fecha_final)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename=constancia_salida_{equipo.id}.docx'
     doc.save(response)
 
     return response
+
 
 
 

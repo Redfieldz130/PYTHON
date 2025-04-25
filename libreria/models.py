@@ -58,3 +58,9 @@ class Asignacion(models.Model):
         return f"{self.colaborador_nombre} - {self.equipo.modelo} {self.equipo.marca}"
 
     
+def validate_mac(value):
+    if not re.match(r'^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$', value):
+        raise ValidationError('Formato de MAC inválido (usa XX:XX:XX:XX:XX:XX)')
+
+class TuModelo(models.Model):
+    mac_address = models.CharField(max_length=17, validators=[validate_mac])

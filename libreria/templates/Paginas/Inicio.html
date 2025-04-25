@@ -4,7 +4,17 @@
 
 {% block contenido %}
 
-<div class="container my-5">
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: "Mensaje",
+                    text: "{{ message }}",
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
     <div class="row align-items-md-stretch">
         <div class="col-md-6">
             <div class="h-100 p-5 text-white bg-primary border rounded-3">
@@ -18,13 +28,13 @@
         </div>
         <div class="col-md-6">
             <div class="h-100 p-5 bg-light border rounded-3">
-                <h2>Optimización y Control</h2>
+                <h2>Nosotros</h2>
                 <p>
-                    Mantén un control detallado de cada equipo asignado. 
-                    Nuestro sistema te ayuda a gestionar de manera eficiente.
+                    Conoce mas acerca de nosotros y nuestro objetivo con nuestra aplicacion de inventario.
                 </p>
                 <a href="{% url 'nosotros' %}" class="btn btn-primary">Más Información</a>
             </div>
+            
         </div>
     </div>
 </div>

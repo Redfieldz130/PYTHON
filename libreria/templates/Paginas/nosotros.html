@@ -1,8 +1,45 @@
 {% extends "Paginas/Base.html" %}
+{% load static %}
 
 {% block titulo %}Aplicación de Inventario{% endblock %}
 
 {% block contenido %}
-    <h1>Bienvenido a la sección de Nosotros</h1>
-    <p>Esta es la sección donde te contamos sobre nuestra aplicación.</p>
+<link rel="stylesheet" href="{% static 'css/nosotros.css' %}">
+
+<div class="contenedor">
+    <h2 class="titulo-principal">NOSOTROS</h2>
+    <div class="quienes-somos">
+        <p>
+            Nuestra aplicación de inventario es una plataforma desarrollada para optimizar la gestión de equipos tecnológicos, facilitando el control de préstamos y devoluciones dentro de instituciones.
+        </p>
+        <p>
+            Somos una herramienta técnica con el objetivo de mejorar la eficiencia y transparencia del manejo de activos tecnológicos en entornos educativos o administrativos.
+        </p>
+    </div>
+    
+    <div class="secciones">
+        <div class="seccion mision">
+            <h3>📍 MISIÓN</h3>
+            <p>
+                Contribuir al control y uso eficiente de los equipos tecnológicos mediante un sistema de inventario moderno, claro y confiable.
+            </p>
+        </div>
+        <div class="seccion vision">
+            <h3>🔭 VISIÓN</h3>
+            <p>
+                Convertirnos en una solución líder en gestión de inventarios tecnológicos, promoviendo decisiones basadas en datos precisos.
+            </p>
+        </div>
+        <div class="seccion valores">
+            <h3>🏆 VALORES</h3>
+            <ul>
+                <li>✔️ Compromiso</li>
+                <li>✔️ Transparencia</li>
+                <li>✔️ Innovación</li>
+            </ul>
+        </div>
+        
+        
+    </div>
+</div>
 {% endblock %}

@@ -49,8 +49,9 @@
                 <div class="mb-3">
                     <label for="mac_address" class="form-label">Dirección MAC</label>
                     <input type="text" name="mac_address" id="mac_address" class="form-control"
-                           placeholder="AA:BB:CC:DD:EE:FF" maxlength="17" required>
+                           placeholder="Ingrese la dirección MAC" maxlength="12" required>
                 </div>
+                
 
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -68,43 +69,41 @@
     document.addEventListener('DOMContentLoaded', function () {
         const macInput = document.getElementById('mac_address');
         const form = document.getElementById('equipoForm');
-
-        // Cuando el usuario empieza a escribir en el campo de la dirección MAC
+    
         macInput.addEventListener('input', function () {
-            // Eliminar caracteres que no sean hexadecimales
+            // Eliminar cualquier carácter no hexadecimal
             let val = macInput.value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
-
-            // Limitar a 12 caracteres
+    
+            // Limitar a 12 caracteres hexadecimales
             if (val.length > 12) val = val.slice(0, 12);
-
-            // Construir la dirección MAC con los dos puntos
-            let formatted = '';
-            for (let i = 0; i < val.length; i++) {
-                if (i > 0 && i % 2 === 0) formatted += ':'; // Insertar ':' después de cada par
-                formatted += val[i];
-            }
-
-            // Asignar el valor formateado al campo de texto
-            macInput.value = formatted;
+    
+            // Asignar el valor formateado al campo de texto (sin los dos puntos aún)
+            macInput.value = val;
         });
-
+    
         form.addEventListener('submit', function (e) {
             const mac = macInput.value.trim();
-            const macRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/; // Regex para validar la dirección MAC
-
+            const macRegex = /^[0-9A-F]{12}$/; // Validar que sean solo 12 caracteres hexadecimales
+    
             // Validar si el formato de la dirección MAC es correcto
             if (!macRegex.test(mac)) {
                 e.preventDefault(); // Prevenir el envío del formulario si el formato es incorrecto
                 Swal.fire({
                     icon: 'error',
                     title: 'Formato inválido',
-                    text: 'La dirección MAC debe tener el formato AA:BB:CC:DD:EE:FF',
+                    text: 'La dirección MAC debe ser de 12 caracteres hexadecimales sin los dos puntos.',
                     confirmButtonText: 'OK'
                 });
             }
         });
     });
+    
+    
 </script>
 {% endblock %}
+
+
+
+
 
 

@@ -4,12 +4,12 @@
 
 {% block contenido %}
 <div class="container-fluid py-4">
-    <!-- Encabezado -->
+    
     <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
         <h4 class="mb-0 font-weight-bold">Asignación de Equipos</h4>
     </div>
 
-    <!-- Alertas -->
+   
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-success alert-flotante mt-3">
@@ -18,7 +18,7 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Botón para mostrar el formulario -->
+   
     {% if perms.libreria.asignar_equipo %}
     <div class="text-center mt-4">
         <button class="btn btn-primary btn-sm text-uppercase" onclick="toggleFormulario()">
@@ -27,7 +27,7 @@
     </div>
     {% endif %}
 
-    <!-- Formulario oculto inicialmente -->
+    
     <div id="formularioAsignacion" class="mt-4 d-none">
         {% if perms.libreria.asignar_equipo %}
         <form method="post">
@@ -73,7 +73,7 @@
         {% endif %}
     </div>
 
-    <!-- Tabla de asignaciones -->
+ 
     <div class="mt-5">
         <h5 class="text-center">Equipos ya asignados</h5>
         <table class="table table-striped table-sm mt-3">
@@ -124,7 +124,6 @@
         form.classList.toggle('d-none');
     }
 
-    // Alert flotante (autocierre)
     document.addEventListener("DOMContentLoaded", function () {
         var alertFlotantes = document.querySelectorAll(".alert-flotante");
         alertFlotantes.forEach(function (alertFlotante) {

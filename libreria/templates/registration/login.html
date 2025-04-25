@@ -1,51 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     {% load static %}
+    {% load crispy_forms_tags %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <title>Login</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.0">
-    
+    <title>Iniciar Sesión | Inventario IDEICE</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <form action="{% url 'login' %}" method="POST" class="login">
-            <h2>INICIAR SESIÓN</h2>
-            
-            {% csrf_token %}
-            
-            <label for="username">Usuario*</label>
-            <input id="username" type="text" name="username" placeholder="Usuario" required autocomplete="off">
 
-            <label for="password">Contraseña*</label>
-            <input id="password" type="password" name="password" placeholder="Contraseña" required autocomplete="off">
-            
-            <button type="submit" class="btn btn-success">Ingresar</button>
-            
-            
+<body style="background-color: #f4f6f9;">
 
-            <a href="{% url 'inicio' %}">Ir a Home</a>
-            <a href="{% url 'registro' %}">Registrarme</a>
-            
-        </form>        
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+
+                <div class="card shadow-sm" style="border-radius: 20px;">
+                    <div class="card-body">
+
+                        <div class="text-center mb-4">
+                            <img src="https://ideice.gob.do/images/minerd-ideice-logo-v2.svg?20241015105300" alt="Logo IDEICE" style="height: 50px;">
+                        </div>
+
+                        <h2 class="text-center mb-3" style="color: #0b3771;">Iniciar Sesión</h2>
+                        <hr>
+
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <div>
+                                    <a href="{% url 'inicio' %}">Ir al Home</a> |
+                                    <a href="{% url 'registro' %}">Registrarme</a>
+                                </div>
+                                <button type="submit" class="btn" style="background-color:#b76d0d; color:white;">
+                                    Ingresar
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <script>
-                        Swal.fire({
-                            title: "Mensaje",
-                            text: "{{ message }}",
-                            icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
-                        });
-                    </script>
-                {% endfor %}
-            {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: "Mensaje",
+                    text: "{{ message }}",
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+
 </body>
 </html>
-
