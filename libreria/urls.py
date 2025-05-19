@@ -16,15 +16,12 @@ urlpatterns = [
     path('equipo/editar/<int:equipo_id>/', views.editar_equipo, name='editar_equipo'),
     path('equipo/borrar/<int:equipo_id>/', views.borrar_equipo, name='borrar_equipo'),
     path('actualizar_estado/<int:equipo_id>/', views.actualizar_estado, name='actualizar_estado'),
-    path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('registration/registro/', views.registro, name='registro'),
+    # path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
+    # path('registration/registro/', views.registro, name='registro'),
     path('ver_pdf/', views.ver_pdf, name='ver_pdf'),
     path('generar_constancia/<int:asignacion_id>/', generar_constancia, name='generar_constancia'),
     path('exportar-equipos/', views.exportar_inventario_equipos, name='exportar_equipos_asignados'),
     path('eliminar-equipos/', views.eliminar_equipos_seleccionados, name='eliminar_equipos_seleccionados'),
-
-
 ]
 
 

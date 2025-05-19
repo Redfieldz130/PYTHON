@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'libreria',
     'crispy_forms',
     'crispy_bootstrap5',
+    'mozilla_django_oidc',
 ]
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 

@@ -35,9 +35,11 @@
     background-color: #5d97a1;
     color: white;
     padding: 20px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 0; /* esquinas cuadradas */
+    box-shadow: none;  /* elimina la sombra */
+    border: none;      /* también puedes quitar el borde si usas uno */
 }
+
 
 .seccion h3 {
     margin-bottom: 10px;

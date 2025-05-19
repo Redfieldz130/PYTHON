@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+
 from .forms import EquipoForm, CustomUserCreationForm
 from .models import Equipo, Asignacion
 from django.contrib import messages
@@ -12,6 +13,7 @@ from docx import Document
 from django.http import HttpResponse
 from openpyxl import Workbook
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 def eliminar_equipos_seleccionados(request):
     if request.method == 'POST':
@@ -84,6 +86,7 @@ def listar_equipos(request):
     equipos_monitor = Equipo.objects.filter(tipo='Monitor')
     equipos_pc = Equipo.objects.filter(tipo='Pc')
     equipos_cables = Equipo.objects.filter(tipo='cables')
+    equipos_todos = Equipo.objects.all()
 
     # Debug: Mostrar los equipos encontrados en consola
     print("Laptops:", list(equipos_laptop.values()))
@@ -92,6 +95,7 @@ def listar_equipos(request):
     print("Monitores:", list(equipos_monitor.values()))
     print("cables:", list(equipos_cables.values()))
     print("pc:", list(equipos_pc.values()))
+    
 
     return render(request, 'Equipos/Index.html', {
         'equipos_laptop': equipos_laptop,
@@ -100,6 +104,7 @@ def listar_equipos(request):
         'equipos_monitor': equipos_monitor,
         'equipos_pc': equipos_pc,
         'equipos_cables': equipos_cables,
+        'equipos_todos': equipos_todos,
     })
 
 def crear_equipos(request):
@@ -137,61 +142,69 @@ def editar_equipo(request, equipo_id):
 
 
 def asignar(request):
-    equipos = Equipo.objects.all()
-    asignaciones = Asignacion.objects.all()
+    # Equipos NO asignados actualmente
+    equipos_asignados = Asignacion.objects.filter(fecha_final__isnull=True).values_list('equipo_id', flat=True)
+    equipos = Equipo.objects.exclude(id__in=equipos_asignados).filter(estado='Disponible')
     
+    # Tipos de equipo únicos
+    tipos_equipo = Equipo.objects.values_list('tipo', flat=True).distinct().order_by('tipo')
+
+    asignaciones = Asignacion.objects.all()
+
     if request.method == 'POST':
         colaborador_nombre = request.POST.get('colaborador_nombre')
         correo_institucional = request.POST.get('correo_institucional')
         equipo_id = request.POST.get('equipo')
-        fecha_entrega = request.POST.get('fecha_entrega')  # Nuevo campo
+        fecha_entrega = request.POST.get('fecha_entrega')
         fecha_final = request.POST.get('fecha_final')
-        
+
         try:
             equipo = Equipo.objects.get(id=equipo_id)
-            
-            if Asignacion.objects.filter(equipo=equipo).exists():
-                messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado.')
-            else:
-                # Validar y convertir fechas
-                fecha_entrega = (
-                    datetime.strptime(fecha_entrega, "%Y-%m-%d").date() 
-                    if fecha_entrega 
-                    else timezone.now().date()  # Fallback a fecha actual
-                )
-                fecha_final = (
-                    datetime.strptime(fecha_final, "%Y-%m-%d").date() 
-                    if fecha_final 
-                    else None
-                )
-                
-                # Validar que fecha_final no sea anterior a fecha_entrega
-                if fecha_final and fecha_final < fecha_entrega:
-                    messages.error(request, 'La fecha final no puede ser anterior a la fecha de entrega.')
-                    return redirect('asignar')
-                
-                # Asignar equipo y guardar
-                equipo.estado = 'Asignado'
-                equipo.save()
-                
-                Asignacion.objects.create(
-                    colaborador_nombre=colaborador_nombre,
-                    correo_institucional=correo_institucional,
-                    equipo=equipo,
-                    fecha_entrega=fecha_entrega,  # Usa la fecha del formulario
-                    fecha_final=fecha_final
-                )
-                messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado.')
-                
+
+            # Verifica si el equipo está asignado activamente
+            if Asignacion.objects.filter(equipo=equipo, fecha_final__isnull=True).exists():
+                messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado actualmente.')
+                return redirect('asignar')
+
+            fecha_entrega = (
+                datetime.strptime(fecha_entrega, "%Y-%m-%d").date()
+                if fecha_entrega
+                else timezone.now().date()
+            )
+            fecha_final = (
+                datetime.strptime(fecha_final, "%Y-%m-%d").date()
+                if fecha_final
+                else None
+            )
+
+            if fecha_final and fecha_final < fecha_entrega:
+                messages.error(request, 'La fecha final no puede ser anterior a la fecha de entrega.')
+                return redirect('asignar')
+
+            Asignacion.objects.create(
+                colaborador_nombre=colaborador_nombre,
+                correo_institucional=correo_institucional,
+                equipo=equipo,
+                fecha_entrega=fecha_entrega,
+                fecha_final=fecha_final
+            )
+
+            equipo.estado = 'Disponible' if fecha_final else 'Asignado'
+            equipo.save()
+
+            messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado correctamente.')
+
         except (Equipo.DoesNotExist, ValueError) as e:
             messages.error(request, f'Error en la asignación: {str(e)}')
-        
+
         return redirect('asignar')
-    
+
     return render(request, 'Equipos/Asignar.html', {
-        'equipos': equipos, 
-        'asignaciones': asignaciones
+        'equipos': equipos,
+        'asignaciones': asignaciones,
+        'tipos_equipo': tipos_equipo,
     })
+
 def Listadeasignados(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'Equipos/Listadeasignados.html', {'asignaciones': asignaciones})
@@ -252,12 +265,47 @@ def login_view(request):
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        if user:
+
+        try:
+            # Enviar solicitud a la API institucional
+            response = requests.post("https://ideice.gob.do/remote/login2intranet.php", data={
+                "usuario": username,
+                "clave": password
+            })
+
+            data = response.json()
+
+            if not data:
+                messages.error(request, "Usuario o contraseña incorrectos.")
+                return render(request, "registration/login.html")
+
+            # Extraer datos del primer usuario en el JSON (ej: "123")
+            user_data = list(data.values())[0]
+
+            full_name = user_data.get("usuario", "")
+            email = user_data.get("correo_usuario", "")
+
+            # Crear o actualizar usuario en Django
+            user, created = User.objects.get_or_create(username=username)
+            user.email = email
+
+            if " " in full_name:
+                partes = full_name.split()
+                user.first_name = partes[0]
+                user.last_name = " ".join(partes[1:])
+            else:
+                user.first_name = full_name
+
+            user.set_unusable_password()  # No usará contraseña local
+            user.save()
+
             login(request, user)
-            messages.success(request, "¡Bienvenido!")
+            messages.success(request, f"¡Bienvenido {user.first_name}!")
             return redirect("inicio")
-        messages.error(request, "Usuario o contraseña incorrectos.")
+
+        except Exception as e:
+            messages.error(request, f"Ocurrió un error: {str(e)}")
+
     return render(request, "registration/login.html")
 
 def logout_view(request):
