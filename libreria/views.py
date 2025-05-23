@@ -14,25 +14,25 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from msal import PublicClientApplication
 
 def eliminar_equipos_seleccionados(request):
     if request.method == 'POST':
-        equipo_ids = request.POST.getlist('equipos_seleccionados')  # Obtener los ids seleccionados
+        equipo_ids = request.POST.getlist('equipos_seleccionados') 
         equipos = Equipo.objects.filter(id__in=equipo_ids)
 
-        # Si no hay equipos seleccionados
+        
         if not equipos.exists():
             messages.error(request, 'No se seleccionaron equipos para eliminar.')
-            return redirect('equipos')  # Redirigir si no se seleccionaron equipos
-
-        # Eliminar los equipos seleccionados
+            return redirect('equipos')  
+       
         equipos.delete()
 
-        # Mensaje de éxito
+       
         messages.success(request, 'Los equipos seleccionados fueron eliminados con éxito.')
-        return redirect('equipos')  # Redirigir a la lista de equipos
+        return redirect('equipos')  
 
-    return redirect('equipos')  # Si no es POST, redirigir
+    return redirect('equipos') 
 
 
 def exportar_inventario_equipos(request):
@@ -42,15 +42,15 @@ def exportar_inventario_equipos(request):
     worksheet = workbook.active
     worksheet.title = "Inventario de Equipos"
 
-    # Encabezados de la tabla
+    
     headers = ['ID', 'Tipo', 'Marca', 'Modelo', 'Serial', 'MAC Address', 'Estado', 'Observaciones']
     worksheet.append(headers)
 
-    # Llenar datos
+   
     for equipo in equipos:
         worksheet.append([
             equipo.id,
-            equipo.get_tipo_display(),  # Para mostrar el nombre legible
+            equipo.get_tipo_display(),  
             equipo.marca,
             equipo.modelo,
             equipo.serial,
@@ -59,7 +59,7 @@ def exportar_inventario_equipos(request):
             equipo.observaciones if equipo.observaciones else 'Sin observaciones'
         ])
 
-    # Preparar la respuesta HTTP con el Excel
+    
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
@@ -88,7 +88,7 @@ def listar_equipos(request):
     equipos_cables = Equipo.objects.filter(tipo='cables')
     equipos_todos = Equipo.objects.all()
 
-    # Debug: Mostrar los equipos encontrados en consola
+    
     print("Laptops:", list(equipos_laptop.values()))
     print("Celulares:", list(equipos_celular.values()))
     print("Impresoras:", list(equipos_impresora.values()))
@@ -120,7 +120,7 @@ def crear_equipos(request):
                 return redirect('equipos')
         else:
             messages.error(request, "Error en el formulario. Por favor, revise los campos.")
-            print(formulario.errors)  # Esto te permitirá ver qué errores se están generando en el servidor.
+            print(formulario.errors)  
     else:
         formulario = EquipoForm()
     return render(request, 'Equipos/Crear.html', {'formulario': formulario})
@@ -133,7 +133,7 @@ def editar_equipo(request, equipo_id):
         equipo.tipo = request.POST.get('tipo')
         equipo.marca = request.POST.get('marca')
         equipo.serial = request.POST.get('serial')
-        equipo.mac_address = request.POST.get('mac_address')  # Agregar el campo MAC Address
+        equipo.mac_address = request.POST.get('mac_address')  
         equipo.observaciones = request.POST.get('observaciones')
         equipo.save()
         messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
@@ -142,11 +142,11 @@ def editar_equipo(request, equipo_id):
 
 
 def asignar(request):
-    # Equipos NO asignados actualmente
+   
     equipos_asignados = Asignacion.objects.filter(fecha_final__isnull=True).values_list('equipo_id', flat=True)
     equipos = Equipo.objects.exclude(id__in=equipos_asignados).filter(estado='Disponible')
     
-    # Tipos de equipo únicos
+    
     tipos_equipo = Equipo.objects.values_list('tipo', flat=True).distinct().order_by('tipo')
 
     asignaciones = Asignacion.objects.all()
@@ -161,7 +161,7 @@ def asignar(request):
         try:
             equipo = Equipo.objects.get(id=equipo_id)
 
-            # Verifica si el equipo está asignado activamente
+            
             if Asignacion.objects.filter(equipo=equipo, fecha_final__isnull=True).exists():
                 messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado actualmente.')
                 return redirect('asignar')
@@ -263,50 +263,20 @@ def ver_pdf(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        try:
-            # Enviar solicitud a la API institucional
-            response = requests.post("https://ideice.gob.do/remote/login2intranet.php", data={
-                "usuario": username,
-                "clave": password
-            })
-
-            data = response.json()
-
-            if not data:
-                messages.error(request, "Usuario o contraseña incorrectos.")
-                return render(request, "registration/login.html")
-
-            # Extraer datos del primer usuario en el JSON (ej: "123")
-            user_data = list(data.values())[0]
-
-            full_name = user_data.get("usuario", "")
-            email = user_data.get("correo_usuario", "")
-
-            # Crear o actualizar usuario en Django
-            user, created = User.objects.get_or_create(username=username)
-            user.email = email
-
-            if " " in full_name:
-                partes = full_name.split()
-                user.first_name = partes[0]
-                user.last_name = " ".join(partes[1:])
-            else:
-                user.first_name = full_name
-
-            user.set_unusable_password()  # No usará contraseña local
-            user.save()
-
+        
+        user = authenticate(request, username=username, password=password)
+        if user:
             login(request, user)
-            messages.success(request, f"¡Bienvenido {user.first_name}!")
+            messages.success(request, f"¡Bienvenido {user.first_name or user.username}!")
             return redirect("inicio")
-
-        except Exception as e:
-            messages.error(request, f"Ocurrió un error: {str(e)}")
+        else:
+            messages.error(request, "Usuario o contraseña incorrectos.")
 
     return render(request, "registration/login.html")
+
 
 def logout_view(request):
     logout(request)

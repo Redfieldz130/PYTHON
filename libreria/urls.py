@@ -2,8 +2,9 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .views import generar_constancia
+from mozilla_django_oidc import views as oidc_views
 
-urlpatterns = [ 
+urlpatterns = [
     path('', views.Inicio, name='inicio'),
     path('nosotros/', views.nosotros, name='nosotros'),
     path('inventario/', views.listar_equipos, name='inventario'),
@@ -16,12 +17,14 @@ urlpatterns = [
     path('equipo/editar/<int:equipo_id>/', views.editar_equipo, name='editar_equipo'),
     path('equipo/borrar/<int:equipo_id>/', views.borrar_equipo, name='borrar_equipo'),
     path('actualizar_estado/<int:equipo_id>/', views.actualizar_estado, name='actualizar_estado'),
-    # path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    # path('registration/registro/', views.registro, name='registro'),
     path('ver_pdf/', views.ver_pdf, name='ver_pdf'),
     path('generar_constancia/<int:asignacion_id>/', generar_constancia, name='generar_constancia'),
     path('exportar-equipos/', views.exportar_inventario_equipos, name='exportar_equipos_asignados'),
     path('eliminar-equipos/', views.eliminar_equipos_seleccionados, name='eliminar_equipos_seleccionados'),
+
+    
+    path('accounts/login/', views.login_view, name='login'),
+    path('accounts/registro/', views.registro, name='registro'),
 ]
 
 
