@@ -1,44 +1,62 @@
-# libreria/auth_backends.py
+from hashlib import new as hashlib_new
+from Crypto.Hash import MD4
+import hashlib
+
+def md4(data=b''):
+    h = MD4.new()
+    h.update(data)
+    return h
+
+hashlib.new = lambda name, data=b'': md4(data) if name.lower() == 'md4' else hashlib_new(name, data)
+
+
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import User
 from ldap3 import Server, Connection, NTLM, ALL
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ActiveDirectoryBackend(BaseBackend):
-    """
-    Autentica contra un AD on-premise usando ldap3.
-    """
-    def authenticate(self, request, username=None, password=None):
-        # Ajusta estos valores a tu entorno
-        AD_SERVER   = 'ldap://192.168.0.10'
-        AD_DOMAIN   = 'TU_DOMINIO'            # sin sufijo, ej: IDEICE o MIDOMINIO
-        SEARCH_DN   = 'OU=Usuarios,DC=tu_dominio,DC=local'
+    AD_SERVER = 'ldap://10.80.10.40'
+    AD_DOMAIN = 'ideice'
+    SEARCH_DN = 'DC=ideice,DC=local'
 
-        user_dn = f'{AD_DOMAIN}\\{username}'
-        server  = Server(AD_SERVER, get_info=ALL)
-        conn    = Connection(server, user=user_dn, password=password, authentication=NTLM, auto_bind=False)
+    def authenticate(self, request, username=None, password=None):
+        logger.info(f"Intentando autenticar usuario: {username}")
+
+        if username is None or password is None:
+            return None
+
+        user_dn = f'{self.AD_DOMAIN}\\{username}'
+        server = Server(self.AD_SERVER, get_info=ALL)
+        conn = Connection(server, user=user_dn, password=password, authentication=NTLM, auto_bind=False)
 
         try:
             if not conn.bind():
+                logger.warning(f"Fallo bind LDAP para usuario {username}: {conn.result}")
                 return None
-        except Exception:
+        except Exception as e:
+            logger.error(f"Excepción durante bind LDAP para {username}: {e}")
             return None
 
-        # Si llegamos hasta aquí, la autenticación fue exitosa.
-        # Ahora creamos o actualizamos el User local.
         user, created = User.objects.get_or_create(username=username)
-        # opcional: cargar atributos del AD (nombre, email...)
+
         conn.search(
-            SEARCH_DN,
+            self.SEARCH_DN,
             f'(sAMAccountName={username})',
-            attributes=['givenName','sn','mail']
+            attributes=['givenName', 'sn', 'mail']
         )
+
         if conn.entries:
             entry = conn.entries[0]
             user.first_name = entry.givenName.value or ''
-            user.last_name  = entry.sn.value or ''
-            user.email      = entry.mail.value or ''
+            user.last_name = entry.sn.value or ''
+            user.email = entry.mail.value or ''
             user.save()
+
         conn.unbind()
+        logger.info(f"Usuario {username} autenticado correctamente")
         return user
 
     def get_user(self, user_id):
@@ -46,3 +64,4 @@ class ActiveDirectoryBackend(BaseBackend):
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
