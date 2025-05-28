@@ -20,14 +20,14 @@ class EquipoForm(forms.ModelForm):
     def clean_mac_address(self):
         mac = self.cleaned_data['mac_address']
         
-        # Eliminar caracteres que no sean hexadecimales
-        mac = mac.replace(":", "")  # Elimina cualquier ":" que haya sido ingresado
+       
+        mac = mac.replace(":", "")  
 
-        # Validar que tenga solo caracteres hexadecimales y que tenga exactamente 12 caracteres
+      
         if len(mac) != 12 or not re.match(r'^[0-9A-Fa-f]{12}$', mac):
             raise forms.ValidationError("Dirección MAC inválida. Usa el formato XX:XX:XX:XX:XX:XX")
 
-        # Formatear la dirección MAC con los dos puntos
+        
         mac_formatted = ':'.join([mac[i:i+2] for i in range(0, len(mac), 2)])
 
         return mac_formatted.upper()

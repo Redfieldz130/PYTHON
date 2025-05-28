@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .views import generar_constancia
-from mozilla_django_oidc import views as oidc_views
+
 
 urlpatterns = [
     path('', views.Inicio, name='inicio'),

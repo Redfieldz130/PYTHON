@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-o0#_c#drwr46m!hv*k*8p5&igkvl=h_+bvy#q5is3!m#gr-vz9'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Authentication redirects
 LOGIN_URL = '/accounts/login/'
@@ -87,10 +87,20 @@ DATABASES = {
 
 # Authentication Backends using ldap3
 AUTHENTICATION_BACKENDS = [
-    'libreria.auth_backends.ActiveDirectoryBackend',  # backend personalizado con ldap3
-    'django.contrib.auth.backends.ModelBackend',
+    'libreria.auth_backends.ActiveDirectoryBackend',
+    'django.contrib.auth.backends.ModelBackend',  # fallback para usuarios locales (opcional)
 ]
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler',},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -112,3 +122,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

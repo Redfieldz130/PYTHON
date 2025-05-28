@@ -55,6 +55,35 @@
       </div>
     </div>
   </div>
+
+  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    function showConnectionStatus(message, icon, color) {
+      Swal.fire({
+        toast: true,
+        position: 'bottom-end',
+        icon: icon,
+        title: message,
+        showConfirmButton: false,
+        timer: 4000,
+        background: color,
+        color: 'white',
+        timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-3 shadow'
+        }
+      });
+    }
+
+    window.addEventListener('online', () => {
+      showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754'); // verde Bootstrap
+    });
+
+    window.addEventListener('offline', () => {
+      showConnectionStatus('❌ Sin conexión con el servidor', 'error', '#dc3545'); // rojo Bootstrap
+    });
+  </script>
 </body>
 </html>

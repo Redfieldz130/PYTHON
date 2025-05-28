@@ -142,7 +142,7 @@
         </div>
 
         <div class="ms-auto d-flex align-items-center">
-            {% if user.is_authenticated %}
+                {% if user.is_authenticated %}
                 <span class="text-dark me-3">
                     <i class="fas fa-user-circle me-1"></i>{{ user.username }}
                 </span>
@@ -152,13 +152,13 @@
                         <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
                     </button>
                 </form>
-            {% else %}
+                {% else %}
                 <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
                 </a>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
-    </div>
 
    
     <div class="main-content" id="main-content">
@@ -192,6 +192,33 @@
 
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    function showConnectionStatus(message, icon, color) {
+      Swal.fire({
+        toast: true,
+        position: 'bottom-end',
+        icon: icon,
+        title: message,
+        showConfirmButton: false,
+        timer: 4000,
+        background: color,
+        color: 'white',
+        timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-3 shadow'
+        }
+      });
+    }
+
+    window.addEventListener('online', () => {
+      showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754'); // verde Bootstrap
+    });
+
+    window.addEventListener('offline', () => {
+      showConnectionStatus('❌ Sin conexión con el servidor.', 'error', '#dc3545'); // rojo Bootstrap
+    });
+  </script>
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             {% if messages %}

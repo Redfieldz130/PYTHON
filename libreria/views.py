@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
 from .forms import EquipoForm, CustomUserCreationForm
 from .models import Equipo, Asignacion
 from django.contrib import messages
@@ -12,9 +11,8 @@ from reportlab.pdfgen import canvas
 from docx import Document
 from django.http import HttpResponse
 from openpyxl import Workbook
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-from msal import PublicClientApplication
+
+
 
 def eliminar_equipos_seleccionados(request):
     if request.method == 'POST':
@@ -262,20 +260,19 @@ def ver_pdf(request):
     return response
 
 def login_view(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-        
         user = authenticate(request, username=username, password=password)
-        if user:
+        if user is not None:
             login(request, user)
-            messages.success(request, f"¡Bienvenido {user.first_name or user.username}!")
-            return redirect("inicio")
+            messages.success(request, f'¡Bienvenido {user.first_name}!')
+            return redirect('inicio')
         else:
-            messages.error(request, "Usuario o contraseña incorrectos.")
+            messages.error(request, 'Usuario o contraseña inválidos')
 
-    return render(request, "registration/login.html")
+    return render(request, 'registration/login.html')
 
 
 def logout_view(request):
