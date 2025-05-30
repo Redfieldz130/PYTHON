@@ -21,7 +21,7 @@ urlpatterns = [
     path('generar_constancia/<int:asignacion_id>/', generar_constancia, name='generar_constancia'),
     path('exportar-equipos/', views.exportar_inventario_equipos, name='exportar_equipos_asignados'),
     path('eliminar-equipos/', views.eliminar_equipos_seleccionados, name='eliminar_equipos_seleccionados'),
-
+    path('equipo/detalle/<int:equipo_id>/', views.detalle_equipo_json, name='detalle_equipo_json'),
     
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/registro/', views.registro, name='registro'),

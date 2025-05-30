@@ -12,7 +12,19 @@ from docx import Document
 from django.http import HttpResponse
 from openpyxl import Workbook
 
-
+def detalle_equipo_json(request, equipo_id):
+    equipo = get_object_or_404(Equipo, pk=equipo_id)
+    data = {
+        'modelo': equipo.modelo,
+        'marca': equipo.marca,
+        'serial': equipo.serial,
+        'mac_address': equipo.mac_address,
+        'estado': equipo.estado,
+        'observaciones': equipo.observaciones,
+        'tipo': equipo.tipo,
+        'tipo_display': equipo.get_tipo_display()
+    }
+    return JsonResponse(data)
 
 def eliminar_equipos_seleccionados(request):
     if request.method == 'POST':
@@ -78,33 +90,72 @@ def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
 
 def listar_equipos(request):
-    equipos_laptop = Equipo.objects.filter(tipo='Laptop_pc')
-    equipos_celular = Equipo.objects.filter(tipo='Celular')
-    equipos_impresora = Equipo.objects.filter(tipo='Impresora')
-    equipos_monitor = Equipo.objects.filter(tipo='Monitor')
-    equipos_pc = Equipo.objects.filter(tipo='Pc')
-    equipos_cables = Equipo.objects.filter(tipo='cables')
-    equipos_todos = Equipo.objects.all()
-
-    
-    print("Laptops:", list(equipos_laptop.values()))
-    print("Celulares:", list(equipos_celular.values()))
-    print("Impresoras:", list(equipos_impresora.values()))
-    print("Monitores:", list(equipos_monitor.values()))
-    print("cables:", list(equipos_cables.values()))
-    print("pc:", list(equipos_pc.values()))
-    
+    # ... tus filtros existentes
+    equipos_laptop = Equipo.objects.filter(tipo='laptop')
+    equipos_impresora = Equipo.objects.filter(tipo='impresora')
+    equipos_cpu = Equipo.objects.filter(tipo='cpu')
+    equipos_monitor = Equipo.objects.filter(tipo='monitor')
+    equipos_proyector = Equipo.objects.filter(tipo='proyector')
+    equipos_ups = Equipo.objects.filter(tipo='ups')
+    equipos_scanner = Equipo.objects.filter(tipo='scanner')
+    equipos_pantalla_proyector = Equipo.objects.filter(tipo='pantalla_proyector')
+    equipos_tablet = Equipo.objects.filter(tipo='tablet')
+    equipos_server = Equipo.objects.filter(tipo='server')
+    equipos_router = Equipo.objects.filter(tipo='router')
+    equipos_generador_tono = Equipo.objects.filter(tipo='generador_tono')
+    equipos_tester = Equipo.objects.filter(tipo='tester')
+    equipos_multimetro = Equipo.objects.filter(tipo='multimetro')
+    equipos_access_point = Equipo.objects.filter(tipo='access_point')
+    equipos_licencia_informatica = Equipo.objects.filter(tipo='licencia_informatica')
+    equipos_mouse = Equipo.objects.filter(tipo='mouse')
+    equipos_teclado = Equipo.objects.filter(tipo='teclado')
+    equipos_headset = Equipo.objects.filter(tipo='headset')
+    equipos_bocina = Equipo.objects.filter(tipo='bocina')
+    equipos_brazo_monitor = Equipo.objects.filter(tipo='brazo_monitor')
+    equipos_memoria_usb = Equipo.objects.filter(tipo='memoria_usb')
+    equipos_pointer = Equipo.objects.filter(tipo='pointer')
+    equipos_kit_herramientas = Equipo.objects.filter(tipo='kit_herramientas')
+    equipos_cartucho = Equipo.objects.filter(tipo='cartucho')
+    equipos_toner = Equipo.objects.filter(tipo='toner')
+    equipos_botella_tinta = Equipo.objects.filter(tipo='botella_tinta')
+    equipos_camara_web = Equipo.objects.filter(tipo='camara_web')
+    equipos_disco_duro = Equipo.objects.filter(tipo='disco_duro')
+    equipos_p2 = Equipo.objects.filter(tipo='p2')
+    equipos_todos = Equipo.objects.all() # Esta ya la tienes
 
     return render(request, 'Equipos/Index.html', {
         'equipos_laptop': equipos_laptop,
-        'equipos_celular': equipos_celular,
         'equipos_impresora': equipos_impresora,
+        'equipos_cpu': equipos_cpu,
         'equipos_monitor': equipos_monitor,
-        'equipos_pc': equipos_pc,
-        'equipos_cables': equipos_cables,
+        'equipos_proyector': equipos_proyector,
+        'equipos_ups': equipos_ups,
+        'equipos_scanner': equipos_scanner,
+        'equipos_pantalla_proyector': equipos_pantalla_proyector,
+        'equipos_tablet': equipos_tablet,
+        'equipos_server': equipos_server,
+        'equipos_router': equipos_router,
+        'equipos_generador_tono': equipos_generador_tono,
+        'equipos_tester': equipos_tester,
+        'equipos_multimetro': equipos_multimetro,
+        'equipos_access_point': equipos_access_point,
+        'equipos_licencia_informatica': equipos_licencia_informatica,
+        'equipos_mouse': equipos_mouse,
+        'equipos_teclado': equipos_teclado,
+        'equipos_headset': equipos_headset,
+        'equipos_bocina': equipos_bocina,
+        'equipos_brazo_monitor': equipos_brazo_monitor,
+        'equipos_memoria_usb': equipos_memoria_usb,
+        'equipos_pointer': equipos_pointer,
+        'equipos_kit_herramientas': equipos_kit_herramientas,
+        'equipos_cartucho': equipos_cartucho,
+        'equipos_toner': equipos_toner,
+        'equipos_botella_tinta': equipos_botella_tinta,
+        'equipos_camara_web': equipos_camara_web,
+        'equipos_disco_duro': equipos_disco_duro,
+        
         'equipos_todos': equipos_todos,
     })
-
 def crear_equipos(request):
     if request.method == 'POST':
         formulario = EquipoForm(request.POST, request.FILES)
@@ -140,13 +191,11 @@ def editar_equipo(request, equipo_id):
 
 
 def asignar(request):
-   
-    equipos_asignados = Asignacion.objects.filter(fecha_final__isnull=True).values_list('equipo_id', flat=True)
-    equipos = Equipo.objects.exclude(id__in=equipos_asignados).filter(estado='Disponible')
-    
-    
+    # Obtener todos los tipos de equipo distintos, independientemente de la disponibilidad
     tipos_equipo = Equipo.objects.values_list('tipo', flat=True).distinct().order_by('tipo')
 
+    equipos_asignados = Asignacion.objects.filter(fecha_final__isnull=True).values_list('equipo_id', flat=True)
+    equipos = Equipo.objects.exclude(id__in=equipos_asignados).filter(estado='Disponible')
     asignaciones = Asignacion.objects.all()
 
     if request.method == 'POST':
@@ -159,7 +208,6 @@ def asignar(request):
         try:
             equipo = Equipo.objects.get(id=equipo_id)
 
-            
             if Asignacion.objects.filter(equipo=equipo, fecha_final__isnull=True).exists():
                 messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado actualmente.')
                 return redirect('asignar')
@@ -201,8 +249,8 @@ def asignar(request):
         'equipos': equipos,
         'asignaciones': asignaciones,
         'tipos_equipo': tipos_equipo,
+        'fecha_hoy': timezone.now().date(),  # Asegúrate de pasar la fecha hoy al contexto
     })
-
 def Listadeasignados(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'Equipos/Listadeasignados.html', {'asignaciones': asignaciones})

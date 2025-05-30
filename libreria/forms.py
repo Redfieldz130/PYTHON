@@ -20,21 +20,20 @@ class EquipoForm(forms.ModelForm):
     def clean_mac_address(self):
         mac = self.cleaned_data['mac_address']
         
-       
         mac = mac.replace(":", "")  
 
-      
         if len(mac) != 12 or not re.match(r'^[0-9A-Fa-f]{12}$', mac):
             raise forms.ValidationError("Dirección MAC inválida. Usa el formato XX:XX:XX:XX:XX:XX")
 
-        
         mac_formatted = ':'.join([mac[i:i+2] for i in range(0, len(mac), 2)])
 
         return mac_formatted.upper()
 
     def clean_tipo(self):
+        # Esta línea y las siguientes deben estar indentadas 4 espacios más que 'def clean_tipo(self):'
         tipo = self.cleaned_data['tipo']
-        tipos_validos = ['laptop_pc', 'celular', 'imprecsora', 'monitor','cables','pc' ]  
+        # Asegúrate de que esta lista 'tipos_validos' coincida exactamente con la primera parte de las tuplas en models.py
+        tipos_validos = ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'generador_tono', 'tester', 'multimetro', 'access_point', 'licencia_informatica', 'mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'cartucho', 'toner', 'botella_tinta', 'camara_web', 'disco_duro', 'p2']
         if tipo not in tipos_validos:
             raise forms.ValidationError(f"'{tipo}' no es un tipo válido.")
         return tipo

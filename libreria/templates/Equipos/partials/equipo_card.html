@@ -1,0 +1,58 @@
+<div class="product-card" data-category="{{ equipo.tipo }}" data-status="{{ equipo.estado }}">
+    <div class="product-image">
+        {% if equipo.tipo == 'laptop_pc' %}💻
+        {% elif equipo.tipo == 'impresora' %}🖨️
+        {% elif equipo.tipo == 'cpu' %}🖥️
+        {% elif equipo.tipo == 'monitor' %}🖥️
+        {% elif equipo.tipo == 'proyector' %}📽️
+        {% elif equipo.tipo == 'ups' %}🔋
+        {% elif equipo.tipo == 'scanner' %}🖨️
+        {% elif equipo.tipo == 'pantalla_proyector' %}📺
+        {% elif equipo.tipo == 'tablet' %}📱
+        {% elif equipo.tipo == 'server' %}💾
+        {% elif equipo.tipo == 'router' %}📡
+        {% elif equipo.tipo == 'generador_tono' %}🎶
+        {% elif equipo.tipo == 'tester' %}🧪
+        {% elif equipo.tipo == 'multimetro' %}⚡
+        {% elif equipo.tipo == 'access_point' %}📶
+        {% elif equipo.tipo == 'licencia_informatica' %}🔑
+        {% elif equipo.tipo == 'mouse' %}🖱️
+        {% elif equipo.tipo == 'teclado' %}⌨️
+        {% elif equipo.tipo == 'headset' %}🎧
+        {% elif equipo.tipo == 'bocina' %}🔊
+        {% elif equipo.tipo == 'brazo_monitor' %}💪
+        {% elif equipo.tipo == 'memoria_usb' %}💾
+        {% elif equipo.tipo == 'pointer' %}📍
+        {% elif equipo.tipo == 'kit_herramientas' %}🛠️
+        {% elif equipo.tipo == 'cartucho' %}🖨️
+        {% elif equipo.tipo == 'toner' %}⚫
+        {% elif equipo.tipo == 'botella_tinta' %}💧
+        {% elif equipo.tipo == 'camara_web' %}📷
+        {% elif equipo.tipo == 'disco_duro' %}💽
+        {% else %}📦{% endif %}
+    </div>
+    <div class="product-info">
+        <span class="product-category {{ equipo.tipo }}">{{ equipo.get_tipo_display }}</span>
+        <h3 class="product-name">{{ equipo.modelo }}</h3>
+        <p class="product-brand">{{ equipo.marca }}</p>
+        <p class="product-serial">{{ equipo.serial }}</p>
+        <p class="product-status {{ equipo.estado }}">{{ equipo.estado }}</p>
+
+        <div class="product-actions">
+            <button class="btn-details" onclick="showProductDetails({{ equipo.id }})">Detalles</button>
+            {% if perms.libreria.change_equipo %}
+            <a href="{% url 'editar_equipo' equipo.id %}" class="btn-details btn-edit">Editar</a>
+            {% endif %}
+
+            {% if equipo.estado == 'Disponible' %}
+                <a href="{% url 'asignar' %}?equipo_id={{ equipo.id }}" class="btn-details btn-assign">Asignar</a>
+            {% else %}
+                <button class="btn-details btn-release" onclick="liberarEquipo({{ equipo.id }})">Liberar</button>
+            {% endif %}
+
+            {% if perms.libreria.delete_equipo %}
+            <button class="btn-details btn-delete" onclick="confirmDelete({{ equipo.id }})">Eliminar</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
