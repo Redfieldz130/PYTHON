@@ -82,26 +82,31 @@
             transition: margin-left 0.3s ease;
             margin-left: 240px;
             padding: 80px 20px 60px 20px;
+            min-height: calc(100vh - 60px); /* Ajusta para que ocupe al menos la altura de la pantalla menos el banner */
+            overflow-x: auto; /* Permite desplazamiento horizontal si el contenido excede */
+            max-width: calc(100% - 240px); /* Limita el ancho máximo relativo al sidebar */
         }
 
         .main-content.expanded {
             margin-left: 0;
+            max-width: 100%; /* Ajusta el ancho cuando el sidebar se colapsa */
         }
 
         .footer {
             text-align: center;
             padding: 15px;
-            background-color:#b76d0d;
+            background-color: #b76d0d;
             color: white;
             width: 100%;
             opacity: 0;
             transition: opacity 0.5s ease;
+            position: relative;
+            bottom: 0;
         }
+
         .footer.visible {
             opacity: 1;
         }
-        
-        
 
         .logo-img {
             height: 40px;
@@ -117,8 +122,6 @@
     </style>
 </head>
 <body>
-
-   
     <div class="sidebar" id="sidebar">
         <h5 class="text-center text-white">Inventario IDEICE</h5>
         <hr class="text-white mx-3">
@@ -129,7 +132,6 @@
         <a href="{% url 'nosotros' %}"><i class="fas fa-users me-2"></i>Nosotros</a>
     </div>
 
-  
     <div class="banner" id="banner">
         <div class="d-flex align-items-center">
             <button class="btn text-primary" onclick="toggleSidebar()">
@@ -138,29 +140,28 @@
         </div>
 
         <div class="position-absolute top-50 start-50 translate-middle">
-            <img src="https://ideice.gob.do/images/minerd-ideice-logo-v2.svg?20241015105300" alt="Logo" class="logo-img"style="height: 56px;">
+            <img src="https://ideice.gob.do/images/minerd-ideice-logo-v2.svg?20241015105300" alt="Logo" class="logo-img" style="height: 56px;">
         </div>
 
         <div class="ms-auto d-flex align-items-center">
-                {% if user.is_authenticated %}
-                <span class="text-dark me-3">
-                    <i class="fas fa-user-circle me-1"></i>{{ user.username }}
-                </span>
-                <form action="{% url 'logout' %}" method="post" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-light">
-                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
-                    </button>
-                </form>
-                {% else %}
-                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
-                </a>
-                {% endif %}
-            </div>
+            {% if user.is_authenticated %}
+            <span class="text-dark me-3">
+                <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+            </span>
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-light">
+                    <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                </button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
+            </a>
+            {% endif %}
         </div>
+    </div>
 
-   
     <div class="main-content" id="main-content">
         <div class="container">
             {% block contenido %}
@@ -169,15 +170,12 @@
         </div>
     </div>
 
-    
     <div id="end-of-page-marker"></div>
 
-   
     <div class="footer">
-        <p>| &copy; 2025 Departamento de Tecnología IDEICE |</p>
+        <p>| © 2025 Departamento de Tecnología IDEICE |</p>
     </div>
 
-  
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -190,7 +188,6 @@
         }
     </script>
 
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     function showConnectionStatus(message, icon, color) {
@@ -211,13 +208,12 @@
     }
 
     window.addEventListener('online', () => {
-      showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754'); // verde Bootstrap
+      showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754');
     });
 
     window.addEventListener('offline', () => {
-      showConnectionStatus('❌ Sin conexión con el servidor.', 'error', '#dc3545'); // rojo Bootstrap
+      showConnectionStatus('❌ Sin conexión con el servidor.', 'error', '#dc3545');
     });
-  </script>
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -250,7 +246,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const footer = document.querySelector('.footer');
             const marker = document.getElementById('end-of-page-marker');
-    
+
             const observer = new IntersectionObserver(function(entries) {
                 if (entries[0].isIntersecting) {
                     footer.classList.add('visible');
@@ -258,10 +254,9 @@
                     footer.classList.remove('visible');
                 }
             }, { threshold: 0.1 });
-    
+
             observer.observe(marker);
         });
     </script>
-    
 </body>
 </html>

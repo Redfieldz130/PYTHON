@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EquipoForm, CustomUserCreationForm
+from .forms import EquipoForm, AsignacionForm, CustomUserCreationForm
 from .models import Equipo, Asignacion
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
@@ -9,7 +9,6 @@ from datetime import datetime
 from django.utils import timezone
 from reportlab.pdfgen import canvas
 from docx import Document
-from django.http import HttpResponse
 from openpyxl import Workbook
 
 def detalle_equipo_json(request, equipo_id):
@@ -18,58 +17,131 @@ def detalle_equipo_json(request, equipo_id):
         'modelo': equipo.modelo,
         'marca': equipo.marca,
         'serial': equipo.serial,
-        'mac_address': equipo.mac_address,
+        'mac_address': equipo.mac_address or 'N/A',
         'estado': equipo.estado,
-        'observaciones': equipo.observaciones,
-        'tipo': equipo.tipo,
-        'tipo_display': equipo.get_tipo_display()
+        'observaciones': equipo.observaciones or 'Sin observaciones',
+        'tipo': equipo.get_tipo_display(),
+        'fecha_fabricacion': equipo.fecha_fabricacion.strftime('%Y-%m-%d') if equipo.fecha_fabricacion else 'N/A',
+        'vida_util_anios': equipo.vida_util_anios or 'N/A',
+        'nombre_red': equipo.nombre_red or 'N/A',
+        'ubicacion': equipo.ubicacion or 'N/A',
+        'empleado_responsable': equipo.empleado_responsable or 'N/A',
+        'proveedor': equipo.proveedor or 'N/A',
+        'valor_compra': str(equipo.valor_compra) if equipo.valor_compra else 'N/A',
+        'fecha_compra': equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else 'N/A',
+        'fecha_recepcion': equipo.fecha_recepcion.strftime('%Y-%m-%d') if equipo.fecha_recepcion else 'N/A',
+        'fecha_mantenimiento': equipo.fecha_mantenimiento.strftime('%Y-%m-%d') if equipo.fecha_mantenimiento else 'N/A',
+        'size_pantalla': equipo.size_pantalla or 'N/A',
+        'resolucion': equipo.resolucion or 'N/A',
+        'procesador_marca': equipo.procesador_marca or 'N/A',
+        'procesador_velocidad': equipo.procesador_velocidad or 'N/A',
+        'procesador_generacion': equipo.procesador_generacion or 'N/A',
+        'sistema_operativo': equipo.sistema_operativo or 'N/A',
+        'sistema_operativo_version': equipo.sistema_operativo_version or 'N/A',
+        'sistema_operativo_bits': equipo.sistema_operativo_bits or 'N/A',
+        'almacenamiento_capacidad': equipo.almacenamiento_capacidad or 'N/A',
+        'memoria': equipo.memoria or 'N/A',
+        'impresora_tipo': equipo.impresora_tipo or 'N/A',
+        'impresora_velocidad_ppm': equipo.impresora_velocidad_ppm or 'N/A',
+        'impresora_color': equipo.impresora_color or 'N/A',
+        'impresora_conexion': equipo.impresora_conexion or 'N/A',
+        'cpu_formato_diseno': equipo.cpu_formato_diseno or 'N/A',
+        'proyector_lumens': equipo.proyector_lumens or 'N/A',
+        'ups_vatios': equipo.ups_vatios or 'N/A',
+        'ups_fecha_bateria': equipo.ups_fecha_bateria.strftime('%Y-%m-%d') if equipo.ups_fecha_bateria else 'N/A',
+        'scanner_velocidad': equipo.scanner_velocidad or 'N/A',
+        'scanner_color': equipo.scanner_color or 'N/A',
+        'pantalla_proyector_tipo': equipo.pantalla_proyector_tipo or 'N/A',
+        'server_numero_procesadores': equipo.server_numero_procesadores or 'N/A',
+        'licencia_tipo': equipo.licencia_tipo or 'N/A',
+        'licencia_clase': equipo.licencia_clase or 'N/A',
+        'mouse_tipo': equipo.mouse_tipo or 'N/A',
+        'mouse_conexion': equipo.mouse_conexion or 'N/A',
+        'clase_disco': equipo.clase_disco or 'N/A',
     }
     return JsonResponse(data)
 
 def eliminar_equipos_seleccionados(request):
     if request.method == 'POST':
-        equipo_ids = request.POST.getlist('equipos_seleccionados') 
+        equipo_ids = request.POST.getlist('equipos_seleccionados')
         equipos = Equipo.objects.filter(id__in=equipo_ids)
-
-        
         if not equipos.exists():
             messages.error(request, 'No se seleccionaron equipos para eliminar.')
-            return redirect('equipos')  
-       
+            return redirect('equipos')
         equipos.delete()
-
-       
         messages.success(request, 'Los equipos seleccionados fueron eliminados con éxito.')
-        return redirect('equipos')  
-
-    return redirect('equipos') 
-
+        return redirect('equipos')
+    return redirect('equipos')
 
 def exportar_inventario_equipos(request):
     equipos = Equipo.objects.all()
-
     workbook = Workbook()
     worksheet = workbook.active
     worksheet.title = "Inventario de Equipos"
 
-    
-    headers = ['ID', 'Tipo', 'Marca', 'Modelo', 'Serial', 'MAC Address', 'Estado', 'Observaciones']
+    headers = [
+        'ID', 'Tipo', 'Marca', 'Modelo', 'Serial', 'MAC Address', 'Estado', 'Observaciones',
+        'Fecha Fabricación', 'Vida Útil (Años)', 'Nombre Red', 'Ubicación', 'Responsable',
+        'Proveedor', 'Valor Compra', 'Fecha Compra', 'Fecha Recepción', 'Fecha Mantenimiento',
+        'Tamaño Pantalla', 'Resolución', 'Procesador Marca', 'Procesador Velocidad',
+        'Procesador Generación', 'Sistema Operativo', 'Versión SO', 'Bits SO',
+        'Capacidad Almacenamiento', 'Memoria', 'Tipo Impresora', 'Velocidad Impresora',
+        'Color Impresora', 'Conexión Impresora', 'Formato Diseño CPU', 'Lumens Proyector',
+        'Vatios UPS', 'Fecha Batería UPS', 'Velocidad Scanner', 'Color Scanner',
+        'Tipo Pantalla Proyector', 'Número Procesadores Server', 'Tipo Licencia',
+        'Clase Licencia', 'Tipo Mouse', 'Conexión Mouse', 'Clase Disco'
+    ]
     worksheet.append(headers)
 
-   
     for equipo in equipos:
         worksheet.append([
             equipo.id,
-            equipo.get_tipo_display(),  
+            equipo.get_tipo_display(),
             equipo.marca,
             equipo.modelo,
             equipo.serial,
-            equipo.mac_address if equipo.mac_address else 'N/A',
+            equipo.mac_address or 'N/A',
             equipo.estado,
-            equipo.observaciones if equipo.observaciones else 'Sin observaciones'
+            equipo.observaciones or 'Sin observaciones',
+            equipo.fecha_fabricacion.strftime('%Y-%m-%d') if equipo.fecha_fabricacion else 'N/A',
+            equipo.vida_util_anios or 'N/A',
+            equipo.nombre_red or 'N/A',
+            equipo.ubicacion or 'N/A',
+            equipo.empleado_responsable or 'N/A',
+            equipo.proveedor or 'N/A',
+            str(equipo.valor_compra) if equipo.valor_compra else 'N/A',
+            equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else 'N/A',
+            equipo.fecha_recepcion.strftime('%Y-%m-%d') if equipo.fecha_recepcion else 'N/A',
+            equipo.fecha_mantenimiento.strftime('%Y-%m-%d') if equipo.fecha_mantenimiento else 'N/A',
+            equipo.size_pantalla or 'N/A',
+            equipo.resolucion or 'N/A',
+            equipo.procesador_marca or 'N/A',
+            equipo.procesador_velocidad or 'N/A',
+            equipo.procesador_generacion or 'N/A',
+            equipo.sistema_operativo or 'N/A',
+            equipo.sistema_operativo_version or 'N/A',
+            equipo.sistema_operativo_bits or 'N/A',
+            equipo.almacenamiento_capacidad or 'N/A',
+            equipo.memoria or 'N/A',
+            equipo.impresora_tipo or 'N/A',
+            equipo.impresora_velocidad_ppm or 'N/A',
+            equipo.impresora_color or 'N/A',
+            equipo.impresora_conexion or 'N/A',
+            equipo.cpu_formato_diseno or 'N/A',
+            equipo.proyector_lumens or 'N/A',
+            equipo.ups_vatios or 'N/A',
+            equipo.ups_fecha_bateria.strftime('%Y-%m-%d') if equipo.ups_fecha_bateria else 'N/A',
+            equipo.scanner_velocidad or 'N/A',
+            equipo.scanner_color or 'N/A',
+            equipo.pantalla_proyector_tipo or 'N/A',
+            equipo.server_numero_procesadores or 'N/A',
+            equipo.licencia_tipo or 'N/A',
+            equipo.licencia_clase or 'N/A',
+            equipo.mouse_tipo or 'N/A',
+            equipo.mouse_conexion or 'N/A',
+            equipo.clase_disco or 'N/A',
         ])
 
-    
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
@@ -90,75 +162,17 @@ def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
 
 def listar_equipos(request):
-    # ... tus filtros existentes
-    equipos_laptop = Equipo.objects.filter(tipo='laptop')
-    equipos_impresora = Equipo.objects.filter(tipo='impresora')
-    equipos_cpu = Equipo.objects.filter(tipo='cpu')
-    equipos_monitor = Equipo.objects.filter(tipo='monitor')
-    equipos_proyector = Equipo.objects.filter(tipo='proyector')
-    equipos_ups = Equipo.objects.filter(tipo='ups')
-    equipos_scanner = Equipo.objects.filter(tipo='scanner')
-    equipos_pantalla_proyector = Equipo.objects.filter(tipo='pantalla_proyector')
-    equipos_tablet = Equipo.objects.filter(tipo='tablet')
-    equipos_server = Equipo.objects.filter(tipo='server')
-    equipos_router = Equipo.objects.filter(tipo='router')
-    equipos_generador_tono = Equipo.objects.filter(tipo='generador_tono')
-    equipos_tester = Equipo.objects.filter(tipo='tester')
-    equipos_multimetro = Equipo.objects.filter(tipo='multimetro')
-    equipos_access_point = Equipo.objects.filter(tipo='access_point')
-    equipos_licencia_informatica = Equipo.objects.filter(tipo='licencia_informatica')
-    equipos_mouse = Equipo.objects.filter(tipo='mouse')
-    equipos_teclado = Equipo.objects.filter(tipo='teclado')
-    equipos_headset = Equipo.objects.filter(tipo='headset')
-    equipos_bocina = Equipo.objects.filter(tipo='bocina')
-    equipos_brazo_monitor = Equipo.objects.filter(tipo='brazo_monitor')
-    equipos_memoria_usb = Equipo.objects.filter(tipo='memoria_usb')
-    equipos_pointer = Equipo.objects.filter(tipo='pointer')
-    equipos_kit_herramientas = Equipo.objects.filter(tipo='kit_herramientas')
-    equipos_cartucho = Equipo.objects.filter(tipo='cartucho')
-    equipos_toner = Equipo.objects.filter(tipo='toner')
-    equipos_botella_tinta = Equipo.objects.filter(tipo='botella_tinta')
-    equipos_camara_web = Equipo.objects.filter(tipo='camara_web')
-    equipos_disco_duro = Equipo.objects.filter(tipo='disco_duro')
-    equipos_p2 = Equipo.objects.filter(tipo='p2')
-    equipos_todos = Equipo.objects.all() # Esta ya la tienes
+    equipos_todos = Equipo.objects.all()
+    equipos_por_tipo = {tipo[0]: Equipo.objects.filter(tipo=tipo[0]) for tipo in Equipo.TIPOS}
 
     return render(request, 'Equipos/Index.html', {
-        'equipos_laptop': equipos_laptop,
-        'equipos_impresora': equipos_impresora,
-        'equipos_cpu': equipos_cpu,
-        'equipos_monitor': equipos_monitor,
-        'equipos_proyector': equipos_proyector,
-        'equipos_ups': equipos_ups,
-        'equipos_scanner': equipos_scanner,
-        'equipos_pantalla_proyector': equipos_pantalla_proyector,
-        'equipos_tablet': equipos_tablet,
-        'equipos_server': equipos_server,
-        'equipos_router': equipos_router,
-        'equipos_generador_tono': equipos_generador_tono,
-        'equipos_tester': equipos_tester,
-        'equipos_multimetro': equipos_multimetro,
-        'equipos_access_point': equipos_access_point,
-        'equipos_licencia_informatica': equipos_licencia_informatica,
-        'equipos_mouse': equipos_mouse,
-        'equipos_teclado': equipos_teclado,
-        'equipos_headset': equipos_headset,
-        'equipos_bocina': equipos_bocina,
-        'equipos_brazo_monitor': equipos_brazo_monitor,
-        'equipos_memoria_usb': equipos_memoria_usb,
-        'equipos_pointer': equipos_pointer,
-        'equipos_kit_herramientas': equipos_kit_herramientas,
-        'equipos_cartucho': equipos_cartucho,
-        'equipos_toner': equipos_toner,
-        'equipos_botella_tinta': equipos_botella_tinta,
-        'equipos_camara_web': equipos_camara_web,
-        'equipos_disco_duro': equipos_disco_duro,
-        
         'equipos_todos': equipos_todos,
+        **{f'equipos_{tipo[0]}': equipos_por_tipo.get(tipo[0], []) for tipo in Equipo.TIPOS},
     })
+
 def crear_equipos(request):
     if request.method == 'POST':
-        formulario = EquipoForm(request.POST, request.FILES)
+        formulario = EquipoForm(request.POST)
         if formulario.is_valid():
             serial = formulario.cleaned_data['serial']
             if Equipo.objects.filter(serial=serial).exists():
@@ -169,88 +183,60 @@ def crear_equipos(request):
                 return redirect('equipos')
         else:
             messages.error(request, "Error en el formulario. Por favor, revise los campos.")
-            print(formulario.errors)  
+            print(formulario.errors)  # Para depuración, pero los errores ya se mostrarán en el formulario
     else:
         formulario = EquipoForm()
     return render(request, 'Equipos/Crear.html', {'formulario': formulario})
 
-
 def editar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     if request.method == 'POST':
-        equipo.modelo = request.POST.get('modelo')
-        equipo.tipo = request.POST.get('tipo')
-        equipo.marca = request.POST.get('marca')
-        equipo.serial = request.POST.get('serial')
-        equipo.mac_address = request.POST.get('mac_address')  
-        equipo.observaciones = request.POST.get('observaciones')
-        equipo.save()
-        messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
-        return redirect('equipos')
-    return render(request, 'equipos/editar.html', {'equipo': equipo})
-
+        formulario = EquipoForm(request.POST, instance=equipo)
+        if formulario.is_valid():
+            serial = formulario.cleaned_data['serial']
+            if Equipo.objects.filter(serial=serial).exclude(id=equipo_id).exists():
+                messages.error(request, "El serial ya está registrado en otro equipo.")
+            else:
+                formulario.save()
+                messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
+                return redirect('equipos')
+        else:
+            messages.error(request, "Error en el formulario. Por favor, revise los campos.")
+            print(formulario.errors)
+    else:
+        formulario = EquipoForm(instance=equipo)
+    return render(request, 'Equipos/Editar.html', {'formulario': formulario, 'equipo': equipo})
 
 def asignar(request):
-    # Obtener todos los tipos de equipo distintos, independientemente de la disponibilidad
     tipos_equipo = Equipo.objects.values_list('tipo', flat=True).distinct().order_by('tipo')
-
     equipos_asignados = Asignacion.objects.filter(fecha_final__isnull=True).values_list('equipo_id', flat=True)
     equipos = Equipo.objects.exclude(id__in=equipos_asignados).filter(estado='Disponible')
     asignaciones = Asignacion.objects.all()
 
     if request.method == 'POST':
-        colaborador_nombre = request.POST.get('colaborador_nombre')
-        correo_institucional = request.POST.get('correo_institucional')
-        equipo_id = request.POST.get('equipo')
-        fecha_entrega = request.POST.get('fecha_entrega')
-        fecha_final = request.POST.get('fecha_final')
-
-        try:
-            equipo = Equipo.objects.get(id=equipo_id)
-
+        formulario = AsignacionForm(request.POST)
+        if formulario.is_valid():
+            equipo = formulario.cleaned_data['equipo']
             if Asignacion.objects.filter(equipo=equipo, fecha_final__isnull=True).exists():
                 messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado actualmente.')
                 return redirect('asignar')
-
-            fecha_entrega = (
-                datetime.strptime(fecha_entrega, "%Y-%m-%d").date()
-                if fecha_entrega
-                else timezone.now().date()
-            )
-            fecha_final = (
-                datetime.strptime(fecha_final, "%Y-%m-%d").date()
-                if fecha_final
-                else None
-            )
-
-            if fecha_final and fecha_final < fecha_entrega:
-                messages.error(request, 'La fecha final no puede ser anterior a la fecha de entrega.')
-                return redirect('asignar')
-
-            Asignacion.objects.create(
-                colaborador_nombre=colaborador_nombre,
-                correo_institucional=correo_institucional,
-                equipo=equipo,
-                fecha_entrega=fecha_entrega,
-                fecha_final=fecha_final
-            )
-
-            equipo.estado = 'Disponible' if fecha_final else 'Asignado'
+            asignacion = formulario.save()
+            equipo.estado = 'Asignado'
             equipo.save()
-
             messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado correctamente.')
-
-        except (Equipo.DoesNotExist, ValueError) as e:
-            messages.error(request, f'Error en la asignación: {str(e)}')
-
-        return redirect('asignar')
-
+            return redirect('asignar')
+        else:
+            messages.error(request, 'Error en el formulario de asignación. Por favor, revise los campos.')
+    else:
+        formulario = AsignacionForm()
     return render(request, 'Equipos/Asignar.html', {
         'equipos': equipos,
         'asignaciones': asignaciones,
         'tipos_equipo': tipos_equipo,
-        'fecha_hoy': timezone.now().date(),  # Asegúrate de pasar la fecha hoy al contexto
+        'fecha_hoy': timezone.now().date(),
+        'formulario': formulario,
     })
+
 def Listadeasignados(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'Equipos/Listadeasignados.html', {'asignaciones': asignaciones})
@@ -270,18 +256,17 @@ def desasignar(request, id):
 def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     equipo.delete()
-    messages.success(request, f'El equipo "{equipo.modelo}" ha sido eliminado con exito.')
-    return redirect('inventario')
+    messages.success(request, f'El equipo "{equipo.modelo}" ha sido eliminado con éxito.')
+    return redirect('equipos')
 
 def liberar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     equipo.estado = "Disponible"
     equipo.save()
     messages.success(request, f'Equipo {equipo.modelo} ahora está disponible.')
-    return redirect('inventario')
+    return redirect('equipos')
 
 def registro(request):
-    data = {'form': CustomUserCreationForm()}
     if request.method == 'POST':
         formulario = CustomUserCreationForm(request.POST)
         if formulario.is_valid():
@@ -290,16 +275,24 @@ def registro(request):
             login(request, user)
             messages.success(request, "¡Registro exitoso!")
             return redirect('inicio')
-        data['form'] = formulario
-    return render(request, 'registration/registro.html', data)
+        else:
+            messages.error(request, "Error en el formulario de registro. Por favor, revise los campos.")
+    else:
+        formulario = CustomUserCreationForm()
+    return render(request, 'registration/registro.html', {'form': formulario})
 
 def ver_pdf(request):
     buffer = BytesIO()
     p = canvas.Canvas(buffer)
     equipos = Equipo.objects.all()
     p.drawString(100, 750, "Inventario de Equipos")
-    for i, equipo in enumerate(equipos):
-        p.drawString(100, 730 - i * 20, f"{equipo.id} - {equipo.modelo}")
+    y = 730
+    for equipo in equipos:
+        p.drawString(100, y, f"{equipo.id} - {equipo.marca} {equipo.modelo} ({equipo.serial})")
+        y -= 20
+        if y < 50:
+            p.showPage()
+            y = 750
     p.showPage()
     p.save()
     buffer.seek(0)
@@ -311,7 +304,6 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -319,24 +311,21 @@ def login_view(request):
             return redirect('inicio')
         else:
             messages.error(request, 'Usuario o contraseña inválidos')
-
     return render(request, 'registration/login.html')
-
 
 def logout_view(request):
     logout(request)
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect("login")
+
 def inicio_view(request):
-    
     return render(request, "inicio.html")
+
 def generar_constancia(request, asignacion_id):
     asignacion = get_object_or_404(Asignacion, id=asignacion_id)
-
     nombre_empleado = asignacion.colaborador_nombre
     equipo = asignacion.equipo
     fecha_entrega = asignacion.fecha_entrega.strftime("%d de %B de %Y")
-
     fecha_final = asignacion.fecha_final.strftime("%d de %B de %Y") if asignacion.fecha_final else "No aplica"
     mac_address = equipo.mac_address if equipo.mac_address else "No disponible"
 
@@ -346,19 +335,14 @@ def generar_constancia(request, asignacion_id):
     reemplazar_texto(doc, '{{ nombreempleado }}', nombre_empleado)
     reemplazar_texto(doc, '{{ equipodescripcion }}', f'{equipo.marca} {equipo.modelo}')
     reemplazar_texto(doc, '{{ equiposerial }}', equipo.serial)
-    reemplazar_texto(doc, '{{ macaddress }}', mac_address)  # NUEVO
+    reemplazar_texto(doc, '{{ macaddress }}', mac_address)
     reemplazar_texto(doc, '{{ fecha_entrega }}', fecha_entrega)
     reemplazar_texto(doc, '{{ fecha_final }}', fecha_final)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename=constancia_salida_{equipo.id}.docx'
     doc.save(response)
-
     return response
-
-
-
-
 
 def reemplazar_texto(doc, marcador, texto):
     """ Reemplaza texto en el documento, incluyendo párrafos y tablas. """
@@ -366,7 +350,6 @@ def reemplazar_texto(doc, marcador, texto):
         if marcador in p.text:
             for run in p.runs:
                 run.text = run.text.replace(marcador, texto)
-
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
@@ -374,4 +357,3 @@ def reemplazar_texto(doc, marcador, texto):
                     if marcador in p.text:
                         for run in p.runs:
                             run.text = run.text.replace(marcador, texto)
-
