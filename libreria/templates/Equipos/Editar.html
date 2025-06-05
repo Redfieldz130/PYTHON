@@ -3,72 +3,426 @@
 {% block titulo %}Editar Equipo{% endblock %}
 
 {% block contenido %}
-<div class="container-fluid py-4">
-    <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
-        <h5 class="mb-0 font-weight-bold">Editar Equipo</h5>
-    </div>
+<style>
+    .errorlist {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .device-specific {
+        display: none;
+    }
+    .alert-danger ul {
+        margin-bottom: 0;
+    }
+    .btn-cancel {
+        margin-left: 10px;
+    }
+</style>
 
-    <div class="content mt-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success alert-flotante">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+<div class="container mt-4">
+    <div class="card shadow p-4" style="max-width: 100%; width: 100%; max-width: 900px; margin: 0 auto;">
+        <div class="card-header text-center bg-primary text-white">
+            <h4 class="mb-0">Editar equipo: {{ equipo.marca }} {{ equipo.modelo }} ({{ equipo.serial }})</h4>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {% for message in messages %}
+                        <p class="mb-0">{{ message }}</p>
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                var alertFlotantes = document.querySelectorAll(".alert-flotante");
-                alertFlotantes.forEach(function(alertFlotante) {
-                    setTimeout(function() {
-                        alertFlotante.classList.add("hide");
-                    }, 4000);
-                });
-            });
-        </script>
+            {% if formulario.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <p class="mb-2"><strong>Error:</strong> Por favor corrige los siguientes errores:</p>
+                    <ul>
+                        {% for field, errors in formulario.errors.items %}
+                            <li><strong>{{ field }}:</strong> {{ errors|striptags }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="modelo" class="form-label">Modelo</label>
-                <input type="text" class="form-control form-control-sm" name="modelo" id="modelo" value="{{ equipo.modelo }}" required>
-            </div>
+            <form method="post" id="equipoForm" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Campos generales según la matriz -->
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_tipo" class="form-label">Tipo de Dispositivo</label>
+                        {{ formulario.tipo }}
+                        <div class="invalid-feedback">Por favor selecciona un tipo de dispositivo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_marca" class="form-label">Marca</label>
+                        {{ formulario.marca }}
+                        <div class="invalid-feedback">Por favor ingresa la marca.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_modelo" class="form-label">Modelo</label>
+                        {{ formulario.modelo }}
+                        <div class="invalid-feedback">Por favor ingresa el modelo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_serial" class="form-label">Serial</label>
+                        {{ formulario.serial }}
+                        <div class="invalid-feedback">Por favor ingresa el serial.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_fecha_compra" class="form-label">Fecha de Compra</label>
+                        {{ formulario.fecha_compra }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de compra.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_valor_compra" class="form-label">Valor de Compra</label>
+                        {{ formulario.valor_compra }}
+                        <div class="invalid-feedback">Por favor ingresa el valor de compra.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_ubicacion" class="form-label">Ubicación o Departamento</label>
+                        {{ formulario.ubicacion }}
+                        <div class="invalid-feedback">Por favor ingresa la ubicación.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_empleado_responsable" class="form-label">Empleado Responsable</label>
+                        {{ formulario.empleado_responsable }}
+                        <div class="invalid-feedback">Por favor ingresa el empleado responsable.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_proveedor" class="form-label">Proveedor</label>
+                        {{ formulario.proveedor }}
+                        <div class="invalid-feedback">Por favor ingresa el proveedor.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_fecha_fabricacion" class="form-label">Fecha de Fabricación</label>
+                        {{ formulario.fecha_fabricacion }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de fabricación.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_vida_util_anios" class="form-label">Vida Útil (Años)</label>
+                        {{ formulario.vida_util_anios }}
+                        <div class="invalid-feedback">Por favor ingresa la vida útil.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_nombre_red" class="form-label">Nombre de Red</label>
+                        {{ formulario.nombre_red }}
+                        <div class="invalid-feedback">Por favor ingresa el nombre de red.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_fecha_recepcion" class="form-label">Fecha de Recepción</label>
+                        {{ formulario.fecha_recepcion }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de recepción.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="id_fecha_mantenimiento" class="form-label">Fecha de Mantenimiento</label>
+                        {{ formulario.fecha_mantenimiento }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de mantenimiento.</div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="id_observaciones" class="form-label">Observaciones</label>
+                        {{ formulario.observaciones }}
+                        <div class="invalid-feedback">Por favor ingresa las observaciones si las hay.</div>
+                    </div>
 
-            <div class="mb-3">
-                <label for="tipo" class="form-label">Tipo</label>
-                <select class="form-select form-select-sm" name="tipo" id="tipo" required>
-                    <option value="laptop_pc" {% if equipo.tipo == "laptop_pc" %}selected{% endif %}>Laptop/PC</option>
-                    <option value="celular" {% if equipo.tipo == "celular" %}selected{% endif %}>Celular</option>
-                    <option value="impresora" {% if equipo.tipo == "impresora" %}selected{% endif %}>Impresora</option>
-                    <option value="monitor" {% if equipo.tipo == "monitor" %}selected{% endif %}>Monitor</option>
-                    <option value="cables" {% if equipo.tipo == "cables" %}selected{% endif %}>Cables</option>
-                    <option value="pc" {% if equipo.tipo == "pc" %}selected{% endif %}>PC</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="marca" class="form-label">Marca</label>
-                <input type="text" class="form-control form-control-sm" name="marca" id="marca" value="{{ equipo.marca }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="serial" class="form-label">Serial</label>
-                <input type="text" class="form-control form-control-sm" name="serial" id="serial" value="{{ equipo.serial }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="mac_address" class="form-label">MAC Address</label>
-                <input type="text" class="form-control form-control-sm" name="mac_address" id="mac_address" value="{{ equipo.mac_address }}">
-            </div>
-
-            <div class="mb-3">
-                <label for="observaciones" class="form-label">Observaciones</label>
-                <textarea class="form-control form-control-sm" name="observaciones" id="observaciones">{{ equipo.observaciones }}</textarea>
-            </div>
-
-            <div class="mb-3 text-center">
-                <button type="submit" class="btn btn-primary btn-sm text-uppercase">Guardar cambios</button>
-            </div>
-        </form>
+                    <!-- Campos específicos para cada tipo de equipo -->
+                    <!-- Laptop, CPU, Server, Tablet -->
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop tablet server cpu" style="display: none;">
+                        <label for="id_mac_address" class="form-label">Dirección MAC</label>
+                        {{ formulario.mac_address }}
+                        <div class="invalid-feedback">Por favor ingresa una dirección MAC válida.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
+                        <label for="id_procesador_marca" class="form-label">Marca del Procesador</label>
+                        {{ formulario.procesador_marca }}
+                        <div class="invalid-feedback">Por favor ingresa la marca del procesador.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
+                        <label for="id_procesador_velocidad" class="form-label">Velocidad del Procesador (GHz)</label>
+                        {{ formulario.procesador_velocidad }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad del procesador.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
+                        <label for="id_procesador_generacion" class="form-label">Generación del Procesador</label>
+                        {{ formulario.procesador_generacion }}
+                        <div class="invalid-feedback">Por favor ingresa la generación del procesador.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet" style="display: none;">
+                        <label for="id_sistema_operativo" class="form-label">Sistema Operativo</label>
+                        {{ formulario.sistema_operativo }}
+                        <div class="invalid-feedback">Por favor ingresa el sistema operativo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop server tablet" style="display: none;">
+                        <label for="id_sistema_operativo_version" class="form-label">Versión del Sistema Operativo</label>
+                        {{ formulario.sistema_operativo_version }}
+                        <div class="invalid-feedback">Por favor ingresa la versión del sistema operativo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop server tablet" style="display: none;">
+                        <label for="id_sistema_operativo_bits" class="form-label">Bits del Sistema Operativo</label>
+                        {{ formulario.sistema_operativo_bits }}
+                        <div class="invalid-feedback">Por favor selecciona los bits del sistema operativo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet disco_duro" style="display: none;">
+                        <label for="id_almacenamiento_capacidad" class="form-label">Capacidad de Almacenamiento (GB)</label>
+                        {{ formulario.almacenamiento_capacidad }}
+                        <div class="invalid-feedback">Por favor ingresa la capacidad de almacenamiento.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet" style="display: none;">
+                        <label for="id_memoria" class="form-label">Memoria (GB)</label>
+                        {{ formulario.memoria }}
+                        <div class="invalid-feedback">Por favor ingresa la memoria.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop monitor proyector tablet pantalla_proyector" style="display: none;">
+                        <label for="id_size_pantalla" class="form-label">Tamaño de Pantalla (pulgadas)</label>
+                        {{ formulario.size_pantalla }}
+                        <div class="invalid-feedback">Por favor ingresa el tamaño de la pantalla.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific laptop monitor proyector tablet" style="display: none;">
+                        <label for="id_resolucion" class="form-label">Resolución</label>
+                        {{ formulario.resolucion }}
+                        <div class="invalid-feedback">Por favor ingresa la resolución.</div>
+                    </div>
+                    <!-- Impresora -->
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_tipo" class="form-label">Tipo de Impresora</label>
+                        {{ formulario.impresora_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de impresora.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_velocidad_ppm" class="form-label">Velocidad (PPM)</label>
+                        {{ formulario.impresora_velocidad_ppm }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad de impresión.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_color" class="form-label">Color</label>
+                        {{ formulario.impresora_color }}
+                        <div class="invalid-feedback">Por favor selecciona si imprime en color.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_conexion" class="form-label">Conexión</label>
+                        {{ formulario.impresora_conexion }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de conexión.</div>
+                    </div>
+                    <!-- Proyector -->
+                    <div class="col-12 col-md-6 mb-3 device-specific proyector" style="display: none;">
+                        <label for="id_proyector_lumens" class="form-label">Lúmenes</label>
+                        {{ formulario.proyector_lumens }}
+                        <div class="invalid-feedback">Por favor ingresa los lúmenes.</div>
+                    </div>
+                    <!-- UPS -->
+                    <div class="col-12 col-md-6 mb-3 device-specific ups" style="display: none;">
+                        <label for="id_ups_vatios" class="form-label">Vatios</label>
+                        {{ formulario.ups_vatios }}
+                        <div class="invalid-feedback">Por favor ingresa los vatios.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific ups" style="display: none;">
+                        <label for="id_ups_fecha_bateria" class="form-label">Fecha de Batería</label>
+                        {{ formulario.ups_fecha_bateria }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de la batería.</div>
+                    </div>
+                    <!-- Scanner -->
+                    <div class="col-12 col-md-6 mb-3 device-specific scanner" style="display: none;">
+                        <label for="id_scanner_velocidad" class="form-label">Velocidad</label>
+                        {{ formulario.scanner_velocidad }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad de escaneo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific scanner" style="display: none;">
+                        <label for="id_scanner_color" class="form-label">Color</label>
+                        {{ formulario.scanner_color }}
+                        <div class="invalid-feedback">Por favor selecciona si escanea en color.</div>
+                    </div>
+                    <!-- Pantalla Proyector -->
+                    <div class="col-12 col-md-6 mb-3 device-specific pantalla_proyector" style="display: none;">
+                        <label for="id_pantalla_proyector_tipo" class="form-label">Tipo de Pantalla</label>
+                        {{ formulario.pantalla_proyector_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de pantalla.</div>
+                    </div>
+                    <!-- Server -->
+                    <div class="col-12 col-md-6 mb-3 device-specific server" style="display: none;">
+                        <label for="id_server_numero_procesadores" class="form-label">Número de Procesadores</label>
+                        {{ formulario.server_numero_procesadores }}
+                        <div class="invalid-feedback">Por favor ingresa el número de procesadores.</div>
+                    </div>
+                    <!-- Licencia Informática -->
+                    <div class="col-12 col-md-6 mb-3 device-specific licencia_informatica" style="display: none;">
+                        <label for="id_licencia_tipo" class="form-label">Tipo de Licencia</label>
+                        {{ formulario.licencia_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de licencia.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific licencia_informatica" style="display: none;">
+                        <label for="id_licencia_clase" class="form-label">Clase de Licencia</label>
+                        {{ formulario.licencia_clase }}
+                        <div class="invalid-feedback">Por favor selecciona la clase de licencia.</div>
+                    </div>
+                    <!-- Mouse -->
+                    <div class="col-12 col-md-6 mb-3 device-specific mouse" style="display: none;">
+                        <label for="id_mouse_tipo" class="form-label">Tipo de Mouse</label>
+                        {{ formulario.mouse_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de mouse.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific mouse" style="display: none;">
+                        <label for="id_mouse_conexion" class="form-label">Conexión</label>
+                        {{ formulario.mouse_conexion }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de conexión.</div>
+                    </div>
+                    <!-- Disco Duro -->
+                    <div class="col-12 col-md-6 mb-3 device-specific disco_duro" style="display: none;">
+                        <label for="id_clase_disco" class="form-label">Clase de Disco</label>
+                        {{ formulario.clase_disco }}
+                        <div class="invalid-feedback">Por favor selecciona la clase de disco.</div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="{% url 'equipos' %}" class="btn btn-secondary btn-cancel">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+{% block JS %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipoDispositivo = document.getElementById('id_tipo');
+        const deviceSpecificFields = document.querySelectorAll('.device-specific');
+        const macInput = document.getElementById('id_mac_address');
+        const form = document.getElementById('equipoForm');
+
+        if (!tipoDispositivo) {
+            console.error('No se encontró el elemento #id_tipo');
+            return;
+        }
+
+        const deviceFields = {
+            'laptop': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla', 'resolucion'],
+            'impresora': ['impresora_tipo', 'impresora_velocidad_ppm', 'impresora_color', 'impresora_conexion'],
+            'cpu': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'cpu_formato_diseno'],
+            'monitor': ['size_pantalla', 'resolucion'],
+            'proyector': ['size_pantalla', 'resolucion', 'proyector_lumens'],
+            'ups': ['ups_vatios', 'ups_fecha_bateria'],
+            'scanner': ['scanner_velocidad', 'scanner_color'],
+            'pantalla_proyector': ['size_pantalla', 'pantalla_proyector_tipo'],
+            'tablet': ['mac_address', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla'],
+            'server': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'almacenamiento_capacidad', 'server_numero_procesadores'],
+            'router': [],
+            'generador_tono': [],
+            'tester': [],
+            'multimetro': [],
+            'access_point': [],
+            'licencia_informatica': ['licencia_tipo', 'licencia_clase'],
+            'mouse': ['mouse_tipo', 'mouse_conexion'],
+            'teclado': [],
+            'headset': [],
+            'bocina': [],
+            'brazo_monitor': [],
+            'memoria_usb': [],
+            'pointer': [],
+            'kit_herramientas': [],
+            'cartucho': [],
+            'toner': [],
+            'botella_tinta': [],
+            'camara_web': [],
+            'disco_duro': ['almacenamiento_capacidad', 'clase_disco']
+        };
+
+        function updateFields() {
+            const selectedType = tipoDispositivo.value.toLowerCase();
+            console.log('Tipo seleccionado:', selectedType);
+            deviceSpecificFields.forEach(field => {
+                const fieldClasses = field.classList;
+                if (fieldClasses.contains(selectedType)) {
+                    field.style.display = 'block';
+                    const input = field.querySelector('input, select, textarea');
+                    if (input && deviceFields[selectedType]?.includes(input.id.replace('id_', ''))) {
+                        input.required = true;  // Campos específicos son requeridos si se muestran
+                    }
+                } else {
+                    field.style.display = 'none';
+                    const input = field.querySelector('input, select, textarea');
+                    if (input) {
+                        input.required = false;
+                        if (input.tagName === 'SELECT') {
+                            input.selectedIndex = 0;
+                        } else {
+                            input.value = input.defaultValue || '';  // Mantener valor original si existe
+                        }
+                    }
+                }
+            });
+        }
+
+        // Hacer que los campos generales no sean requeridos en el cliente
+        const generalFields = [
+            'marca', 'modelo', 'serial', 'fecha_compra', 'valor_compra', 'ubicacion',
+            'empleado_responsable', 'proveedor', 'fecha_fabricacion', 'vida_util_anios',
+            'nombre_red', 'fecha_recepcion', 'fecha_mantenimiento', 'observaciones'
+        ];
+        generalFields.forEach(fieldId => {
+            const input = document.getElementById(`id_${fieldId}`);
+            if (input) {
+                input.required = false;
+            }
+        });
+
+        // El campo 'tipo' es el único que siempre es requerido
+        document.getElementById('id_tipo').required = true;
+
+        // Inicializar campos según el tipo actual del equipo
+        updateFields();
+        tipoDispositivo.addEventListener('change', updateFields);
+
+        if (macInput) {
+            macInput.addEventListener('input', function () {
+                let val = macInput.value.replace(/[^a-fA-F0-9:]/g, '').toUpperCase();
+                let formatted = '';
+                for (let i = 0; i < val.length; i++) {
+                    if (i > 0 && i % 2 === 0 && i < 12) {
+                        formatted += ':';
+                    }
+                    formatted += val[i];
+                }
+                if (formatted.length > 17) formatted = formatted.slice(0, 17);
+                macInput.value = formatted;
+            });
+
+            form.addEventListener('submit', function (e) {
+                const mac = macInput.value.trim();
+                if (mac && macInput.closest('.device-specific').style.display === 'block') {
+                    const macRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/;
+                    if (!macRegex.test(mac)) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Formato inválido',
+                            text: 'La dirección MAC debe ser 12 caracteres hexadecimales con el formato XX:XX:XX:XX:XX:XX.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        }
+
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    });
+</script>
+{% endblock JS %}
 {% endblock %}

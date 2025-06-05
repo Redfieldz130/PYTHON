@@ -156,39 +156,48 @@
         font-weight: bold;
         margin-bottom: 8px;
     }
+    .product-status {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
 
-    /* Clases para los nuevos tipos de productos */
+    .Disponible { background-color: #c8e6c9; color: #388e3c; }
+    .Asignado { background-color: #ffcdd2; color: #c62828; }
+
+    /* Clases para los tipos de productos */
     .laptop { background-color: #e3f2fd; color: #1565c0; }
     .impresora { background-color: #ffebee; color: #c62828; }
     .cpu { background-color: #fff3e0; color: #e65100; }
     .monitor { background-color: #e0f7fa; color: #00838f; }
-    .proyector { background-color: #c8e6c9; color: #388e3c; } /* Nuevo color */
-    .ups { background-color: #bbdefb; color: #1976d2; } /* Nuevo color */
-    .scanner { background-color: #fce4ec; color: #ad1457; } /* Nuevo color */
-    .pantalla_proyector { background-color: #e1f5fe; color: #0277bd; } /* Nuevo color */
+    .proyector { background-color: #c8e6c9; color: #388e3c; }
+    .ups { background-color: #bbdefb; color: #1976d2; }
+    .scanner { background-color: #fce4ec; color: #ad1457; }
+    .pantalla_proyector { background-color: #e1f5fe; color: #0277bd; }
     .tablet { background-color: #f3e5f5; color: #7b1fa2; }
-    .server { background-color: #ffecb3; color: #ff8f00; } /* Nuevo color */
-    .router { background-color: #d7ccc8; color: #5d4037; } /* Nuevo color */
-    .generador_tono { background-color: #e0f2f7; color: #006064; } /* Nuevo color */
-    .tester { background-color: #f1f8e9; color: #558b2f; } /* Nuevo color */
-    .multimetro { background-color: #fbe9e7; color: #bf360c; } /* Nuevo color */
+    .server { background-color: #ffecb3; color: #ff8f00; }
+    .router { background-color: #d7ccc8; color: #5d4037; }
+    .generador_tono { background-color: #e0f2f7; color: #006064; }
+    .tester { background-color: #f1f8e9; color: #558b2f; }
+    .multimetro { background-color: #fbe9e7; color: #bf360c; }
     .access_point { background-color: #e8f5e9; color: #2e7d32; }
-    .licencia_informatica { background-color: #ede7f6; color: #5e35b1; } /* Nuevo color */
-    .mouse { background-color: #f5f5f5; color: #424242; } /* Nuevo color */
-    .teclado { background-color: #eeeeee; color: #616161; } /* Nuevo color */
-    .headset { background-color: #e0f2f7; color: #00838f; } /* Nuevo color */
-    .bocina { background-color: #f0f4c3; color: #827717; } /* Nuevo color */
-    .brazo_monitor { background-color: #cfd8dc; color: #455a64; } /* Nuevo color */
-    .memoria_usb { background-color: #e8eaf6; color: #3f51b5; } /* Nuevo color */
-    .pointer { background-color: #fffde7; color: #fbc02d; } /* Nuevo color */
-    .kit_herramientas { background-color: #fbe9e7; color: #e64a19; } /* Nuevo color */
-    .cartucho { background-color: #fce4ec; color: #c2185b; } /* Nuevo color */
-    .toner { background-color: #e0f7fa; color: #0097a7; } /* Nuevo color */
-    .botella_tinta { background-color: #e3f2fd; color: #2196f3; } /* Nuevo color */
-    .camara_web { background-color: #f3e5f5; color: #9c27b0; } /* Nuevo color */
-    .disco_duro { background-color: #e8f5e9; color: #43a047; } /* Nuevo color */
-    .p2 { background-color: #ffe0b2; color: #fb8c00; } /* Nuevo color */
-
+    .licencia_informatica { background-color: #ede7f6; color: #5e35b1; }
+    .mouse { background-color: #f5f5f5; color: #424242; }
+    .teclado { background-color: #eee0e0; color: #616161; }
+    .headset { background-color: #e0f2f7; color: #00838f; }
+    .bocina { background-color: #f0f4c3; color: #827717; }
+    .brazo_monitor { background-color: #cfd8dc; color: #455a64; }
+    .memoria_usb { background-color: #e8eaf6; color: #3f51b5; }
+    .pointer { background-color: #fffde7; color: #fbc02d; }
+    .kit_herramientas { background-color: #fbe9e7; color: #e64a19; }
+    .cartucho { background-color: #fce4ec; color: #c2185b; }
+    .toner { background-color: #e0f7fa; color: #0097a7; }
+    .botella_tinta { background-color: #e3f2fd; color: #2196f3; }
+    .camara_web { background-color: #f3e5f5; color: #9c27b0; }
+    .disco_duro { background-color: #e8f5e9; color: #43a047; }
 
     .product-name {
         font-size: 18px;
@@ -208,24 +217,6 @@
         color: #777;
         margin-bottom: 15px;
         font-family: monospace;
-    }
-
-    .product-status {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .Disponible {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-
-    .Asignado {
-        background-color: #fff3e0;
-        color: #e65100;
     }
 
     .product-actions {
@@ -378,7 +369,7 @@
     }
 
     @media (max-width: 480px) {
-        .inventory-header h1 {
+        .inventory-header h3 {
             font-size: 1.5rem;
         }
 
@@ -394,673 +385,300 @@
 
 <div class="inventory-container">
     <div class="inventory-header">
-        <h1>Inventario de Tecnología</h1>
-        <p>Gestiona y consulta todos los equipos tecnológicos</p>
+        <h3>Inventario de Tecnología</h3>
+        <p>Gestiona y consulta todos los equipos, accesorios, licencias y materiales</p>
     </div>
 
     <div class="filter-section">
-        <button class="filter-btn active" data-category="all">Todos</button>
-        <button class="filter-btn" data-category="laptop">Laptops</button>
-        <button class="filter-btn" data-category="impresora">Impresoras</button>
-        <button class="filter-btn" data-category="cpu">CPU</button>
-        <button class="filter-btn" data-category="monitor">Monitores</button>
-        <button class="filter-btn" data-category="proyector">Proyectores</button>
-        <button class="filter-btn" data-category="ups">UPS</button>
-        <button class="filter-btn" data-category="scanner">Scanners</button>
-        <button class="filter-btn" data-category="pantalla_proyector">Pantallas Proyector</button>
-        <button class="filter-btn" data-category="tablet">Tablets</button>
-        <button class="filter-btn" data-category="server">Servers</button>
-        <button class="filter-btn" data-category="router">Routers</button>
-        <button class="filter-btn" data-category="generador_tono">Generadores de Tono</button>
-        <button class="filter-btn" data-category="tester">Testers</button>
-        <button class="filter-btn" data-category="multimetro">Multímetros</button>
-        <button class="filter-btn" data-category="access_point">Access Points</button>
-        <button class="filter-btn" data-category="licencia_informatica">Licencias Informáticas</button>
-        <button class="filter-btn" data-category="mouse">Mouses</button>
-        <button class="filter-btn" data-category="teclado">Teclados</button>
-        <button class="filter-btn" data-category="headset">Headsets</button>
-        <button class="filter-btn" data-category="bocina">Bocinas</button>
-        <button class="filter-btn" data-category="brazo_monitor">Brazos para Monitor</button>
-        <button class="filter-btn" data-category="memoria_usb">Memorias USB</button>
-        <button class="filter-btn" data-category="pointer">Pointers</button>
-        <button class="filter-btn" data-category="kit_herramientas">Kits de Herramientas</button>
-        <button class="filter-btn" data-category="cartucho">Cartuchos</button>
-        <button class="filter-btn" data-category="toner">Tóners</button>
-        <button class="filter-btn" data-category="botella_tinta">Botellas de Tinta</button>
-        <button class="filter-btn" data-category="camara_web">Cámaras Web</button>
-        <button class="filter-btn" data-category="disco_duro">Discos Duros</button>
-        
+        <button class="filter-btn active" data-category="todos">Todos</button>
+        <button class="filter-btn" data-category="equipos">Equipos</button>
+        <button class="filter-btn" data-category="accesorios">Accesorios</button>
+        <button class="filter-btn" data-category="licencias">Licencias</button>
+        <button class="filter-btn" data-category="materiales">Materiales</button>
     </div>
 
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar por Modelo, Marca o Serial...">
+        <input type="text" id="search-input" placeholder="Buscar por Marca, Modelo o Serial...">
     </div>
 
-    <div id="all-section">
-        <h2>Todos los equipos</h2>
-        <div class="products-grid" id="all-products-grid">
-            {% for equipo in equipos_todos %}
-                {% include 'Equipos/partials/equipo_card.html' %}
+    <!-- Sección: Todos -->
+    <div id="todos-section">
+        <h2>Todos los elementos</h2>
+        <div class="products-grid">
+            {% for equipo in equipos_por_categoria.todos %}
+                {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
+            {% empty %}
+                <div class="no-results">
+                    <h3>No se encontraron elementos</h3>
+                    <p>No hay elementos registrados en el inventario.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sección: Equipos -->
+    <div id="equipos-section" style="display:none;">
+        <h2>Equipos</h2>
+        <div class="products-grid">
+            {% for equipo in equipos_por_categoria.equipos %}
+                {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results">
                     <h3>No se encontraron equipos</h3>
-                    <p>No hay equipos registrados en el inventario</p>
+                    <p>No hay equipos registrados.</p>
                 </div>
             {% endfor %}
         </div>
     </div>
 
-    <div id="laptop-section" style="display:none;">
-        <h2>Laptops</h2>
+    <!-- Sección: Accesorios -->
+    <div id="accesorios-section" style="display:none;">
+        <h2>Accesorios</h2>
         <div class="products-grid">
-            {% for equipo in equipos_laptop %}
-                {% include 'Equipos/partials/equipo_card.html' %}
+            {% for equipo in equipos_por_categoria.accesorios %}
+                {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results">
-                    <h3>No se encontraron Laptops</h3>
+                    <h3>No se encontraron accesorios</h3>
+                    <p>No hay accesorios registrados.</p>
                 </div>
             {% endfor %}
         </div>
     </div>
 
-    <div id="impresora-section" style="display:none;">
-        <h2>Impresoras</h2>
+    <!-- Sección: Licencias -->
+    <div id="licencias-section" style="display:none;">
+        <h2>Licencias</h2>
         <div class="products-grid">
-            {% for equipo in equipos_impresora %}
-                {% include 'Equipos/partials/equipo_card.html' %}
+            {% for equipo in equipos_por_categoria.licencias %}
+                {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results">
-                    <h3>No se encontraron Impresoras</h3>
+                    <h3>No se encontraron licencias</h3>
+                    <p>No hay licencias registradas.</p>
                 </div>
             {% endfor %}
         </div>
     </div>
 
-    <div id="cpu-section" style="display:none;">
-        <h2>CPUs</h2>
+    <!-- Sección: Materiales -->
+    <div id="materiales-section" style="display:none;">
+        <h2>Materiales</h2>
         <div class="products-grid">
-            {% for equipo in equipos_cpu %}
-                {% include 'Equipos/partials/equipo_card.html' %}
+            {% for equipo in equipos_por_categoria.materiales %}
+                {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results">
-                    <h3>No se encontraron CPUs</h3>
+                    <h3>No se encontraron materiales</h3>
+                    <p>No hay materiales registrados.</p>
                 </div>
             {% endfor %}
         </div>
     </div>
-
-    <div id="monitor-section" style="display:none;">
-        <h2>Monitores</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_monitor %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Monitores</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="proyector-section" style="display:none;">
-        <h2>Proyectores</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_proyector %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Proyectores</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="ups-section" style="display:none;">
-        <h2>UPS</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_ups %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron UPS</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="scanner-section" style="display:none;">
-        <h2>Scanners</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_scanner %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Scanners</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="pantalla_proyector-section" style="display:none;">
-        <h2>Pantallas Proyector</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_pantalla_proyector %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Pantallas de Proyector</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="tablet-section" style="display:none;">
-        <h2>Tablets</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_tablet %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Tablets</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="server-section" style="display:none;">
-        <h2>Servers</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_server %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Servers</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="router-section" style="display:none;">
-        <h2>Routers</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_router %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Routers</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="generador_tono-section" style="display:none;">
-        <h2>Generadores de Tono</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_generador_tono %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Generadores de Tono</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="tester-section" style="display:none;">
-        <h2>Testers</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_tester %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Testers</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="multimetro-section" style="display:none;">
-        <h2>Multímetros</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_multimetro %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Multímetros</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="access_point-section" style="display:none;">
-        <h2>Access Points</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_access_point %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Access Points</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="licencia_informatica-section" style="display:none;">
-        <h2>Licencias Informáticas</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_licencia_informatica %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Licencias Informáticas</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="mouse-section" style="display:none;">
-        <h2>Mouses</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_mouse %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Mouses</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="teclado-section" style="display:none;">
-        <h2>Teclados</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_teclado %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Teclados</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="headset-section" style="display:none;">
-        <h2>Headsets</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_headset %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Headsets</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="bocina-section" style="display:none;">
-        <h2>Bocinas</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_bocina %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Bocinas</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="brazo_monitor-section" style="display:none;">
-        <h2>Brazos para Monitor</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_brazo_monitor %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Brazos para Monitor</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="memoria_usb-section" style="display:none;">
-        <h2>Memorias USB</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_memoria_usb %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Memorias USB</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="pointer-section" style="display:none;">
-        <h2>Pointers</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_pointer %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Pointers</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="kit_herramientas-section" style="display:none;">
-        <h2>Kits de Herramientas</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_kit_herramientas %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Kits de Herramientas</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="cartucho-section" style="display:none;">
-        <h2>Cartuchos</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_cartucho %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Cartuchos</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="toner-section" style="display:none;">
-        <h2>Tóners</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_toner %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Tóners</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="botella_tinta-section" style="display:none;">
-        <h2>Botellas de Tinta</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_botella_tinta %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Botellas de Tinta</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="camara_web-section" style="display:none;">
-        <h2>Cámaras Web</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_camara_web %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Cámaras Web</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="disco_duro-section" style="display:none;">
-        <h2>Discos Duros</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_disco_duro %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron Discos Duros</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="p2-section" style="display:none;">
-        <h2>P2</h2>
-        <div class="products-grid">
-            {% for equipo in equipos_p2 %}
-                {% include 'Equipos/partials/equipo_card.html' %}
-            {% empty %}
-                <div class="no-results">
-                    <h3>No se encontraron P2</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-
+    {% if perms.libreria.add_equipo %}
     <div class="action-buttons">
-        <a href="{% url 'exportar_equipos_asignados' %}" class="action-btn btn btn-success">
-            <i class="fas fa-file-excel"></i> Exportar
-        </a>
-        <a href="{% url 'ver_pdf' %}" class="action-btn btn btn-info">
-            <i class="fas fa-file-pdf"></i> PDF
-        </a>
-        {% if perms.libreria.add_equipo %}
         <a href="{% url 'crear_equipo' %}" class="action-btn btn btn-primary">
-            <i class="fas fa-plus"></i> Añadir
-        </a>
-        {% endif %}
-        <a href="{% url 'listadeasignados' %}" class="action-btn btn btn-warning">
-            <i class="fas fa-list"></i> Asignados
+            <i class="fas fa-plus"></i> Agregar Equipo
+    {%endif%}
+        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export">
+            <i class="fas fa-file-excel"></i> Exportar a Excel
         </a>
     </div>
-</div>
 
-<div class="modal" id="product-modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <div id="modal-content">
-            </div>
+    <!-- Modal para detalles -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h3 id="modal-product-name"></h3>
+            <div id="modal-product-details"></div>
+        </div>
     </div>
 </div>
 
 <script>
-    function showSection(category) {
-        // Lista completa de todas las secciones posibles
-        const sections = [
-            'all', 'laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner',
-            'pantalla_proyector', 'tablet', 'server', 'router', 'generador_tono', 'tester',
-            'multimetro', 'access_point', 'licencia_informatica', 'mouse', 'teclado', 'headset',
-            'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'cartucho',
-            'toner', 'botella_tinta', 'camara_web', 'disco_duro', 'p2'
-        ];
+document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const sections = document.querySelectorAll('div[id$="-section"]');
+    const searchInput = document.getElementById('search-input');
+    const productCards = document.querySelectorAll('.product-card');
+    const modal = document.getElementById('productModal');
+    const closeModal = document.querySelector('.close-modal');
+    const modalProductName = document.getElementById('modal-product-name');
+    const modalProductDetails = document.getElementById('modal-product-details');
 
-        sections.forEach(sec => {
-            const element = document.getElementById(`${sec}-section`);
-            if (element) {
-                element.style.display = sec === category ? 'block' : 'none';
-            }
-        });
-    }
-
-    document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    // Manejar el cambio de categoría
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const category = this.getAttribute('data-category');
+            filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            const category = this.dataset.category;
-            showSection(category);
-            // Limpiar la búsqueda al cambiar de categoría
-            document.getElementById('search-input').value = '';
-            searchProducts(''); // Vuelve a aplicar la búsqueda (vacía) para la nueva sección
-        });
-    });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        showSection('all'); // Mostrar la sección de "Todos" al cargar la página
-    });
-
-    // Función para mostrar detalles del equipo
-    function showProductDetails(equipoId) {
-        fetch(`/equipo/detalle/${equipoId}/`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al obtener detalles');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const modalContent = document.getElementById('modal-content');
-                modalContent.innerHTML = `
-                    <h2>${data.modelo}</h2>
-                    <span class="product-category ${data.tipo}">${data.tipo_display}</span>
-                    <div style="margin-top: 20px;">
-                        <div class="feature-item">
-                            <span class="feature-name">Marca:</span>
-                            <span class="feature-value">${data.marca}</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">Serial:</span>
-                            <span class="feature-value">${data.serial}</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">MAC Address:</span>
-                            <span class="feature-value">${data.mac_address || 'No disponible'}</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">Estado:</span>
-                            <span class="feature-value">${data.estado}</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">Observaciones:</span>
-                            <span class="feature-value">${data.observaciones || 'Ninguna'}</span>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('product-modal').style.display = 'flex';
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error',
-                    text: error.message,
-                    icon: 'error'
-                });
+            sections.forEach(section => {
+                section.style.display = section.id === `${category}-section` ? 'block' : 'none';
             });
-    }
 
-    // Función para liberar equipo
-    function liberarEquipo(equipoId) {
-        Swal.fire({
-            title: '¿Liberar equipo?',
-            text: "¿Estás seguro de que deseas marcar este equipo como disponible?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, liberar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/actualizar_estado/${equipoId}/`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
+            // Resetear búsqueda al cambiar de categoría
+            searchInput.value = '';
+            productCards.forEach(card => card.style.display = 'block');
+        });
+    });
+
+    // Filtrado por búsqueda
+    searchInput.addEventListener('input', function () {
+        const searchTerm = this.value.toLowerCase();
+        const activeSection = document.querySelector('div[id$="-section"]:not([style*="display: none"])');
+        const cards = activeSection.querySelectorAll('.product-card');
+
+        cards.forEach(card => {
+            const brand = card.querySelector('.product-brand').textContent.toLowerCase();
+            const model = card.querySelector('.product-name').textContent.toLowerCase();
+            const serial = card.querySelector('.product-serial').textContent.toLowerCase();
+            const matches = brand.includes(searchTerm) || model.includes(searchTerm) || serial.includes(searchTerm);
+            card.style.display = matches ? 'block' : 'none';
+        });
+
+        // Mostrar mensaje si no hay resultados
+        const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+        const noResults = activeSection.querySelector('.no-results');
+        if (visibleCards.length === 0 && !searchTerm) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = visibleCards.length === 0 ? 'block' : 'none';
+        }
+    });
+
+    // Mostrar detalles del producto en el modal
+    document.querySelectorAll('.btn-details').forEach(button => {
+        button.addEventListener('click', function () {
+            const card = this.closest('.product-card');
+            const productName = card.querySelector('.product-name').textContent;
+            const details = JSON.parse(this.getAttribute('data-details'));
+
+            modalProductName.textContent = productName;
+            modalProductDetails.innerHTML = '';
+
+            // Definir campos generales según la matriz
+            const generalFields = {
+                'tipo': 'Tipo',
+                'marca': 'Marca',
+                'modelo': 'Modelo',
+                'serial': 'Serial',
+                'fecha_compra': 'Fecha de Compra',
+                'valor_compra': 'Valor de Compra',
+                'ubicacion': 'Ubicación',
+                'empleado_responsable': 'Empleado Responsable',
+                'proveedor': 'Proveedor',
+                'fecha_fabricacion': 'Fecha de Fabricación',
+                'vida_util_anios': 'Vida Útil (Años)',
+                'nombre_red': 'Nombre de Red',
+                'fecha_recepcion': 'Fecha de Recepción',
+                'fecha_mantenimiento': 'Fecha de Mantenimiento',
+                'observaciones': 'Observaciones'
+            };
+
+            // Definir campos específicos según la matriz
+            const deviceFields = {
+                'laptop': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla', 'resolucion'],
+                'impresora': ['impresora_tipo', 'impresora_velocidad_ppm', 'impresora_color', 'impresora_conexion'],
+                'cpu': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'cpu_formato_diseno'],
+                'monitor': ['size_pantalla', 'resolucion'],
+                'proyector': ['size_pantalla', 'resolucion', 'proyector_lumens'],
+                'ups': ['ups_vatios', 'ups_fecha_bateria'],
+                'scanner': ['scanner_velocidad', 'scanner_color'],
+                'pantalla_proyector': ['size_pantalla', 'pantalla_proyector_tipo'],
+                'tablet': ['mac_address', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla'],
+                'server': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'almacenamiento_capacidad', 'server_numero_procesadores'],
+                'router': [],
+                'generador_tono': [],
+                'tester': [],
+                'multimetro': [],
+                'access_point': [],
+                'licencia_informatica': ['licencia_tipo', 'licencia_clase'],
+                'mouse': ['mouse_tipo', 'mouse_conexion'],
+                'teclado': [],
+                'headset': [],
+                'bocina': [],
+                'brazo_monitor': [],
+                'memoria_usb': [],
+                'pointer': [],
+                'kit_herramientas': [],
+                'cartucho': [],
+                'toner': [],
+                'botella_tinta': [],
+                'camara_web': [],
+                'disco_duro': ['almacenamiento_capacidad', 'clase_disco']
+            };
+
+            // Mapa de nombres de campos para mostrar en el modal
+            const fieldNames = {
+                'mac_address': 'Dirección MAC',
+                'procesador_marca': 'Marca del Procesador',
+                'procesador_velocidad': 'Velocidad del Procesador (GHz)',
+                'procesador_generacion': 'Generación del Procesador',
+                'sistema_operativo': 'Sistema Operativo',
+                'sistema_operativo_version': 'Versión del Sistema Operativo',
+                'sistema_operativo_bits': 'Bits del Sistema Operativo',
+                'almacenamiento_capacidad': 'Capacidad de Almacenamiento (GB)',
+                'memoria': 'Memoria (GB)',
+                'size_pantalla': 'Tamaño de Pantalla (pulgadas)',
+                'resolucion': 'Resolución',
+                'impresora_tipo': 'Tipo de Impresora',
+                'impresora_velocidad_ppm': 'Velocidad (PPM)',
+                'impresora_color': 'Color',
+                'impresora_conexion': 'Conexión',
+                'proyector_lumens': 'Lúmenes',
+                'ups_vatios': 'Vatios',
+                'ups_fecha_bateria': 'Fecha de Batería',
+                'scanner_velocidad': 'Velocidad',
+                'scanner_color': 'Color',
+                'pantalla_proyector_tipo': 'Tipo de Pantalla',
+                'server_numero_procesadores': 'Número de Procesadores',
+                'licencia_tipo': 'Tipo de Licencia',
+                'licencia_clase': 'Clase de Licencia',
+                'mouse_tipo': 'Tipo de Mouse',
+                'mouse_conexion': 'Conexión',
+                'clase_disco': 'Clase de Disco',
+                'cpu_formato_diseno': 'Formato/Diseño'
+            };
+
+            // Mostrar campos generales
+            for (const [key, label] of Object.entries(generalFields)) {
+                if (details[key]) {
+                    const div = document.createElement('div');
+                    div.className = 'feature-item';
+                    div.innerHTML = `<span class="feature-name">${label}</span><span class="feature-value">${details[key]}</span>`;
+                    modalProductDetails.appendChild(div);
+                }
+            }
+
+            // Mostrar campos específicos según el tipo
+            const tipo = details['tipo'].toLowerCase();
+            if (deviceFields[tipo]) {
+                deviceFields[tipo].forEach(field => {
+                    if (details[field]) {
+                        const div = document.createElement('div');
+                        div.className = 'feature-item';
+                        div.innerHTML = `<span class="feature-name">${fieldNames[field]}</span><span class="feature-value">${details[field]}</span>`;
+                        modalProductDetails.appendChild(div);
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.estado === 'Disponible') {
-                        Swal.fire({
-                            title: '¡Éxito!',
-                            text: 'El equipo ha sido liberado',
-                            icon: 'success'
-                        }).then(() => {
-                            location.reload();
-                        });
-                    }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'No se pudo liberar el equipo',
-                        icon: 'error'
-                    });
                 });
             }
-        });
-    }
 
-    // Función para confirmar eliminación
-    function confirmDelete(equipoId) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "¡No podrás revertir esta acción!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{% url 'borrar_equipo' 0 %}".replace('0', equipoId);
-            }
+            modal.style.display = 'flex';
         });
-    }
-
-    // Cerrar modal
-    document.querySelector('.close-modal').addEventListener('click', function() {
-        document.getElementById('product-modal').style.display = 'none';
     });
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('product-modal');
+
+    // Cerrar el modal
+    closeModal.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+    // Cerrar el modal al hacer clic fuera de él
+    window.addEventListener('click', function (event) {
         if (event.target === modal) {
             modal.style.display = 'none';
         }
     });
-
-    // Función de búsqueda (modificada para operar en la sección activa)
-    document.getElementById('search-input').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        searchProducts(searchTerm);
-    });
-
-    function searchProducts(searchTerm) {
-        const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
-        let productCardsContainer;
-
-        if (activeCategory === 'all') {
-            productCardsContainer = document.getElementById('all-products-grid');
-        } else {
-            productCardsContainer = document.getElementById(`${activeCategory}-section`).querySelector('.products-grid');
-        }
-
-        const productCards = productCardsContainer.querySelectorAll('.product-card');
-        let hasVisibleResults = false;
-
-        productCards.forEach(card => {
-            const cardText = card.textContent.toLowerCase();
-            const shouldShow = cardText.includes(searchTerm);
-            card.style.display = shouldShow ? 'block' : 'none';
-            if (shouldShow) {
-                hasVisibleResults = true;
-            }
-        });
-
-        // Manejar el mensaje de "no resultados" dentro de cada sección
-        let noResultsElement = productCardsContainer.querySelector('.no-results-search');
-        if (!hasVisibleResults && productCards.length > 0) { // Solo si hay tarjetas pero ninguna coincide
-            if (!noResultsElement) {
-                noResultsElement = document.createElement('div');
-                noResultsElement.className = 'no-results no-results-search';
-                noResultsElement.innerHTML = '<h3>No se encontraron equipos con este término en la categoría actual.</h3>';
-                productCardsContainer.appendChild(noResultsElement);
-            }
-        } else if (noResultsElement) {
-            noResultsElement.remove();
-        }
-    }
+});
 </script>
 {% endblock %}

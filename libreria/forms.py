@@ -16,6 +16,9 @@ class CustomUserCreationForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirme contraseña'}),
         }
 
+from django import forms
+from .models import Equipo
+
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
@@ -30,7 +33,8 @@ class EquipoForm(forms.ModelForm):
             'impresora_color', 'impresora_conexion', 'cpu_formato_diseno',
             'proyector_lumens', 'ups_vatios', 'ups_fecha_bateria', 'scanner_velocidad',
             'scanner_color', 'pantalla_proyector_tipo', 'server_numero_procesadores',
-            'licencia_tipo', 'licencia_clase', 'mouse_tipo', 'mouse_conexion', 'clase_disco'
+            'licencia_tipo', 'licencia_clase', 'mouse_tipo', 'mouse_conexion', 'clase_disco',
+            'estado'  # Añadido
         ]
         widgets = {
             'tipo': forms.Select(attrs={'class': 'form-select'}),
@@ -76,7 +80,13 @@ class EquipoForm(forms.ModelForm):
             'mouse_tipo': forms.Select(attrs={'class': 'form-control'}, choices=[('', 'Seleccione'), ('optical', 'Óptico'), ('ball', 'Bola')]),
             'mouse_conexion': forms.Select(attrs={'class': 'form-control'}, choices=[('', 'Seleccione'), ('wired', 'Cableado'), ('wi-fi', 'Inalámbrico')]),
             'clase_disco': forms.Select(attrs={'class': 'form-control'}, choices=[('', 'Seleccione'), ('M2', 'M2'), ('SSD', 'SSD'), ('SATA', 'SATA'), ('IDE', 'IDE')]),
+            'estado': forms.Select(attrs={'class': 'form-control'}, choices=Equipo.ESTADOS),  # Añadido
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = False  # Todos los campos son opcionales por defecto
 
     def clean_mac_address(self):
         mac = self.cleaned_data.get('mac_address')

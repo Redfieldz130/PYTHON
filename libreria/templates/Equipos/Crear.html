@@ -3,148 +3,296 @@
 {% block titulo %}Agregar Equipo{% endblock %}
 
 {% block contenido %}
-<div class="container">
+<style>
+    .errorlist {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .device-specific {
+        display: none;
+    }
+    .alert-danger ul {
+        margin-bottom: 0;
+    }
+    .btn-cancel {
+        margin-left: 10px;
+    }
+    /* Ajuste para evitar superposición */
+    .card {
+        z-index: 1; /* Asegura que el formulario esté debajo del banner y sidebar */
+        margin-top: 80px; /* Ajuste para dejar espacio al banner */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
     <div class="card shadow p-4" style="max-width: 100%; width: 100%; max-width: 900px; margin: 0 auto;">
-        <div class="card-header text-center">
-            <h4>Agregar nuevo equipo</h4>
+        <div class="card-header text-center bg-primary text-white">
+            <h4 class="mb-0">Agregar nuevo equipo</h4>
         </div>
         <div class="card-body">
             {% if messages %}
-                <div class="alert alert-info">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
                     {% for message in messages %}
-                        <p>{{ message }}</p>
+                        <p class="mb-0">{{ message }}</p>
                     {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endif %}
 
             {% if formulario.errors %}
-                <div class="alert alert-danger">
-                    <p><strong>Error:</strong> Por favor corrige los siguientes errores:</p>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <p class="mb-2"><strong>Error:</strong> Por favor corrige los siguientes errores:</p>
                     <ul>
                         {% for field, errors in formulario.errors.items %}
-                            <li>{{ field }}: {{ errors|striptags }}</li>
+                            <li><strong>{{ field }}:</strong> {{ errors|striptags }}</li>
                         {% endfor %}
                     </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endif %}
 
-            <form method="post" enctype="multipart/form-data" id="equipoForm" class="needs-validation" novalidate>
+            <form method="post" id="equipoForm" class="needs-validation" novalidate>
                 {% csrf_token %}
                 <div class="row">
+                    <!-- Campos generales según la matriz -->
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_tipo" class="form-label">Tipo de Dispositivo</label>
                         {{ formulario.tipo }}
+                        <div class="invalid-feedback">Por favor selecciona un tipo de dispositivo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_marca" class="form-label">Marca</label>
                         {{ formulario.marca }}
+                        <div class="invalid-feedback">Por favor ingresa la marca.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_modelo" class="form-label">Modelo</label>
                         {{ formulario.modelo }}
+                        <div class="invalid-feedback">Por favor ingresa el modelo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_serial" class="form-label">Serial</label>
                         {{ formulario.serial }}
+                        <div class="invalid-feedback">Por favor ingresa el serial.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_fecha_compra" class="form-label">Fecha de Compra</label>
                         {{ formulario.fecha_compra }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de compra.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_valor_compra" class="form-label">Valor de Compra</label>
                         {{ formulario.valor_compra }}
+                        <div class="invalid-feedback">Por favor ingresa el valor de compra.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_ubicacion" class="form-label">Ubicación o Departamento</label>
                         {{ formulario.ubicacion }}
+                        <div class="invalid-feedback">Por favor ingresa la ubicación.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_empleado_responsable" class="form-label">Empleado Responsable</label>
                         {{ formulario.empleado_responsable }}
+                        <div class="invalid-feedback">Por favor ingresa el empleado responsable.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_proveedor" class="form-label">Proveedor</label>
                         {{ formulario.proveedor }}
+                        <div class="invalid-feedback">Por favor ingresa el proveedor.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_fecha_fabricacion" class="form-label">Fecha de Fabricación</label>
                         {{ formulario.fecha_fabricacion }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de fabricación.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_vida_util_anios" class="form-label">Vida Útil (Años)</label>
                         {{ formulario.vida_util_anios }}
+                        <div class="invalid-feedback">Por favor ingresa la vida útil.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_nombre_red" class="form-label">Nombre de Red</label>
                         {{ formulario.nombre_red }}
+                        <div class="invalid-feedback">Por favor ingresa el nombre de red.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_fecha_recepcion" class="form-label">Fecha de Recepción</label>
                         {{ formulario.fecha_recepcion }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de recepción.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_fecha_mantenimiento" class="form-label">Fecha de Mantenimiento</label>
                         {{ formulario.fecha_mantenimiento }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de mantenimiento.</div>
                     </div>
                     <div class="col-12 mb-3">
                         <label for="id_observaciones" class="form-label">Observaciones</label>
                         {{ formulario.observaciones }}
+                        <div class="invalid-feedback">Por favor ingresa las observaciones si las hay.</div>
                     </div>
-                    <!-- Campos específicos para laptop -->
+
+                    <!-- Campos específicos para cada tipo de equipo -->
+                    <!-- Laptop, CPU, Server, Tablet -->
                     <div class="col-12 col-md-6 mb-3 device-specific laptop tablet server cpu" style="display: none;">
                         <label for="id_mac_address" class="form-label">Dirección MAC</label>
                         {{ formulario.mac_address }}
+                        <div class="invalid-feedback">Por favor ingresa una dirección MAC válida.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
                         <label for="id_procesador_marca" class="form-label">Marca del Procesador</label>
                         {{ formulario.procesador_marca }}
+                        <div class="invalid-feedback">Por favor ingresa la marca del procesador.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
                         <label for="id_procesador_velocidad" class="form-label">Velocidad del Procesador (GHz)</label>
                         {{ formulario.procesador_velocidad }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad del procesador.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server" style="display: none;">
                         <label for="id_procesador_generacion" class="form-label">Generación del Procesador</label>
                         {{ formulario.procesador_generacion }}
+                        <div class="invalid-feedback">Por favor ingresa la generación del procesador.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet" style="display: none;">
                         <label for="id_sistema_operativo" class="form-label">Sistema Operativo</label>
                         {{ formulario.sistema_operativo }}
+                        <div class="invalid-feedback">Por favor ingresa el sistema operativo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop server tablet" style="display: none;">
                         <label for="id_sistema_operativo_version" class="form-label">Versión del Sistema Operativo</label>
                         {{ formulario.sistema_operativo_version }}
+                        <div class="invalid-feedback">Por favor ingresa la versión del sistema operativo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop server tablet" style="display: none;">
                         <label for="id_sistema_operativo_bits" class="form-label">Bits del Sistema Operativo</label>
                         {{ formulario.sistema_operativo_bits }}
+                        <div class="invalid-feedback">Por favor selecciona los bits del sistema operativo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet disco_duro" style="display: none;">
                         <label for="id_almacenamiento_capacidad" class="form-label">Capacidad de Almacenamiento (GB)</label>
                         {{ formulario.almacenamiento_capacidad }}
+                        <div class="invalid-feedback">Por favor ingresa la capacidad de almacenamiento.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop cpu server tablet" style="display: none;">
                         <label for="id_memoria" class="form-label">Memoria (GB)</label>
                         {{ formulario.memoria }}
+                        <div class="invalid-feedback">Por favor ingresa la memoria.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop monitor proyector tablet pantalla_proyector" style="display: none;">
                         <label for="id_size_pantalla" class="form-label">Tamaño de Pantalla (pulgadas)</label>
                         {{ formulario.size_pantalla }}
+                        <div class="invalid-feedback">Por favor ingresa el tamaño de la pantalla.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3 device-specific laptop monitor proyector tablet" style="display: none;">
                         <label for="id_resolucion" class="form-label">Resolución</label>
                         {{ formulario.resolucion }}
+                        <div class="invalid-feedback">Por favor ingresa la resolución.</div>
                     </div>
-                    <!-- Añade el resto de los campos específicos para otros tipos -->
+                    <!-- Impresora -->
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_tipo" class="form-label">Tipo de Impresora</label>
+                        {{ formulario.impresora_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de impresora.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_velocidad_ppm" class="form-label">Velocidad (PPM)</label>
+                        {{ formulario.impresora_velocidad_ppm }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad de impresión.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_color" class="form-label">Color</label>
+                        {{ formulario.impresora_color }}
+                        <div class="invalid-feedback">Por favor selecciona si imprime en color.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific impresora" style="display: none;">
+                        <label for="id_impresora_conexion" class="form-label">Conexión</label>
+                        {{ formulario.impresora_conexion }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de conexión.</div>
+                    </div>
+                    <!-- Proyector -->
+                    <div class="col-12 col-md-6 mb-3 device-specific proyector" style="display: none;">
+                        <label for="id_proyector_lumens" class="form-label">Lúmenes</label>
+                        {{ formulario.proyector_lumens }}
+                        <div class="invalid-feedback">Por favor ingresa los lúmenes.</div>
+                    </div>
+                    <!-- UPS -->
+                    <div class="col-12 col-md-6 mb-3 device-specific ups" style="display: none;">
+                        <label for="id_ups_vatios" class="form-label">Vatios</label>
+                        {{ formulario.ups_vatios }}
+                        <div class="invalid-feedback">Por favor ingresa los vatios.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific ups" style="display: none;">
+                        <label for="id_ups_fecha_bateria" class="form-label">Fecha de Batería</label>
+                        {{ formulario.ups_fecha_bateria }}
+                        <div class="invalid-feedback">Por favor selecciona la fecha de la batería.</div>
+                    </div>
+                    <!-- Scanner -->
+                    <div class="col-12 col-md-6 mb-3 device-specific scanner" style="display: none;">
+                        <label for="id_scanner_velocidad" class="form-label">Velocidad</label>
+                        {{ formulario.scanner_velocidad }}
+                        <div class="invalid-feedback">Por favor ingresa la velocidad de escaneo.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific scanner" style="display: none;">
+                        <label for="id_scanner_color" class="form-label">Color</label>
+                        {{ formulario.scanner_color }}
+                        <div class="invalid-feedback">Por favor selecciona si escanea en color.</div>
+                    </div>
+                    <!-- Pantalla Proyector -->
+                    <div class="col-12 col-md-6 mb-3 device-specific pantalla_proyector" style="display: none;">
+                        <label for="id_pantalla_proyector_tipo" class="form-label">Tipo de Pantalla</label>
+                        {{ formulario.pantalla_proyector_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de pantalla.</div>
+                    </div>
+                    <!-- Server -->
+                    <div class="col-12 col-md-6 mb-3 device-specific server" style="display: none;">
+                        <label for="id_server_numero_procesadores" class="form-label">Número de Procesadores</label>
+                        {{ formulario.server_numero_procesadores }}
+                        <div class="invalid-feedback">Por favor ingresa el número de procesadores.</div>
+                    </div>
+                    <!-- Licencia Informática -->
+                    <div class="col-12 col-md-6 mb-3 device-specific licencia_informatica" style="display: none;">
+                        <label for="id_licencia_tipo" class="form-label">Tipo de Licencia</label>
+                        {{ formulario.licencia_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de licencia.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific licencia_informatica" style="display: none;">
+                        <label for="id_licencia_clase" class="form-label">Clase de Licencia</label>
+                        {{ formulario.licencia_clase }}
+                        <div class="invalid-feedback">Por favor selecciona la clase de licencia.</div>
+                    </div>
+                    <!-- Mouse -->
+                    <div class="col-12 col-md-6 mb-3 device-specific mouse" style="display: none;">
+                        <label for="id_mouse_tipo" class="form-label">Tipo de Mouse</label>
+                        {{ formulario.mouse_tipo }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de mouse.</div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3 device-specific mouse" style="display: none;">
+                        <label for="id_mouse_conexion" class="form-label">Conexión</label>
+                        {{ formulario.mouse_conexion }}
+                        <div class="invalid-feedback">Por favor selecciona el tipo de conexión.</div>
+                    </div>
+                    <!-- Disco Duro -->
+                    <div class="col-12 col-md-6 mb-3 device-specific disco_duro" style="display: none;">
+                        <label for="id_clase_disco" class="form-label">Clase de Disco</label>
+                        {{ formulario.clase_disco }}
+                        <div class="invalid-feedback">Por favor selecciona la clase de disco.</div>
+                    </div>
                 </div>
-                <div class="text-center">
+                <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{% url 'equipos' %}" class="btn btn-secondary btn-cancel">Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 {% block JS %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -169,15 +317,31 @@
             'scanner': ['scanner_velocidad', 'scanner_color'],
             'pantalla_proyector': ['size_pantalla', 'pantalla_proyector_tipo'],
             'tablet': ['mac_address', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla'],
-            'server': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'server_numero_procesadores'],
+            'server': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'almacenamiento_capacidad', 'server_numero_procesadores'],
+            'router': [],
+            'generador_tono': [],
+            'tester': [],
+            'multimetro': [],
+            'access_point': [],
             'licencia_informatica': ['licencia_tipo', 'licencia_clase'],
             'mouse': ['mouse_tipo', 'mouse_conexion'],
+            'teclado': [],
+            'headset': [],
+            'bocina': [],
+            'brazo_monitor': [],
+            'memoria_usb': [],
+            'pointer': [],
+            'kit_herramientas': [],
+            'cartucho': [],
+            'toner': [],
+            'botella_tinta': [],
+            'camara_web': [],
             'disco_duro': ['almacenamiento_capacidad', 'clase_disco']
         };
 
         function updateFields() {
             const selectedType = tipoDispositivo.value.toLowerCase();
-            console.log('Tipo seleccionado:', selectedType); // Depuración
+            console.log('Tipo seleccionado:', selectedType);
             deviceSpecificFields.forEach(field => {
                 const fieldClasses = field.classList;
                 if (fieldClasses.contains(selectedType)) {
@@ -189,7 +353,14 @@
                 } else {
                     field.style.display = 'none';
                     const input = field.querySelector('input, select');
-                    if (input) input.required = false;
+                    if (input) {
+                        input.required = false;
+                        if (input.tagName === 'SELECT') {
+                            input.selectedIndex = 0;
+                        } else {
+                            input.value = '';
+                        }
+                    }
                 }
             });
         }
@@ -198,22 +369,39 @@
         tipoDispositivo.addEventListener('change', updateFields);
 
         if (macInput) {
-            macInput.addEventListener('input', function () {
-                let val = macInput.value.replace(/[^a-fA-F0-9:]/g, '').toUpperCase();
-                if (val.length > 17) val = val.slice(0, 17);
-                macInput.value = val;
+            macInput.addEventListener('input', function (e) {
+                const cursorPosition = e.target.selectionStart;
+                const oldValue = e.target.value;
+
+                let value = oldValue.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+                if (value.length > 12) value = value.slice(0, 12);
+
+                let formatted = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 2 === 0) formatted += ':';
+                    formatted += value[i];
+                }
+
+                e.target.value = formatted;
+
+                const newLength = e.target.value.length;
+                const delta = newLength - oldValue.length;
+                const newCursorPosition = cursorPosition + delta;
+                if (newCursorPosition <= e.target.value.length) {
+                    e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+                }
             });
 
             form.addEventListener('submit', function (e) {
                 const mac = macInput.value.trim();
-                if (mac) {
-                    const macRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$|^[0-9A-F]{12}$/;
+                if (mac && macInput.closest('.device-specific').style.display === 'block') {
+                    const macRegex = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/;
                     if (!macRegex.test(mac)) {
                         e.preventDefault();
                         Swal.fire({
                             icon: 'error',
                             title: 'Formato inválido',
-                            text: 'La dirección MAC debe ser 12 caracteres hexadecimales (con o sin dos puntos).',
+                            text: 'La dirección MAC debe ser 12 caracteres hexadecimales con el formato XX:XX:XX:XX:XX:XX.',
                             confirmButtonText: 'OK'
                         });
                     }
@@ -236,5 +424,5 @@
         })();
     });
 </script>
-{% endblock %}
+{% endblock JS %}
 {% endblock %}

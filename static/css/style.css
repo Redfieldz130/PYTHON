@@ -200,3 +200,19 @@ input:focus, select:focus, textarea:focus {
         }
     }
 }
+.swal-wide {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.swal-wide h5 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #0b3771;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.swal-wide p {
+    margin: 5px 0;
+}

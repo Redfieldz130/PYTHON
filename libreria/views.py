@@ -4,12 +4,11 @@ from .models import Equipo, Asignacion
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.http import JsonResponse, HttpResponse
-from io import BytesIO
 from datetime import datetime
 from django.utils import timezone
-from reportlab.pdfgen import canvas
+import openpyxl
 from docx import Document
-from openpyxl import Workbook
+from openpyxl.styles import Font
 
 def detalle_equipo_json(request, equipo_id):
     equipo = get_object_or_404(Equipo, pk=equipo_id)
@@ -73,80 +72,59 @@ def eliminar_equipos_seleccionados(request):
         return redirect('equipos')
     return redirect('equipos')
 
-def exportar_inventario_equipos(request):
-    equipos = Equipo.objects.all()
-    workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = "Inventario de Equipos"
+def exportar_excel(request):
+    # Crear un libro de trabajo y una hoja
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inventario de Tecnología"
 
+    # Definir encabezados
     headers = [
-        'ID', 'Tipo', 'Marca', 'Modelo', 'Serial', 'MAC Address', 'Estado', 'Observaciones',
-        'Fecha Fabricación', 'Vida Útil (Años)', 'Nombre Red', 'Ubicación', 'Responsable',
-        'Proveedor', 'Valor Compra', 'Fecha Compra', 'Fecha Recepción', 'Fecha Mantenimiento',
-        'Tamaño Pantalla', 'Resolución', 'Procesador Marca', 'Procesador Velocidad',
-        'Procesador Generación', 'Sistema Operativo', 'Versión SO', 'Bits SO',
-        'Capacidad Almacenamiento', 'Memoria', 'Tipo Impresora', 'Velocidad Impresora',
-        'Color Impresora', 'Conexión Impresora', 'Formato Diseño CPU', 'Lumens Proyector',
-        'Vatios UPS', 'Fecha Batería UPS', 'Velocidad Scanner', 'Color Scanner',
-        'Tipo Pantalla Proyector', 'Número Procesadores Server', 'Tipo Licencia',
-        'Clase Licencia', 'Tipo Mouse', 'Conexión Mouse', 'Clase Disco'
+        'Tipo', 'Marca', 'Modelo', 'Serial', 'Estado', 'Ubicación',
+        'Fecha de Compra', 'Valor de Compra', 'Empleado Responsable', 'Observaciones'
     ]
-    worksheet.append(headers)
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.font = Font(bold=True)
 
-    for equipo in equipos:
-        worksheet.append([
-            equipo.id,
-            equipo.get_tipo_display(),
-            equipo.marca,
-            equipo.modelo,
-            equipo.serial,
-            equipo.mac_address or 'N/A',
-            equipo.estado,
-            equipo.observaciones or 'Sin observaciones',
-            equipo.fecha_fabricacion.strftime('%Y-%m-%d') if equipo.fecha_fabricacion else 'N/A',
-            equipo.vida_util_anios or 'N/A',
-            equipo.nombre_red or 'N/A',
-            equipo.ubicacion or 'N/A',
-            equipo.empleado_responsable or 'N/A',
-            equipo.proveedor or 'N/A',
-            str(equipo.valor_compra) if equipo.valor_compra else 'N/A',
-            equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else 'N/A',
-            equipo.fecha_recepcion.strftime('%Y-%m-%d') if equipo.fecha_recepcion else 'N/A',
-            equipo.fecha_mantenimiento.strftime('%Y-%m-%d') if equipo.fecha_mantenimiento else 'N/A',
-            equipo.size_pantalla or 'N/A',
-            equipo.resolucion or 'N/A',
-            equipo.procesador_marca or 'N/A',
-            equipo.procesador_velocidad or 'N/A',
-            equipo.procesador_generacion or 'N/A',
-            equipo.sistema_operativo or 'N/A',
-            equipo.sistema_operativo_version or 'N/A',
-            equipo.sistema_operativo_bits or 'N/A',
-            equipo.almacenamiento_capacidad or 'N/A',
-            equipo.memoria or 'N/A',
-            equipo.impresora_tipo or 'N/A',
-            equipo.impresora_velocidad_ppm or 'N/A',
-            equipo.impresora_color or 'N/A',
-            equipo.impresora_conexion or 'N/A',
-            equipo.cpu_formato_diseno or 'N/A',
-            equipo.proyector_lumens or 'N/A',
-            equipo.ups_vatios or 'N/A',
-            equipo.ups_fecha_bateria.strftime('%Y-%m-%d') if equipo.ups_fecha_bateria else 'N/A',
-            equipo.scanner_velocidad or 'N/A',
-            equipo.scanner_color or 'N/A',
-            equipo.pantalla_proyector_tipo or 'N/A',
-            equipo.server_numero_procesadores or 'N/A',
-            equipo.licencia_tipo or 'N/A',
-            equipo.licencia_clase or 'N/A',
-            equipo.mouse_tipo or 'N/A',
-            equipo.mouse_conexion or 'N/A',
-            equipo.clase_disco or 'N/A',
-        ])
+    # Obtener todos los equipos
+    equipos = Equipo.objects.all()
 
+    # Llenar datos
+    for row_num, equipo in enumerate(equipos, 2):
+        ws.cell(row=row_num, column=1).value = equipo.get_tipo_display()
+        ws.cell(row=row_num, column=2).value = equipo.marca
+        ws.cell(row=row_num, column=3).value = equipo.modelo
+        ws.cell(row=row_num, column=4).value = equipo.serial
+        ws.cell(row=row_num, column=5).value = equipo.estado
+        ws.cell(row=row_num, column=6).value = equipo.ubicacion
+        ws.cell(row=row_num, column=7).value = equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else ''
+        ws.cell(row=row_num, column=8).value = str(equipo.valor_compra) if equipo.valor_compra else ''
+        ws.cell(row=row_num, column=9).value = equipo.empleado_responsable
+        ws.cell(row=row_num, column=10).value = equipo.observaciones
+
+    # Ajustar el ancho de las columnas
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Preparar la respuesta HTTP
     response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = 'attachment; filename=Inventario_Equipos.xlsx'
-    workbook.save(response)
+    response['Content-Disposition'] = f'attachment; filename="Inventario_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    
+    # Guardar el libro en la respuesta
+    wb.save(response)
     return response
 
 def actualizar_estado(request, equipo_id):
@@ -162,13 +140,30 @@ def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
 
 def listar_equipos(request):
+    # Obtener todos los equipos
     equipos_todos = Equipo.objects.all()
-    equipos_por_tipo = {tipo[0]: Equipo.objects.filter(tipo=tipo[0]) for tipo in Equipo.TIPOS}
 
-    return render(request, 'Equipos/Index.html', {
-        'equipos_todos': equipos_todos,
-        **{f'equipos_{tipo[0]}': equipos_por_tipo.get(tipo[0], []) for tipo in Equipo.TIPOS},
-    })
+    # Nueva clasificación por categorías
+    equipos_categorias = {
+        'equipos': ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'access_point', 'camara_web', 'disco_duro'],
+        'accesorios': ['mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'generador_tono', 'tester', 'multimetro'],
+        'licencias': ['licencia_informatica'],
+        'materiales': ['cartucho', 'toner', 'botella_tinta'],
+    }
+
+    
+    equipos_por_categoria = {
+        'todos': equipos_todos,
+        'equipos': equipos_todos.filter(tipo__in=equipos_categorias['equipos']),
+        'accesorios': equipos_todos.filter(tipo__in=equipos_categorias['accesorios']),
+        'licencias': equipos_todos.filter(tipo__in=equipos_categorias['licencias']),
+        'materiales': equipos_todos.filter(tipo__in=equipos_categorias['materiales']),
+    }
+
+    context = {
+        'equipos_por_categoria': equipos_por_categoria,
+    }
+    return render(request, 'Equipos/Index.html', context)
 
 def crear_equipos(request):
     if request.method == 'POST':
@@ -281,24 +276,6 @@ def registro(request):
         formulario = CustomUserCreationForm()
     return render(request, 'registration/registro.html', {'form': formulario})
 
-def ver_pdf(request):
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer)
-    equipos = Equipo.objects.all()
-    p.drawString(100, 750, "Inventario de Equipos")
-    y = 730
-    for equipo in equipos:
-        p.drawString(100, y, f"{equipo.id} - {equipo.marca} {equipo.modelo} ({equipo.serial})")
-        y -= 20
-        if y < 50:
-            p.showPage()
-            y = 750
-    p.showPage()
-    p.save()
-    buffer.seek(0)
-    response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="inventario.pdf"'
-    return response
 
 def login_view(request):
     if request.method == 'POST':

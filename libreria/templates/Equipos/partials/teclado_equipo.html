@@ -1,0 +1,81 @@
+{% load equipo_tags %}
+<div class="product-card" data-category="{{ equipo.tipo|default:'' }}" data-status="{{ equipo.estado|default:'' }}">
+    <div class="product-image">
+        {% with tipo=equipo.tipo|default:'' %}
+            {% if tipo == 'laptop' %}<i class="fas fa-laptop"></i>
+            {% elif tipo == 'impresora' %}<i class="fas fa-print"></i>
+            {% elif tipo == 'cpu' %}<i class="fas fa-desktop"></i>
+            {% elif tipo == 'monitor' %}<i class="fas fa-desktop"></i>
+            {% elif tipo == 'proyector' %}<i class="fas fa-projector"></i>
+            {% elif tipo == 'ups' %}<i class="fas fa-battery-full"></i>
+            {% elif tipo == 'scanner' %}<i class="fas fa-scanner"></i>
+            {% elif tipo == 'pantalla_proyector' %}<i class="fas fa-tv"></i>
+            {% elif tipo == 'tablet' %}<i class="fas fa-tablet-alt"></i>
+            {% elif tipo == 'server' %}<i class="fas fa-server"></i>
+            {% elif tipo == 'router' %}<i class="fas fa-wifi"></i>
+            {% elif tipo == 'generador_tono' %}<i class="fas fa-music"></i>
+            {% elif tipo == 'tester' %}<i class="fas fa-tools"></i>
+            {% elif tipo == 'multimetro' %}<i class="fas fa-bolt"></i>
+            {% elif tipo == 'access_point' %}<i class="fas fa-wifi"></i>
+            {% elif tipo == 'licencia_informatica' %}<i class="fas fa-key"></i>
+            {% elif tipo == 'mouse' %}<i class="fas fa-mouse"></i>
+            {% elif tipo == 'teclado' %}<i class="fas fa-keyboard"></i>
+            {% elif tipo == 'headset' %}<i class="fas fa-headset"></i>
+            {% elif tipo == 'bocina' %}<i class="fas fa-speaker"></i>
+            {% elif tipo == 'brazo_monitor' %}<i class="fas fa-desktop"></i>
+            {% elif tipo == 'memoria_usb' %}<i class="fas fa-usb"></i>
+            {% elif tipo == 'pointer' %}<i class="fas fa-arrow-pointer"></i>
+            {% elif tipo == 'kit_herramientas' %}<i class="fas fa-tools"></i>
+            {% elif tipo == 'cartucho' %}<i class="fas fa-print"></i>
+            {% elif tipo == 'toner' %}<i class="fas fa-tint"></i>
+            {% elif tipo == 'botella_tinta' %}<i class="fas fa-tint"></i>
+            {% elif tipo == 'camara_web' %}<i class="fas fa-webcam"></i>
+            {% elif tipo == 'disco_duro' %}<i class="fas fa-hdd"></i>
+            {% else %}<i class="fas fa-box"></i>{% endif %}
+        {% endwith %}
+    </div>
+    <div class="product-info">
+        <span class="product-category {{ equipo.tipo|default:'' }}">{{ equipo.get_tipo_display|default:'Sin tipo' }}</span>
+        <span class="product-status {{ equipo.estado|default:'' }}">{{ equipo.estado|default:'Sin estado' }}</span>
+        <h4 class="product-name">{{ equipo.modelo }}</h4>
+        <p class="product-brand">{{ equipo.marca|default:'Sin marca' }}</p>
+        <p class="product-serial">{{ equipo.serial }}</p>
+        <div class="product-actions">
+            <button class="btn-details" data-details='{{ equipo|json_details }}' onclick="showProductDetails({{ equipo.id }})">Detalles</button>
+            {% if perms.libreria.change_equipo %}
+            <a href="{% url 'editar_equipo' equipo.id %}" class="btn-details btn-edit">Editar</a>
+            {% endif %}
+            {% if equipo.estado == 'Disponible' %}
+                <a href="{% url 'asignar' %}?equipo_id={{ equipo.id }}" class="btn-details btn-assign">Asignar</a>
+            {% else %}
+                <button class="btn-details btn-release" onclick="liberarEquipo({{ equipo.id }})">Liberar</button>
+            {% endif %}
+            {% if perms.libreria.delete_equipo %}
+            <form action="{% url 'borrar_equipo' equipo.id %}" method="POST" style="display:inline;" id="delete-form-{{ equipo.id }}" onsubmit="return confirmDelete(event, {{ equipo.id }})">
+                {% csrf_token %}
+                <button type="submit" class="btn-details btn-delete">Eliminar</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(event, equipoId) {
+        event.preventDefault(); // Evita que el formulario se envíe inmediatamente
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción eliminará el equipo permanentemente. ¿Deseas continuar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + equipoId).submit();
+            }
+        });
+    }
+</script>

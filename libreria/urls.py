@@ -17,12 +17,10 @@ urlpatterns = [
     path('equipo/editar/<int:equipo_id>/', views.editar_equipo, name='editar_equipo'),
     path('equipo/borrar/<int:equipo_id>/', views.borrar_equipo, name='borrar_equipo'),
     path('actualizar_estado/<int:equipo_id>/', views.actualizar_estado, name='actualizar_estado'),
-    path('ver_pdf/', views.ver_pdf, name='ver_pdf'),
     path('generar_constancia/<int:asignacion_id>/', generar_constancia, name='generar_constancia'),
-    path('exportar-equipos/', views.exportar_inventario_equipos, name='exportar_equipos_asignados'),
+    path('equipos/exportar-excel/', views.exportar_excel, name='exportar_excel'),
     path('eliminar-equipos/', views.eliminar_equipos_seleccionados, name='eliminar_equipos_seleccionados'),
-    path('equipo/detalle/<int:equipo_id>/', views.detalle_equipo_json, name='detalle_equipo_json'),
-    
+    path('equipos/detalles/<int:equipo_id>/', views.detalle_equipo_json, name='detalle_equipo_json'),
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/registro/', views.registro, name='registro'),
 ]
