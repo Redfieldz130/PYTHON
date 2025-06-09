@@ -30,7 +30,7 @@
         }
 
         body.modal-open {
-            overflow: hidden; /* Evita el desplazamiento en el body cuando el modal está abierto */
+            overflow: hidden;
         }
 
         .sidebar {
@@ -39,7 +39,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #0b3771;
+            background: linear-gradient(135deg, #0b3771,rgb(8, 73, 172)); /* Degradado para el sidebar */
             color: white;
             display: flex;
             flex-direction: column;
@@ -87,8 +87,8 @@
         .main-content {
             transition: margin-left 0.3s ease;
             margin-left: 240px;
-            padding: 80px 20px 100px 20px; /* Aumentado el padding-bottom */
-            min-height: 100vh; /* Asegura que ocupe toda la altura */
+            padding: 80px 20px 100px 20px;
+            min-height: 100vh;
             max-width: calc(100% - 240px);
             box-sizing: border-box;
         }
@@ -98,9 +98,9 @@
             max-width: 100%;
         }
 
-        .container {
+        .container-fluid {
             width: 100%;
-            max-width: 1200px; /* Asegura que no haya restricciones excesivas */
+            max-width: 1200px;
             margin: 0 auto;
             box-sizing: border-box;
         }
@@ -108,13 +108,13 @@
         .footer {
             text-align: center;
             padding: 15px;
-            background-color: #b76d0d;
+            background: linear-gradient(135deg, #b76d0d,rgb(119, 65, 21)); /* Degradado para el footer */
             color: white;
             width: 100%;
             position: fixed;
             bottom: 0;
             left: 0;
-            z-index: 998; /* Menor que el banner y el modal */
+            z-index: 998;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
@@ -179,12 +179,12 @@
     </div>
 
     <div class="main-content" id="main-content">
-    <div class="container-fluid">
+        <div class="container-fluid">
             {% block contenido %}
             {% block cuerpo %}{% endblock %}
             {% endblock %}
         </div>
-        <div id="end-of-page-marker"></div> <!-- Movido dentro de .main-content -->
+        <div id="end-of-page-marker"></div>
     </div>
 
     <div class="footer">
@@ -205,30 +205,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-    function showConnectionStatus(message, icon, color) {
-      Swal.fire({
-        toast: true,
-        position: 'bottom-end',
-        icon: icon,
-        title: message,
-        showConfirmButton: false,
-        timer: 4000,
-        background: color,
-        color: 'white',
-        timerProgressBar: true,
-        customClass: {
-          popup: 'rounded-3 shadow'
+        function showConnectionStatus(message, icon, color) {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: icon,
+                title: message,
+                showConfirmButton: false,
+                timer: 4000,
+                background: color,
+                color: 'white',
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'rounded-3 shadow'
+                }
+            });
         }
-      });
-    }
 
-    window.addEventListener('online', () => {
-      showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754');
-    });
+        window.addEventListener('online', () => {
+            showConnectionStatus('✅ Conexión restaurada con el servidor.', 'success', '#198754');
+        });
 
-    window.addEventListener('offline', () => {
-      showConnectionStatus('❌ Sin conexión con el servidor.', 'error', '#dc3545');
-    });
+        window.addEventListener('offline', () => {
+            showConnectionStatus('❌ Sin conexión con el servidor.', 'error', '#dc3545');
+        });
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {

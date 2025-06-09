@@ -1,45 +1,69 @@
 {% extends "Paginas/Base.html" %}
 {% load static %}
 
-{% block titulo %}Aplicación de Inventario{% endblock %}
+{% block titulo %}Nosotros{% endblock %}
 
 {% block contenido %}
-<link rel="stylesheet" href="{% static 'css/nosotros.css' %}">
+    <!-- Mostrar mensajes con SweetAlert -->
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: "Mensaje",
+                    text: "{{ message }}",
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
 
-<div class="contenedor">
-    <h2 class="titulo-principal">NOSOTROS</h2>
-    <div class="quienes-somos">
-        <p>
-            Nuestra aplicación de inventario es una plataforma desarrollada para optimizar la gestión de equipos tecnológicos, facilitando el control de préstamos y devoluciones dentro de instituciones.
-        </p>
-        <p>
-            Somos una herramienta técnica con el objetivo de mejorar la eficiencia y transparencia del manejo de activos tecnológicos en entornos educativos o administrativos.
-        </p>
-    </div>
-    
-    <div class="secciones">
-        <div class="seccion mision">
-            <h3>📍 MISIÓN</h3>
-            <p>
-                Contribuir al control y uso eficiente de los equipos tecnológicos mediante un sistema de inventario moderno, claro y confiable.
-            </p>
-        </div>
-        <div class="seccion vision">
-            <h3>🔭 VISIÓN</h3>
-            <p>
-                Convertirnos en una solución líder en gestión de inventarios tecnológicos, promoviendo decisiones basadas en datos precisos.
-            </p>
-        </div>
-        <div class="seccion valores">
-            <h3>🏆 VALORES</h3>
-            <ul>
-                <li>✔️ Compromiso</li>
-                <li>✔️ Transparencia</li>
-                <li>✔️ Innovación</li>
-            </ul>
-        </div>
+    <div class="container-fluid py-4">
         
-        
+        <div class="header-section mb-5">
+            <div class="header-content p-5 text-white rounded-3" style="background: linear-gradient(135deg,rgb(15, 34, 141),rgb(11, 79, 143));">
+                <h1 class="display-4 mb-4">Quiénes Somos</h1>
+                <p class="lead mb-4">
+                    Nuestra aplicación de inventario es una plataforma desarrollada para optimizar la gestión de equipos tecnológicos, facilitando el control de préstamos y devoluciones dentro de instituciones.
+                </p>
+                <p class="lead">
+                    Somos una herramienta técnica con el objetivo de mejorar la eficiencia y transparencia del manejo de activos tecnológicos en entornos educativos o administrativos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Secciones principales -->
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-stretch">
+            <!-- Sección Misión -->
+            <div class="col">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h3 class="mb-3">📍 Misión</h3>
+                    <p class="mb-4">
+                        Contribuir al control y uso eficiente de los equipos tecnológicos mediante un sistema de inventario moderno, claro y confiable.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sección Visión -->
+            <div class="col">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h3 class="mb-3">🔭 Visión</h3>
+                    <p class="mb-4">
+                        Convertirnos en una solución líder en gestión de inventarios tecnológicos, promoviendo decisiones basadas en datos precisos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sección Valores -->
+            <div class="col">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h3 class="mb-3">🏆 Valores</h3>
+                    <ul class="mb-4" style="list-style-type: none; padding-left: 0;">
+                        <li class="mb-2">✔️ Compromiso</li>
+                        <li class="mb-2">✔️ Transparencia</li>
+                        <li class="mb-2">✔️ Innovación</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}

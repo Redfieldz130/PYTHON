@@ -1,9 +1,9 @@
 {% extends "Paginas/Base.html" %}
 
-{% block titulo %} Aplicación de Inventario {% endblock %}
+{% block titulo %}Aplicación de Inventario{% endblock %}
 
 {% block contenido %}
-
+    <!-- Mostrar mensajes con SweetAlert -->
     {% if messages %}
         {% for message in messages %}
             <script>
@@ -15,33 +15,45 @@
             </script>
         {% endfor %}
     {% endif %}
-    <div class="row align-items-md-stretch">
-        <div class="col-md-6">
-            <div class="h-100 p-5 text-white bg-primary border rounded-3">
-                <h2>Gestión de Inventario</h2>
-                <p>
-                    Organiza y administra los equipos de manera eficiente con nuestra aplicación. 
-                    Accede fácilmente a los registros y controla los movimientos en tiempo real.
-                </p>
-                <a href="{% url 'equipos' %}" class="btn btn-light">Ver Equipos</a>
+
+    <div class="container-fluid py-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-stretch">
+            <!-- Sección Gestión de Inventario -->
+            <div class="col">
+                <div class="h-100 p-5 text-white rounded-3" style="background: linear-gradient(135deg, #0b3771,rgb(42, 99, 173));">
+                    <h2 class="mb-3">Gestión de Inventario</h2>
+                    <p class="mb-4">
+                        Organiza y administra los equipos de manera eficiente con nuestra aplicación. 
+                        Accede fácilmente a los registros y controla los movimientos en tiempo real.
+                    </p>
+                    <a href="{% url 'equipos' %}" class="btn btn-light">Ver Equipos</a>
+                </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="h-100 p-5 bg-light border rounded-3">
-                <h2>Nosotros</h2>
-                <p>
-                    Conoce mas acerca de nosotros y nuestro objetivo con nuestra aplicacion de inventario.
-                </p>
-                <a href="{% url 'nosotros' %}" class="btn btn-primary">Más Información</a>
+
+            <!-- Sección Asignaciones -->
+            <div class="col">
+                <div class="h-100 p-5 text-white rounded-3" style="background: linear-gradient(135deg, #0b3771,rgb(42, 99, 173));">
+                    <h2 class="mb-3">Asignaciones</h2>
+                    <p class="mb-4">
+                        Gestiona las asignaciones de equipos a colaboradores y revisa el estado de cada uno.
+                    </p>
+                    <a href="{% url 'asignar' %}" class="btn btn-light">Ver Asignaciones</a>
+                </div>
             </div>
-            
+
+            <!-- Sección Nosotros -->
+            <div class="col">
+                <div class="h-100 p-5 text-white rounded-3" style="background: linear-gradient(135deg, #0b3771,rgb(42, 99, 173));">
+                    <h2 class="mb-3">Nosotros</h2>
+                    <p class="mb-4">
+                        Conoce más acerca de nosotros y nuestro objetivo con nuestra aplicación de inventario.
+                    </p>
+                    <a href="{% url 'nosotros' %}" class="btn btn-light">Más Información</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
 {% endblock %}
-
-
 
 
 
