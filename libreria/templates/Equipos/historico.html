@@ -1,0 +1,45 @@
+{% extends "Paginas/Base.html" %}
+
+{% block titulo %}Histórico de Equipos{% endblock %}
+
+{% block contenido %}
+<div class="container-fluid py-4">
+    <div class="header text-center py-3 shadow-sm rounded-3">
+        <h4 class="mb-0 font-weight-bold">Histórico de Equipos Eliminados</h4>
+    </div>
+    {% if historial %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serial</th>
+                    <th>Fecha de Eliminación</th>
+                    <th>Eliminado por</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in historial %}
+                <tr>
+                    <td>{{ item.marca|default:'Sin marca' }}</td>
+                    <td>{{ item.modelo|default:'Sin modelo' }}</td>
+                    <td>{{ item.serial|default:'Sin serial' }}</td>
+                    <td>{{ item.fecha_eliminacion|default:'No registrada' }}</td>
+                    <td>{{ item.usuario_eliminacion.username|default:'Usuario desconocido' }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay equipos en el historial.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center mt-4">
+        <p>No hay equipos en el historial.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

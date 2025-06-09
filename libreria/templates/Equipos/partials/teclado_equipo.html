@@ -48,7 +48,16 @@
             {% if equipo.estado == 'Disponible' %}
                 <a href="{% url 'asignar' %}?equipo_id={{ equipo.id }}" class="btn-details btn-assign">Asignar</a>
             {% else %}
-                <button class="btn-details btn-release" onclick="liberarEquipo({{ equipo.id }})">Liberar</button>
+                {% with asignacion_id=asignaciones_dict|get_item:equipo.id %}
+                {% if asignacion_id %}
+                    <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">
+                                <i class="fas fa-times"></i>
+                            </a>
+                    </form>
+                {% else %}
+                    <button class="btn-details btn-release" disabled>Liberar</button>
+                {% endif %}
+                {% endwith %}
             {% endif %}
             {% if perms.libreria.delete_equipo %}
             <form action="{% url 'borrar_equipo' equipo.id %}" method="POST" style="display:inline;" id="delete-form-{{ equipo.id }}" onsubmit="return confirmDelete(event, {{ equipo.id }})">
@@ -62,7 +71,7 @@
 
 <script>
     function confirmDelete(event, equipoId) {
-        event.preventDefault(); // Evita que el formulario se envíe inmediatamente
+        event.preventDefault();
         Swal.fire({
             title: '¿Estás seguro?',
             text: 'Esta acción eliminará el equipo permanentemente. ¿Deseas continuar?',

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    {% load equipo_tags %}
     {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,6 +26,11 @@
             height: 100%;
             margin: 0;
             overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        body.modal-open {
+            overflow: hidden; /* Evita el desplazamiento en el body cuando el modal está abierto */
         }
 
         .sidebar {
@@ -81,15 +87,22 @@
         .main-content {
             transition: margin-left 0.3s ease;
             margin-left: 240px;
-            padding: 80px 20px 60px 20px;
-            min-height: calc(100vh - 60px); /* Ajusta para que ocupe al menos la altura de la pantalla menos el banner */
-            overflow-x: auto; /* Permite desplazamiento horizontal si el contenido excede */
-            max-width: calc(100% - 240px); /* Limita el ancho máximo relativo al sidebar */
+            padding: 80px 20px 100px 20px; /* Aumentado el padding-bottom */
+            min-height: 100vh; /* Asegura que ocupe toda la altura */
+            max-width: calc(100% - 240px);
+            box-sizing: border-box;
         }
 
         .main-content.expanded {
             margin-left: 0;
-            max-width: 100%; /* Ajusta el ancho cuando el sidebar se colapsa */
+            max-width: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px; /* Asegura que no haya restricciones excesivas */
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
         .footer {
@@ -98,10 +111,12 @@
             background-color: #b76d0d;
             color: white;
             width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 998; /* Menor que el banner y el modal */
             opacity: 0;
             transition: opacity 0.5s ease;
-            position: relative;
-            bottom: 0;
         }
 
         .footer.visible {
@@ -128,6 +143,7 @@
         <a href="{% url 'inicio' %}" class="{% if request.path == '/' %}active{% endif %}"> 
             <i class="fas fa-home fa-2px me-2"></i>Inicio</a>
         <a href="{% url 'equipos' %}"><i class="fas fa-desktop me-2"></i>Equipos</a>
+        <a href="{% url 'historico' %}"><i class="fa-solid fa-clock-rotate-left me-2"></i>Histórico</a>
         <a href="{% url 'asignar' %}"><i class="fas fa-tasks me-2"></i>Asignaciones</a>
         <a href="{% url 'nosotros' %}"><i class="fas fa-users me-2"></i>Nosotros</a>
     </div>
@@ -163,14 +179,13 @@
     </div>
 
     <div class="main-content" id="main-content">
-        <div class="container">
+    <div class="container-fluid">
             {% block contenido %}
             {% block cuerpo %}{% endblock %}
             {% endblock %}
         </div>
+        <div id="end-of-page-marker"></div> <!-- Movido dentro de .main-content -->
     </div>
-
-    <div id="end-of-page-marker"></div>
 
     <div class="footer">
         <p>| © 2025 Departamento de Tecnología IDEICE |</p>

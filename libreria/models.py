@@ -3,6 +3,23 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 import re
 
+from django.db import models
+from django.contrib.auth.models import User
+
+class HistorialEquipo(models.Model):
+    tipo = models.CharField(max_length=100, blank=True, null=True)
+    marca = models.CharField(max_length=100, blank=True, null=True)
+    modelo = models.CharField(max_length=100, blank=True, null=True)
+    serial = models.CharField(max_length=100, blank=True, null=True)
+    fecha_eliminacion = models.DateTimeField(auto_now_add=True)
+    usuario_eliminacion = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='equipos_eliminados')
+
+    def __str__(self):
+        return f"{self.marca} {self.modelo} (Serial: {self.serial})"
+
+    class Meta:
+        verbose_name = "Historial de Equipo"
+        verbose_name_plural = "Historial de Equipos"
 def validate_mac_address(value):
     """Valida que el valor sea un MAC address válido."""
     if value:  # Permitir vacío porque es opcional
@@ -125,3 +142,4 @@ class Asignacion(models.Model):
 
     def __str__(self):
         return f"{self.colaborador_nombre} - {self.equipo.marca} {self.equipo.modelo}"
+    

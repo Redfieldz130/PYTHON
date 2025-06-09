@@ -23,6 +23,7 @@ urlpatterns = [
     path('equipos/detalles/<int:equipo_id>/', views.detalle_equipo_json, name='detalle_equipo_json'),
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/registro/', views.registro, name='registro'),
+    path('historico/', views.historico_equipos, name='historico'),
 ]
 
 

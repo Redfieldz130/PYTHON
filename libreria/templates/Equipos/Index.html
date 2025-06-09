@@ -22,6 +22,7 @@
 {% block contenido %}
 <style>
     :root {
+        --excel-green: #217346;
         --primary-color: #4361ee;
         --secondary-color: #3f37c9;
         --accent-color: #4895ef;
@@ -34,11 +35,23 @@
         --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         --transition: all 0.3s ease;
     }
+    .btn-export-excel {
+    background-color: var(--excel-green);
+    color: white; /
+    border: 1px solid var(--excel-green); 
+}
+
+    .btn-export-excel:hover {
+    background-color:rgb(7, 61, 31); /* Un verde un poco más oscuro al pasar el ratón */
+    border-color: #1a5635;
+    color: #f8f9fa;
+}
 
     .inventory-container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
+        box-sizing: border-box;
     }
 
     .inventory-header {
@@ -274,6 +287,7 @@
         justify-content: center;
         gap: 15px;
         margin-top: 30px;
+        margin-bottom: 100px; /* Ajustado para el footer */
     }
 
     .action-btn {
@@ -479,11 +493,12 @@
     <div class="action-buttons">
         <a href="{% url 'crear_equipo' %}" class="action-btn btn btn-primary">
             <i class="fas fa-plus"></i> Agregar Equipo
-    {%endif%}
-        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export">
+        </a>
+        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export-excel"> {# Cambiado btn-export por btn-export-excel #}
             <i class="fas fa-file-excel"></i> Exportar a Excel
         </a>
     </div>
+    {% endif %}
 
     <!-- Modal para detalles -->
     <div id="productModal" class="modal">
@@ -505,6 +520,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModal = document.querySelector('.close-modal');
     const modalProductName = document.getElementById('modal-product-name');
     const modalProductDetails = document.getElementById('modal-product-details');
+
+    // Calcular el ancho de la barra de desplazamiento
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
     // Manejar el cambio de categoría
     filterButtons.forEach(button => {
@@ -664,21 +682,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
+            // Agregar clase modal-open y compensar el ancho de la barra
+            document.body.classList.add('modal-open');
+            document.body.style.marginRight = `${scrollbarWidth}px`;
             modal.style.display = 'flex';
         });
     });
 
     // Cerrar el modal
     closeModal.addEventListener('click', function () {
+        document.body.classList.remove('modal-open');
+        document.body.style.marginRight = '0px';
         modal.style.display = 'none';
     });
 
-    // Cerrar el modal al hacer clic fuera de él
-    window.addEventListener('click', function (event) {
+    // Cerrar el modal al clicar fuera de él
+    window.addEventListener('click', function(event) {
         if (event.target === modal) {
+            document.body.classList.remove('modal-open');
+            document.body.style.marginRight = '0px';
             modal.style.display = 'none';
         }
     });
 });
 </script>
+
 {% endblock %}

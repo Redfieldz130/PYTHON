@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EquipoForm, AsignacionForm, CustomUserCreationForm
-from .models import Equipo, Asignacion
+from .models import Equipo, Asignacion, HistorialEquipo
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.http import JsonResponse, HttpResponse
@@ -9,6 +9,10 @@ from django.utils import timezone
 import openpyxl
 from docx import Document
 from openpyxl.styles import Font
+
+def historico_equipos(request):
+    historial = HistorialEquipo.objects.all().order_by('-fecha_eliminacion')  # Ordenar por fecha de eliminación descendente
+    return render(request, 'Equipos/historico.html', {'historial': historial})
 
 def detalle_equipo_json(request, equipo_id):
     equipo = get_object_or_404(Equipo, pk=equipo_id)
@@ -151,7 +155,7 @@ def listar_equipos(request):
         'materiales': ['cartucho', 'toner', 'botella_tinta'],
     }
 
-    
+    # Filtrar equipos por categoría
     equipos_por_categoria = {
         'todos': equipos_todos,
         'equipos': equipos_todos.filter(tipo__in=equipos_categorias['equipos']),
@@ -160,8 +164,12 @@ def listar_equipos(request):
         'materiales': equipos_todos.filter(tipo__in=equipos_categorias['materiales']),
     }
 
+    # Crear un diccionario que mapee equipo.id a asignacion.id
+    asignaciones_dict = {asignacion.equipo.id: asignacion.id for asignacion in Asignacion.objects.all()}
+
     context = {
         'equipos_por_categoria': equipos_por_categoria,
+        'asignaciones_dict': asignaciones_dict,
     }
     return render(request, 'Equipos/Index.html', context)
 
@@ -250,9 +258,20 @@ def desasignar(request, id):
 
 def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
-    equipo.delete()
-    messages.success(request, f'El equipo "{equipo.modelo}" ha sido eliminado con éxito.')
-    return redirect('equipos')
+    if request.method == 'POST':
+        historial = HistorialEquipo(
+            tipo=equipo.tipo,
+            marca=equipo.marca,
+            modelo=equipo.modelo,
+            serial=equipo.serial,
+            usuario_eliminacion=request.user if request.user.is_authenticated else None,
+        )
+        historial.save()
+        Asignacion.objects.filter(equipo=equipo).delete()
+        equipo.delete()
+        messages.success(request, f"El equipo {equipo.marca} {equipo.modelo} ha sido eliminado correctamente.")
+        return redirect('equipos')
+    return render(request, 'Equipos/confirmar_eliminacion.html', {'equipo': equipo})
 
 def liberar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
