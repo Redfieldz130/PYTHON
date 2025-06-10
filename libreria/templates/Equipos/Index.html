@@ -412,7 +412,7 @@
     </div>
 
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar por Marca, Modelo o Serial...">
+        <input type="text" id="search-input" placeholder="Buscar por Tipo de equipo, Marca, Modelo o Serial...">
     </div>
 
     <!-- Sección: Todos -->
@@ -549,9 +549,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         cards.forEach(card => {
             const brand = card.querySelector('.product-brand').textContent.toLowerCase();
+            const category = card.querySelector('.product-category').textContent.toLowerCase();
             const model = card.querySelector('.product-name').textContent.toLowerCase();
             const serial = card.querySelector('.product-serial').textContent.toLowerCase();
-            const matches = brand.includes(searchTerm) || model.includes(searchTerm) || serial.includes(searchTerm);
+            const matches = brand.includes(searchTerm) || model.includes(searchTerm) || serial.includes(searchTerm) || category.includes(searchTerm);
             card.style.display = matches ? 'block' : 'none';
         });
 
