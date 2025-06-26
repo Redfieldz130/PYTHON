@@ -1,45 +1,182 @@
-{% extends "Paginas/Base.html" %}
+{% extends "Paginas/base.html" %}
 
-{% block titulo %}Histórico de Equipos{% endblock %}
+{% block titulo %}
+Histórico de Equipos
+{% endblock %}
+
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/historico.css' %}?v=11.0">
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
 
 {% block contenido %}
 <div class="container-fluid py-4">
-    <div class="header text-center py-3 shadow-sm rounded-3">
-        <h4 class="mb-0 font-weight-bold">Histórico de Equipos Eliminados</h4>
+    <div class="header text-center py-3 shadow-sm rounded-3 bg-primary text-white">
+        <h4 class="mb-0 font-weight-bold">Historial de Equipos Eliminados</h4>
     </div>
-    {% if historial %}
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Serial</th>
-                    <th>Fecha de Eliminación</th>
-                    <th>Eliminado por</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in historial %}
-                <tr>
-                    <td>{{ item.marca|default:'Sin marca' }}</td>
-                    <td>{{ item.modelo|default:'Sin modelo' }}</td>
-                    <td>{{ item.serial|default:'Sin serial' }}</td>
-                    <td>{{ item.fecha_eliminacion|default:'No registrada' }}</td>
-                    <td>{{ item.usuario_eliminacion.username|default:'Usuario desconocido' }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No hay equipos en el historial.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <div class="filter-section mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 mb-3">
+                <label for="fecha-eliminacion" class="form-label fw-bold">Fecha de eliminación</label>
+                <input type="text" id="fecha-eliminacion" class="form-control form-control-sm border-primary" placeholder="Seleccionar fecha">
+            </div>
+            <div class="col-md-4 col-sm-6 mb-3">
+                <label for="tipo-filtro" class="form-label fw-bold">Tipo de equipo</label>
+                <select id="tipo-filtro" class="form-control form-control-sm border-primary">
+                    <option value="">Todos</option>
+                    {% for tipo in tipos %}
+                    <option value="{{ tipo.valor }}">{{ tipo.display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 col-sm-6 mb-3">
+                <label for="modelo-filtro" class="form-label fw-bold">Modelo</label>
+                <select id="modelo-filtro" class="form-control form-control-sm border-primary">
+                    <option value="">Todos</option>
+                    {% for modelo in modelos %}
+                    <option value="{{ modelo }}">{{ modelo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+        </div>
     </div>
-    {% else %}
-    <div class="text-center mt-4">
-        <p>No hay equipos en el historial.</p>
+
+    <div class="history-list mt-4">
+        {% if historial %}
+            {% for item in historial %}
+            <div class="history-item shadow-sm rounded-3 mb-3 p-3 d-flex align-items-center bg-white border" 
+                 data-fecha-eliminacion="{{ item.fecha_eliminacion|date:'Y-m-d'|default:'' }}"
+                 data-modelo="{{ item.modelo|default:'' }}"
+                 data-tipo="{{ item.tipo|default:'' }}">
+                <div class="item-details flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 fw-bold text-dark">{{ item.marca|default:'Sin marca' }} {{ item.modelo|default:'Sin modelo' }}</h6>
+                            <p class="mb-1 text-muted small">Tipo de equipo: 
+                                {% for tipo in tipos %}
+                                    {% if tipo.valor == item.tipo %}{{ tipo.display }}{% endif %}
+                                {% empty %}
+                                    No especificado
+                                {% endfor %}
+                            </p>
+                            <p class="mb-1 text-muted small">Serial: {{ item.serial|default:'Sin serial' }}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-1 text-muted small">Eliminado: {{ item.fecha_eliminacion|date:'Y-m-d H:i'|default:'No registrada' }}</p>
+                            <p class="mb-1 text-muted small">Por: {{ item.usuario_eliminacion.username|default:'Usuario desconocido' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center mt-4">
+                <p class="text-muted">No hay equipos en el historial.</p>
+            </div>
+        {% endif %}
+        <div class="no-results text-center mt-4" style="display: none;">
+            <p class="text-muted">No se encontraron resultados para los filtros seleccionados.</p>
+        </div>
     </div>
-    {% endif %}
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fechaInput = document.getElementById('fecha-eliminacion');
+    const modeloSelect = document.getElementById('modelo-filtro');
+    const tipoSelect = document.getElementById('tipo-filtro');
+    const items = document.querySelectorAll('.history-item');
+    const noResults = document.querySelector('.no-results');
+
+    // Fechas con registros desde el contexto de Django
+    const fechasConRegistros = {{ fechas_con_registros|safe|default:'[]' }};
+
+    // Depuración inicial
+    console.log('Total de registros:', items.length);
+    console.log('Fechas con registros:', fechasConRegistros);
+    items.forEach(item => {
+        console.log('Item:', {
+            fecha: item.getAttribute('data-fecha-eliminacion'),
+            modelo: item.getAttribute('data-modelo'),
+            tipo: item.getAttribute('data-tipo')
+        });
+    });
+
+    // Inicializar Flatpickr
+    flatpickr(fechaInput, {
+        dateFormat: 'Y-m-d',
+        allowInput: true,
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+            if (fechasConRegistros.includes(dateStr)) {
+                dayElem.classList.add('has-registros');
+            }
+        },
+        onChange: applyFilter
+    });
+
+    // Función para aplicar el filtro
+    function applyFilter() {
+        const selectedFecha = fechaInput.value;
+        const selectedModelo = modeloSelect.value.toLowerCase().trim();
+        const selectedTipo = tipoSelect.value;
+        console.log('Filtros seleccionados:', {
+            fecha: selectedFecha,
+            modelo: selectedModelo,
+            tipo: selectedTipo
+        });
+        let visibleItems = 0;
+
+        items.forEach(item => {
+            const itemFecha = item.getAttribute('data-fecha-eliminacion') || '';
+            const itemModelo = (item.getAttribute('data-modelo') || '').toLowerCase();
+            const itemTipo = item.getAttribute('data-tipo') || '';
+
+            const matchesFecha = !selectedFecha || itemFecha === selectedFecha;
+            const matchesModelo = !selectedModelo || itemModelo === selectedModelo;
+            const matchesTipo = !selectedTipo || itemTipo === selectedTipo;
+
+            const matchesAll = matchesFecha && matchesModelo && matchesTipo;
+            console.log('Comparando:', {
+                itemFecha: itemFecha,
+                itemModelo: itemModelo,
+                itemTipo: itemTipo,
+                matchesAll: matchesAll
+            });
+
+            if (matchesAll) {
+                item.classList.remove('hidden');
+                visibleItems++;
+            } else {
+                item.classList.add('hidden');
+            }
+            console.log('Estado del item:', item.className, 'Clases:', item.classList.contains('hidden'));
+        });
+
+        console.log('Elementos visibles:', visibleItems);
+        noResults.style.display = visibleItems === 0 ? 'block' : 'none';
+    }
+
+    // Eventos para los filtros
+    fechaInput.addEventListener('input', () => {
+        console.log('Evento input (fecha) disparado:', fechaInput.value);
+        applyFilter();
+    });
+
+    modeloSelect.addEventListener('change', () => {
+        console.log('Evento change (modelo) disparado:', modeloSelect.value);
+        applyFilter();
+    });
+
+    tipoSelect.addEventListener('change', () => {
+        console.log('Evento change (tipo) disparado:', tipoSelect.value);
+        applyFilter();
+    });
+});
+</script>
 {% endblock %}

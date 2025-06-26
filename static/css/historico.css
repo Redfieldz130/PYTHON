@@ -1,0 +1,114 @@
+/* Contenedor principal */
+.container-fluid {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Sección de cabecera */
+.header {
+    background-color: #007bff; /* Azul primario */
+    color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+/* Sección de filtro */
+.filter-section {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-control-sm {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    transition: border-color 0.3s;
+}
+
+.form-control-sm:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Lista de historial */
+.history-list {
+    margin-top: 1.5rem;
+}
+
+.history-item {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-item.hidden {
+    display: none !important;
+}
+
+.item-details h6 {
+    font-size: 1.1rem;
+    color: #212529;
+}
+
+.text-muted.small {
+    font-size: 0.85rem;
+    color: #6c757d !important;
+}
+
+/* Mensaje de no resultados */
+.no-results {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-top: 2rem;
+}
+
+/* Estilos para Flatpickr */
+.flatpickr-day.has-registros {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+    border-radius: 50%;
+}
+
+.flatpickr-day.has-registros:hover {
+    background-color: #0056b3 !important;
+}
+
+/* Responsividad */
+@media (max-width: 576px) {
+    .header h4 {
+        font-size: 1.25rem;
+    }
+
+    .history-item {
+        padding: 0.75rem;
+    }
+
+    .item-details h6 {
+        font-size: 1rem;
+    }
+
+    .text-muted.small {
+        font-size: 0.75rem;
+    }
+
+    .filter-section .col-sm-6 {
+        margin-bottom: 1rem;
+    }
+}

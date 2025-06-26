@@ -1,11 +1,13 @@
 {% load equipo_tags %}
+{%load static %}
+
 <div class="product-card" data-category="{{ equipo.tipo|default:'' }}" data-status="{{ equipo.estado|default:'' }}">
     <div class="product-image">
         {% with tipo=equipo.tipo|default:'' %}
             {% if tipo == 'laptop' %}<i class="fas fa-laptop"></i>
             {% elif tipo == 'impresora' %}<i class="fas fa-print"></i>
             {% elif tipo == 'cpu' %}<i class="fas fa-desktop"></i>
-            {% elif tipo == 'monitor' %}<i class="fas fa-desktop"></i>
+            {% elif tipo == 'monitor' %}<i class="fa-solid fa-tv"></i>
             {% elif tipo == 'proyector' %}<i class="fas fa-projector"></i>
             {% elif tipo == 'ups' %}<i class="fas fa-battery-full"></i>
             {% elif tipo == 'scanner' %}<i class="fas fa-scanner"></i>
@@ -35,36 +37,30 @@
         {% endwith %}
     </div>
     <div class="product-info">
-        <span class="product-category {{ equipo.tipo|default:'' }}">{{ equipo.get_tipo_display|default:'Sin tipo' }}</span>
-        <span class="product-status {{ equipo.estado|default:'' }}">{{ equipo.estado|default:'Sin estado' }}</span>
-        <h4 class="product-name">{{ equipo.modelo }}</h4>
-        <p class="product-brand">{{ equipo.marca|default:'Sin marca' }}</p>
-        <p class="product-serial">{{ equipo.serial }}</p>
+        <input type="checkbox" class="select-item" style="display: none;">
+        <input type="checkbox" class="toggle-actions" id="toggle-{{ equipo.id }}" style="display: none;">
+        <label for="toggle-{{ equipo.id }}" class="btn-actions" title="Acciones">
+            <i class="fas fa-ellipsis-v"></i>
+        </label>
+        <div class="product-desc">
+            <div class="product-tags">
+                <span class="product-category {{ equipo.tipo|lower }}">{{ equipo.get_tipo_display }}</span>
+                <span class="product-status {{ equipo.estado|title }}">{{ equipo.get_estado_display }}</span>
+            </div>
+        <div class="product-main-info">
+            <p class="product-brand">{{ equipo.marca }}</p>
+            <p class="product-name">{{ equipo.modelo }}</p>
+            <p class="product-serial">{{ equipo.serial }}</p>
+        </div>
+        </div>
         <div class="product-actions">
-            <button class="btn-details" data-details='{{ equipo|json_details }}' onclick="showProductDetails({{ equipo.id }})">Detalles</button>
+            <button class="btn-details" data-details='{{ equipo.detalles_json }}'>Detalles</button>
             {% if perms.libreria.change_equipo %}
-            <a href="{% url 'editar_equipo' equipo.id %}" class="btn-details btn-edit">Editar</a>
-            {% endif %}
-            {% if equipo.estado == 'Disponible' %}
-                <a href="{% url 'asignar' %}?equipo_id={{ equipo.id }}" class="btn-details btn-assign">Asignar</a>
-            {% else %}
-                {% with asignacion_id=asignaciones_dict|get_item:equipo.id %}
-                {% if asignacion_id %}
-                    <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">
-                                <i class="fas fa-times"></i>
-                            </a>
-                    </form>
-                {% else %}
-                    <button class="btn-details btn-release" disabled>Liberar</button>
-                {% endif %}
-                {% endwith %}
+            <a href="{% url 'editar_equipo' equipo.id %}" class="btn-edit">Editar</a>
             {% endif %}
             {% if perms.libreria.delete_equipo %}
-            <form action="{% url 'borrar_equipo' equipo.id %}" method="POST" style="display:inline;" id="delete-form-{{ equipo.id }}" onsubmit="return confirmDelete(event, {{ equipo.id }})">
-                {% csrf_token %}
-                <button type="submit" class="btn-details btn-delete">Eliminar</button>
-            </form>
-            {% endif %}
+            <a href="{% url 'borrar_equipo' equipo.id %}" class="btn-delete">Eliminar</a>
+            {% endif %}            
         </div>
     </div>
 </div>

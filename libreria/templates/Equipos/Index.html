@@ -5,7 +5,6 @@
 {% block JS %}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     {% if messages %}
         {% for message in messages %}
             <script>
@@ -17,10 +16,10 @@
             </script>
         {% endfor %}
     {% endif %}
-{% endblock JS %}
+{% endblock %}
 
 {% block contenido %}
-<style>
+<style scoped>
     :root {
         --excel-green: #217346;
         --primary-color: #4361ee;
@@ -35,17 +34,18 @@
         --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         --transition: all 0.3s ease;
     }
+
     .btn-export-excel {
-    background-color: var(--excel-green);
-    color: white; /
-    border: 1px solid var(--excel-green); 
-}
+        background-color: var(--excel-green);
+        color: white;
+        border: 1px solid var(--excel-green);
+    }
 
     .btn-export-excel:hover {
-    background-color:rgb(5, 153, 71); /* Un verde un poco más oscuro al pasar el ratón */
-    border-color: #1a5635;
-    color: #f8f9fa;
-}
+        background-color: #1a5635;
+        border-color: #1a5635;
+        color: #f8f9fa;
+    }
 
     .inventory-container {
         max-width: 1200px;
@@ -159,6 +159,40 @@
 
     .product-info {
         padding: 20px;
+        position: relative;
+        overflow: hidden; /* Asegura que .product-actions no desborde */
+    }
+
+    .btn-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px;
+        transition: var(--transition);
+    }
+
+    .btn-actions:hover {
+        color: var(--primary-color);
+    }
+
+    .product-actions {
+        transform: translateX(100%); /* Inicialmente fuera a la derecha */
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .toggle-actions:checked ~ .product-actions {
+        transform: translateX(0); /* Se desliza a la posición original */
+        opacity: 1;
     }
 
     .product-category {
@@ -169,6 +203,7 @@
         font-weight: bold;
         margin-bottom: 8px;
     }
+
     .product-status {
         display: inline-block;
         padding: 4px 8px;
@@ -212,14 +247,14 @@
     .camara_web { background-color: #f3e5f5; color: #9c27b0; }
     .disco_duro { background-color: #e8f5e9; color: #43a047; }
 
-    .product-name {
+     .product-brand{
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 5px;
         color: var(--dark-color);
     }
 
-    .product-brand {
+    .product-name {
         font-size: 14px;
         color: #555;
         margin-bottom: 5px;
@@ -232,13 +267,7 @@
         font-family: monospace;
     }
 
-    .product-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .btn-details {
+    .btn-details, .btn-edit, .btn-delete, .btn-assign, .btn-release {
         background-color: var(--accent-color);
         color: white;
         border: none;
@@ -249,6 +278,7 @@
         font-size: 0.85rem;
         flex: 1;
         text-align: center;
+        text-decoration: none;
     }
 
     .btn-details:hover {
@@ -257,22 +287,18 @@
 
     .btn-edit {
         background-color: var(--warning-color);
-        color: white;
     }
 
     .btn-delete {
         background-color: var(--danger-color);
-        color: white;
     }
 
     .btn-assign {
         background-color: var(--success-color);
-        color: white;
     }
 
     .btn-release {
         background-color: var(--primary-color);
-        color: white;
     }
 
     .no-results {
@@ -287,7 +313,7 @@
         justify-content: center;
         gap: 15px;
         margin-top: 30px;
-        margin-bottom: 100px; /* Ajustado para el footer */
+        margin-bottom: 100px;
     }
 
     .action-btn {
@@ -395,6 +421,126 @@
             width: 100%;
         }
     }
+    .todo-titulo-lista{
+        display:flex;
+        justify-content:space-between;
+        flex-wrap: wrap;  
+        label{
+            cursor: pointer;
+        }  
+        .check-lista{
+            display:none;
+        } 
+    }
+    :has(.check-lista:checked) .fa-list{
+        color:#4361ee;
+    }
+    :has(.check-lista:checked) .products-grid{
+        grid-template-columns:1fr;
+        .product-card{
+            display:flex;
+            
+            /* justify-content:space-between; */
+            align-items:center;
+            
+            .product-image{
+                margin-left:1em;
+                font-size: 2em;
+                padding:0;
+                background:transparent;
+            }
+            .product-info{
+                font-size:.9em;
+                display: flex;
+                justify-content: flex-start;
+                flex: 1;
+                
+                
+            }
+            .product-main-info > * {
+                display: inline-block;
+                white-space: nowrap;
+                margin: 0;
+                padding: 0;
+            }
+            .product-desc{
+                display:flex;
+                flex-direction: column;
+                gap: 0.3em;
+                
+            }
+            .product-main-info{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 0.5em;
+                align-items: center;
+            }
+            .product-actions{
+                margin-left: auto;
+                display: flex;
+
+            }
+            .product-brand{
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 0;
+                color: var(--dark-color);
+                margin: 0;
+                white-space: nowrap;
+            }
+
+            .product-name {
+                font-size: 14px;
+                color: #555;
+                margin-bottom: 0;
+                margin: 0;
+                white-space: nowrap;
+            }
+
+            .product-serial {
+                font-size: 13px;
+                color: #777;
+                margin-bottom: 0;
+                font-family: monospace;
+                margin: 0;
+                white-space: nowrap;
+            }
+            .product-category {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            .product-status {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+            .product-tags {
+                display: flex;
+                flex-direction: row;
+                gap: 0.5em; /* Espacio entre tipo y estado */
+                margin-bottom: 0.3em;
+                flex-wrap: wrap;
+                }
+
+            .product-category,
+            .product-status {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            
+            
+            
+        }
+    }
 </style>
 
 <div class="inventory-container">
@@ -417,7 +563,13 @@
 
     <!-- Sección: Todos -->
     <div id="todos-section">
-        <h2>Todos los elementos</h2>
+        <div class="todo-titulo-lista">
+            <h2>Todos los elementos</h2>
+            <label >
+                <i class="fa-solid fa-list"></i>
+                <input type="checkbox" class='check-lista' />
+            </label>
+        </div>
         <div class="products-grid">
             {% for equipo in equipos_por_categoria.todos %}
                 {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
@@ -489,12 +641,13 @@
             {% endfor %}
         </div>
     </div>
+
     {% if perms.libreria.add_equipo %}
     <div class="action-buttons">
         <a href="{% url 'crear_equipo' %}" class="action-btn btn btn-primary">
             <i class="fas fa-plus"></i> Agregar Equipo
         </a>
-        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export-excel"> {# Cambiado btn-export por btn-export-excel #}
+        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export-excel">
             <i class="fas fa-file-excel"></i> Exportar a Excel
         </a>
     </div>
@@ -538,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Resetear búsqueda al cambiar de categoría
             searchInput.value = '';
             productCards.forEach(card => card.style.display = 'block');
+            document.querySelectorAll('.no-results').forEach(noResult => noResult.style.display = 'none');
         });
     });
 
@@ -559,10 +713,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Mostrar mensaje si no hay resultados
         const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
         const noResults = activeSection.querySelector('.no-results');
-        if (visibleCards.length === 0 && !searchTerm) {
+        if (visibleCards.length === 0) {
             noResults.style.display = 'block';
         } else {
-            noResults.style.display = visibleCards.length === 0 ? 'block' : 'none';
+            noResults.style.display = 'none';
         }
     });
 

@@ -9,10 +9,68 @@ from django.utils import timezone
 import openpyxl
 from docx import Document
 from openpyxl.styles import Font
+from django.db.models.functions import TruncDate
+from django.db.models import DateField
 
 def historico_equipos(request):
-    historial = HistorialEquipo.objects.all().order_by('-fecha_eliminacion')  # Ordenar por fecha de eliminación descendente
-    return render(request, 'Equipos/historico.html', {'historial': historial})
+    # Obtener todos los registros ordenados por fecha de eliminación
+    historial = HistorialEquipo.objects.all().order_by('-fecha_eliminacion')
+    
+    # Obtener fechas únicas de eliminación (solo la parte de la fecha)
+    fechas_con_registros = HistorialEquipo.objects.annotate(
+        fecha_truncada=TruncDate('fecha_eliminacion', output_field=DateField())
+    ).values('fecha_truncada').distinct()
+    
+    # Convertir las fechas a formato YYYY-MM-DD, filtrando None
+    fechas_formateadas = [fecha['fecha_truncada'].strftime('%Y-%m-%d') for fecha in fechas_con_registros if fecha['fecha_truncada'] is not None]
+    
+    # Obtener modelos únicos (excluyendo nulos o vacíos)
+    modelos = HistorialEquipo.objects.filter(modelo__isnull=False, modelo__gt='').values('modelo').distinct()
+    modelos_formateados = [modelo['modelo'] for modelo in modelos]
+    
+    # Obtener tipos únicos (excluyendo nulos)
+    tipos = HistorialEquipo.objects.filter(tipo__isnull=False).values('tipo').distinct()
+    tipos_formateados = []
+    for tipo in tipos:
+        try:
+            # Intentar obtener el nombre legible usando get_tipo_display
+            tipo_display = HistorialEquipo.TIPOS[tipo['tipo']][1] if hasattr(HistorialEquipo, 'TIPOS') else tipo['tipo']
+        except (KeyError, IndexError):
+            tipo_display = tipo['tipo'] or 'Desconocido'
+        tipos_formateados.append({'valor': tipo['tipo'], 'display': tipo_display})
+    
+    # Depuración: Verificar registros con fecha_eliminacion o tipo nulos
+    registros_nulos_fecha = HistorialEquipo.objects.filter(fecha_eliminacion__isnull=True)
+    if registros_nulos_fecha.exists():
+        print(f"Registros con fecha_eliminacion nula: {registros_nulos_fecha.count()}")
+        for registro in registros_nulos_fecha:
+            print(f"ID: {registro.id}, Marca: {registro.marca}, Modelo: {registro.modelo}, Serial: {registro.serial}, Tipo: {registro.tipo}")
+    
+    registros_sin_tipo = HistorialEquipo.objects.filter(tipo__isnull=True)
+    if registros_sin_tipo.exists():
+        print(f"Registros con tipo nulo: {registros_sin_tipo.count()}")
+        for registro in registros_sin_tipo:
+            print(f"ID: {registro.id}, Marca: {registro.marca}, Modelo: {registro.modelo}, Serial: {registro.serial}, Tipo: {registro.tipo}")
+    
+    print(f"Total registros: {historial.count()}")
+    print(f"Fechas con registros: {fechas_formateadas}")
+    print(f"Modelos únicos: {modelos_formateados}")
+    print(f"Tipos únicos: {tipos_formateados}")
+    for item in historial:
+        tipo_display = 'Nulo'
+        if item.tipo:
+            try:
+                tipo_display = item.get_tipo_display() if hasattr(item, 'get_tipo_display') else item.tipo
+            except (KeyError, IndexError):
+                tipo_display = item.tipo or 'Desconocido'
+        print(f"ID: {item.id}, Marca: {item.marca}, Modelo: {item.modelo}, Tipo: {tipo_display}, Fecha: {item.fecha_eliminacion}, Fecha formateada: {item.fecha_eliminacion.date() if item.fecha_eliminacion else 'Nula'}")
+    
+    return render(request, 'Equipos/historico.html', {
+        'historial': historial,
+        'fechas_con_registros': fechas_formateadas,
+        'modelos': modelos_formateados,
+        'tipos': tipos_formateados
+    })
 
 def detalle_equipo_json(request, equipo_id):
     equipo = get_object_or_404(Equipo, pk=equipo_id)
@@ -144,18 +202,13 @@ def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
 
 def listar_equipos(request):
-    # Obtener todos los equipos
     equipos_todos = Equipo.objects.all()
-
-    # Nueva clasificación por categorías
     equipos_categorias = {
         'equipos': ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'access_point', 'camara_web', 'disco_duro'],
         'accesorios': ['mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'generador_tono', 'tester', 'multimetro'],
         'licencias': ['licencia_informatica'],
         'materiales': ['cartucho', 'toner', 'botella_tinta'],
     }
-
-    # Filtrar equipos por categoría
     equipos_por_categoria = {
         'todos': equipos_todos,
         'equipos': equipos_todos.filter(tipo__in=equipos_categorias['equipos']),
@@ -163,16 +216,13 @@ def listar_equipos(request):
         'licencias': equipos_todos.filter(tipo__in=equipos_categorias['licencias']),
         'materiales': equipos_todos.filter(tipo__in=equipos_categorias['materiales']),
     }
-
-    # Crear un diccionario que mapee equipo.id a asignacion.id
-    asignaciones_dict = {asignacion.equipo.id: asignacion.id for asignacion in Asignacion.objects.all()}
-
+    asignaciones_dict = {asignacion.equipo.id: asignacion.id for asignacion in Asignacion.objects.filter(fecha_final__isnull=True)}
+    print("Asignaciones_dict:", asignaciones_dict)  # Para depuración
     context = {
         'equipos_por_categoria': equipos_por_categoria,
         'asignaciones_dict': asignaciones_dict,
     }
     return render(request, 'Equipos/Index.html', context)
-
 def crear_equipos(request):
     if request.method == 'POST':
         formulario = EquipoForm(request.POST)
@@ -245,6 +295,7 @@ def Listadeasignados(request):
     return render(request, 'Equipos/Listadeasignados.html', {'asignaciones': asignaciones})
 
 def desasignar(request, id):
+    print(f"Intentando desasignar asignación con ID: {id}")  # Depuración
     try:
         asignacion = Asignacion.objects.get(id=id)
         equipo = asignacion.equipo
@@ -253,8 +304,9 @@ def desasignar(request, id):
         equipo.save()
         messages.success(request, f'El equipo "{equipo.modelo}" ha sido desasignado.')
     except Asignacion.DoesNotExist:
+        print(f"No se encontró asignación con ID: {id}")  # Depuración
         messages.error(request, 'No se pudo encontrar la asignación.')
-    return redirect('asignar')
+    return redirect('equipos')  # Cambiado de 'asignar' a 'equipos'
 
 def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
