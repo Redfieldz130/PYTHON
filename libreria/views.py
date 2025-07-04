@@ -314,20 +314,16 @@ def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     if request.method == 'POST':
         try:
-            # Registrar en HistorialEquipo
-            historial = HistorialEquipo(
-                tipo=equipo.tipo,
+            # Registrar en historial antes de eliminar (opcional)
+            HistorialEquipo.objects.create(
                 marca=equipo.marca,
                 modelo=equipo.modelo,
                 serial=equipo.serial,
-                usuario_eliminacion=request.user if request.user.is_authenticated else None,
+                tipo=equipo.tipo,
+                fecha_eliminacion=timezone.now(),
+                # Agrega aquí otros campos necesarios según tu modelo
             )
-            historial.save()
-            # Eliminar asignaciones relacionadas
-            Asignacion.objects.filter(equipo=equipo).delete()
-            # Eliminar el equipo
             equipo.delete()
-            messages.success(request, f"El equipo {equipo.marca} {equipo.modelo} ha sido eliminado correctamente.")
             return JsonResponse({'status': 'success', 'message': 'Equipo eliminado correctamente'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': f'Error al eliminar el equipo: {str(e)}'}, status=500)
