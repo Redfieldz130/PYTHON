@@ -1,8 +1,7 @@
 {% load equipo_tags %}
 {%load static %}
 
-<div class="product-card" data-category="{{ equipo.tipo|default:'' }}" data-status="{{ equipo.estado|default:'' }}">
-    <div class="product-image">
+<div class="product-card" data-equipo-id="{{ equipo.id }}" data-category="{{ equipo.tipo|default:'' }}" data-status="{{ equipo.estado|default:'' }}">    <div class="product-image">
         {% with tipo=equipo.tipo|default:'' %}
             {% if tipo == 'laptop' %}<i class="fas fa-laptop"></i>
             {% elif tipo == 'impresora' %}<i class="fas fa-print"></i>
@@ -59,28 +58,10 @@
             <a href="{% url 'editar_equipo' equipo.id %}" class="btn-edit">Editar</a>
             {% endif %}
             {% if perms.libreria.delete_equipo %}
-            <button class="btn-delete" data-equipo-id="{{ equipo.id }}" onclick="confirmDelete(event, {{ equipo.id }})">Eliminar</button>
-        {% endif %}            
+            <button class="btn-delete" data-equipo-id="{{ equipo.id }}" onclick="confirmDelete(event, {{ equipo.id }})">Eliminar</button>        {% endif %}            
         </div>
     </div>
 </div>
 
-<script>
-    function confirmDelete(event, equipoId) {
-        event.preventDefault();
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Esta acción eliminará el equipo permanentemente. ¿Deseas continuar?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + equipoId).submit();
-            }
-        });
-    }
+
 </script>
