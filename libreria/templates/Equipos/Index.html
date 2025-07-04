@@ -52,6 +52,8 @@
         margin: 0 auto;
         padding: 20px;
         box-sizing: border-box;
+        min-height: calc(100vh - 160px);
+        margin-bottom: 80px; /* Espacio para el footer */
     }
 
     .inventory-header {
@@ -134,12 +136,19 @@
         margin-bottom: 30px;
     }
 
+    .product-card:nth-child(n+7) {
+    display: none; /* Ocultar todas las tarjetas a partir de la 7ma por defecto */
+    }
     .product-card {
         background-color: white;
         border-radius: var(--border-radius);
         overflow: hidden;
         box-shadow: var(--box-shadow);
         transition: var(--transition);
+    }
+
+    .product-card.hidden {
+        display: none !important; 
     }
 
     .product-card:hover {
@@ -160,7 +169,7 @@
     .product-info {
         padding: 20px;
         position: relative;
-        overflow: hidden; /* Asegura que .product-actions no desborde */
+        overflow: hidden;
     }
 
     .btn-actions {
@@ -181,7 +190,7 @@
     }
 
     .product-actions {
-        transform: translateX(100%); /* Inicialmente fuera a la derecha */
+        transform: translateX(100%);
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;
         display: flex;
@@ -191,7 +200,7 @@
     }
 
     .toggle-actions:checked ~ .product-actions {
-        transform: translateX(0); /* Se desliza a la posición original */
+        transform: translateX(0);
         opacity: 1;
     }
 
@@ -247,7 +256,7 @@
     .camara_web { background-color: #f3e5f5; color: #9c27b0; }
     .disco_duro { background-color: #e8f5e9; color: #43a047; }
 
-     .product-brand{
+    .product-brand {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 5px;
@@ -312,8 +321,8 @@
         display: flex;
         justify-content: center;
         gap: 15px;
-        margin-top: 30px;
-        margin-bottom: 100px;
+        margin-top: 20px;
+        margin-bottom: 30px;
     }
 
     .action-btn {
@@ -334,7 +343,26 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Modal styles */
+    .load-more-btn {
+        display: none; /* Oculto por defecto, mostrado por JS si hay más tarjetas */
+        margin: 20px auto;
+        padding: 10px 25px;
+        border-radius: 50px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .load-more-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
     .modal {
         display: none;
         position: fixed;
@@ -390,7 +418,7 @@
 
     @media (max-width: 768px) {
         .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) ;
         }
 
         .filter-section {
@@ -399,6 +427,21 @@
         }
 
         .filter-btn {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .load-more-btn {
             width: 100%;
             max-width: 300px;
         }
@@ -421,126 +464,133 @@
             width: 100%;
         }
     }
-    .todo-titulo-lista{
-        display:flex;
-        justify-content:space-between;
-        flex-wrap: wrap;  
-        label{
-            cursor: pointer;
-        }  
-        .check-lista{
-            display:none;
-        } 
+
+    .todo-titulo-lista {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
     }
-    :has(.check-lista:checked) .fa-list{
-        color:#4361ee;
+    .fa-list{
+        cursor: pointer;
     }
-    :has(.check-lista:checked) .products-grid{
-        grid-template-columns:1fr;
-        .product-card{
-            display:flex;
-            
-            /* justify-content:space-between; */
-            align-items:center;
-            
-            .product-image{
-                margin-left:1em;
-                font-size: 2em;
-                padding:0;
-                background:transparent;
-            }
-            .product-info{
-                font-size:.9em;
-                display: flex;
-                justify-content: flex-start;
-                flex: 1;
-                
-                
-            }
-            .product-main-info > * {
-                display: inline-block;
-                white-space: nowrap;
-                margin: 0;
-                padding: 0;
-            }
-            .product-desc{
-                display:flex;
-                flex-direction: column;
-                gap: 0.3em;
-                
-            }
-            .product-main-info{
-                display: flex;
-                flex-direction: row;
-                flex-wrap: nowrap;
-                gap: 0.5em;
-                align-items: center;
-            }
-            .product-actions{
-                margin-left: auto;
-                display: flex;
-
-            }
-            .product-brand{
-                font-size: 18px;
-                font-weight: 600;
-                margin-bottom: 0;
-                color: var(--dark-color);
-                margin: 0;
-                white-space: nowrap;
-            }
-
-            .product-name {
-                font-size: 14px;
-                color: #555;
-                margin-bottom: 0;
-                margin: 0;
-                white-space: nowrap;
-            }
-
-            .product-serial {
-                font-size: 13px;
-                color: #777;
-                margin-bottom: 0;
-                font-family: monospace;
-                margin: 0;
-                white-space: nowrap;
-            }
-            .product-category {
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: bold;
-                margin-bottom: 8px;
-            }
-
-            .product-status {
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: bold;
-                margin-bottom: 8px;
-            }
-            .product-tags {
-                display: flex;
-                flex-direction: row;
-                gap: 0.5em; /* Espacio entre tipo y estado */
-                margin-bottom: 0.3em;
-                flex-wrap: wrap;
-                }
-
-            .product-category,
-            .product-status {
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            
-            
-            
-        }
+    .check-lista {
+        display: none;
+          
     }
+    .box-check-lista{
+        width: 100%;
+        display: flex;
+        justify-content: end; 
+    }
+
+    :has(.check-lista:checked) .fa-list {
+        color: #4361ee;
+    }
+
+    :has(.check-lista:checked) .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    :has(.check-lista:checked) .product-card {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        width: auto;
+    }
+
+    :has(.check-lista:checked) .product-image {
+        margin-left: 1em;
+        font-size: 2em;
+        padding: 0;
+        background: transparent;
+        width: 80px;
+        height: auto;
+    }
+
+    :has(.check-lista:checked) .product-info {
+        font-size: .9em;
+        display: flex;
+        justify-content: flex-start;
+        flex: 1;
+        padding: 10px;
+    }
+
+    :has(.check-lista:checked) .product-main-info > * {
+        display: inline-block;
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+    }
+
+    :has(.check-lista:checked) .product-desc {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3em;
+    }
+
+    :has(.check-lista:checked) .product-main-info {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0.5em;
+        align-items: center;
+    }
+
+    :has(.check-lista:checked) .product-actions {
+        margin-left: auto;
+        display: flex;
+    }
+
+    :has(.check-lista:checked) .product-brand {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--dark-color);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    :has(.check-lista:checked) .product-name {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 0;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    :has(.check-lista:checked) .product-serial {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 0;
+        font-family: monospace;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    :has(.check-lista:checked) .product-category {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    :has(.check-lista:checked) .product-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    :has(.check-lista:checked) .product-tags {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5em;
+        margin-bottom: 0.3em;
+        flex-wrap: wrap;
+    }
+    
 </style>
 
 <div class="inventory-container">
@@ -561,14 +611,27 @@
         <input type="text" id="search-input" placeholder="Buscar por Tipo de equipo, Marca, Modelo o Serial...">
     </div>
 
+    {% if perms.libreria.add_equipo %}
+    <div class="action-buttons">
+        <a href="{% url 'crear_equipo' %}" class="action-btn btn btn-primary">
+            <i class="fas fa-plus"></i> Agregar Equipo
+        </a>
+        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export-excel">
+            <i class="fas fa-file-excel"></i> Exportar a Excel
+        </a>
+    </div>
+    {% endif %}
+
     <!-- Sección: Todos -->
+     <div class="box-check-lista">
+         <label>
+             <i class="fa-solid fa-list"></i>
+             <input type="checkbox" class='check-lista' />
+         </label>
+     </div>
     <div id="todos-section">
         <div class="todo-titulo-lista">
             <h2>Todos los elementos</h2>
-            <label >
-                <i class="fa-solid fa-list"></i>
-                <input type="checkbox" class='check-lista' />
-            </label>
         </div>
         <div class="products-grid">
             {% for equipo in equipos_por_categoria.todos %}
@@ -580,6 +643,7 @@
                 </div>
             {% endfor %}
         </div>
+        <button class="load-more-btn" data-section="todos">Cargar más</button>
     </div>
 
     <!-- Sección: Equipos -->
@@ -595,6 +659,7 @@
                 </div>
             {% endfor %}
         </div>
+        <button class="load-more-btn" data-section="equipos">Cargar más</button>
     </div>
 
     <!-- Sección: Accesorios -->
@@ -610,6 +675,7 @@
                 </div>
             {% endfor %}
         </div>
+        <button class="load-more-btn" data-section="accesorios">Cargar más</button>
     </div>
 
     <!-- Sección: Licencias -->
@@ -625,6 +691,7 @@
                 </div>
             {% endfor %}
         </div>
+        <button class="load-more-btn" data-section="licencias">Cargar más</button>
     </div>
 
     <!-- Sección: Materiales -->
@@ -640,20 +707,10 @@
                 </div>
             {% endfor %}
         </div>
+        <button class="load-more-btn" data-section="materiales">Cargar más</button>
     </div>
 
-    {% if perms.libreria.add_equipo %}
-    <div class="action-buttons">
-        <a href="{% url 'crear_equipo' %}" class="action-btn btn btn-primary">
-            <i class="fas fa-plus"></i> Agregar Equipo
-        </a>
-        <a href="{% url 'exportar_excel' %}" class="action-btn btn btn-export-excel">
-            <i class="fas fa-file-excel"></i> Exportar a Excel
-        </a>
-    </div>
-    {% endif %}
-
-    <!-- Modal para detalles -->
+    <!-- Modal para Detalles -->
     <div id="productModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">×</span>
@@ -662,204 +719,4 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const sections = document.querySelectorAll('div[id$="-section"]');
-    const searchInput = document.getElementById('search-input');
-    const productCards = document.querySelectorAll('.product-card');
-    const modal = document.getElementById('productModal');
-    const closeModal = document.querySelector('.close-modal');
-    const modalProductName = document.getElementById('modal-product-name');
-    const modalProductDetails = document.getElementById('modal-product-details');
-
-    // Calcular el ancho de la barra de desplazamiento
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-    // Manejar el cambio de categoría
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const category = this.getAttribute('data-category');
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-
-            sections.forEach(section => {
-                section.style.display = section.id === `${category}-section` ? 'block' : 'none';
-            });
-
-            // Resetear búsqueda al cambiar de categoría
-            searchInput.value = '';
-            productCards.forEach(card => card.style.display = 'block');
-            document.querySelectorAll('.no-results').forEach(noResult => noResult.style.display = 'none');
-        });
-    });
-
-    // Filtrado por búsqueda
-    searchInput.addEventListener('input', function () {
-        const searchTerm = this.value.toLowerCase();
-        const activeSection = document.querySelector('div[id$="-section"]:not([style*="display: none"])');
-        const cards = activeSection.querySelectorAll('.product-card');
-
-        cards.forEach(card => {
-            const brand = card.querySelector('.product-brand').textContent.toLowerCase();
-            const category = card.querySelector('.product-category').textContent.toLowerCase();
-            const model = card.querySelector('.product-name').textContent.toLowerCase();
-            const serial = card.querySelector('.product-serial').textContent.toLowerCase();
-            const matches = brand.includes(searchTerm) || model.includes(searchTerm) || serial.includes(searchTerm) || category.includes(searchTerm);
-            card.style.display = matches ? 'block' : 'none';
-        });
-
-        // Mostrar mensaje si no hay resultados
-        const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
-        const noResults = activeSection.querySelector('.no-results');
-        if (visibleCards.length === 0) {
-            noResults.style.display = 'block';
-        } else {
-            noResults.style.display = 'none';
-        }
-    });
-
-    // Mostrar detalles del producto en el modal
-    document.querySelectorAll('.btn-details').forEach(button => {
-        button.addEventListener('click', function () {
-            const card = this.closest('.product-card');
-            const productName = card.querySelector('.product-name').textContent;
-            const details = JSON.parse(this.getAttribute('data-details'));
-
-            modalProductName.textContent = productName;
-            modalProductDetails.innerHTML = '';
-
-            // Definir campos generales según la matriz
-            const generalFields = {
-                'tipo': 'Tipo',
-                'marca': 'Marca',
-                'modelo': 'Modelo',
-                'serial': 'Serial',
-                'fecha_compra': 'Fecha de Compra',
-                'valor_compra': 'Valor de Compra',
-                'ubicacion': 'Ubicación',
-                'empleado_responsable': 'Empleado Responsable',
-                'proveedor': 'Proveedor',
-                'fecha_fabricacion': 'Fecha de Fabricación',
-                'vida_util_anios': 'Vida Útil (Años)',
-                'nombre_red': 'Nombre de Red',
-                'fecha_recepcion': 'Fecha de Recepción',
-                'fecha_mantenimiento': 'Fecha de Mantenimiento',
-                'observaciones': 'Observaciones'
-            };
-
-            // Definir campos específicos según la matriz
-            const deviceFields = {
-                'laptop': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla', 'resolucion'],
-                'impresora': ['impresora_tipo', 'impresora_velocidad_ppm', 'impresora_color', 'impresora_conexion'],
-                'cpu': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'cpu_formato_diseno'],
-                'monitor': ['size_pantalla', 'resolucion'],
-                'proyector': ['size_pantalla', 'resolucion', 'proyector_lumens'],
-                'ups': ['ups_vatios', 'ups_fecha_bateria'],
-                'scanner': ['scanner_velocidad', 'scanner_color'],
-                'pantalla_proyector': ['size_pantalla', 'pantalla_proyector_tipo'],
-                'tablet': ['mac_address', 'sistema_operativo', 'sistema_operativo_version', 'sistema_operativo_bits', 'almacenamiento_capacidad', 'memoria', 'size_pantalla'],
-                'server': ['mac_address', 'procesador_marca', 'procesador_velocidad', 'procesador_generacion', 'memoria', 'almacenamiento_capacidad', 'server_numero_procesadores'],
-                'router': [],
-                'generador_tono': [],
-                'tester': [],
-                'multimetro': [],
-                'access_point': [],
-                'licencia_informatica': ['licencia_tipo', 'licencia_clase'],
-                'mouse': ['mouse_tipo', 'mouse_conexion'],
-                'teclado': [],
-                'headset': [],
-                'bocina': [],
-                'brazo_monitor': [],
-                'memoria_usb': [],
-                'pointer': [],
-                'kit_herramientas': [],
-                'cartucho': [],
-                'toner': [],
-                'botella_tinta': [],
-                'camara_web': [],
-                'disco_duro': ['almacenamiento_capacidad', 'clase_disco']
-            };
-
-            // Mapa de nombres de campos para mostrar en el modal
-            const fieldNames = {
-                'mac_address': 'Dirección MAC',
-                'procesador_marca': 'Marca del Procesador',
-                'procesador_velocidad': 'Velocidad del Procesador (GHz)',
-                'procesador_generacion': 'Generación del Procesador',
-                'sistema_operativo': 'Sistema Operativo',
-                'sistema_operativo_version': 'Versión del Sistema Operativo',
-                'sistema_operativo_bits': 'Bits del Sistema Operativo',
-                'almacenamiento_capacidad': 'Capacidad de Almacenamiento (GB)',
-                'memoria': 'Memoria (GB)',
-                'size_pantalla': 'Tamaño de Pantalla (pulgadas)',
-                'resolucion': 'Resolución',
-                'impresora_tipo': 'Tipo de Impresora',
-                'impresora_velocidad_ppm': 'Velocidad (PPM)',
-                'impresora_color': 'Color',
-                'impresora_conexion': 'Conexión',
-                'proyector_lumens': 'Lúmenes',
-                'ups_vatios': 'Vatios',
-                'ups_fecha_bateria': 'Fecha de Batería',
-                'scanner_velocidad': 'Velocidad',
-                'scanner_color': 'Color',
-                'pantalla_proyector_tipo': 'Tipo de Pantalla',
-                'server_numero_procesadores': 'Número de Procesadores',
-                'licencia_tipo': 'Tipo de Licencia',
-                'licencia_clase': 'Clase de Licencia',
-                'mouse_tipo': 'Tipo de Mouse',
-                'mouse_conexion': 'Conexión',
-                'clase_disco': 'Clase de Disco',
-                'cpu_formato_diseno': 'Formato/Diseño'
-            };
-
-            // Mostrar campos generales
-            for (const [key, label] of Object.entries(generalFields)) {
-                if (details[key]) {
-                    const div = document.createElement('div');
-                    div.className = 'feature-item';
-                    div.innerHTML = `<span class="feature-name">${label}</span><span class="feature-value">${details[key]}</span>`;
-                    modalProductDetails.appendChild(div);
-                }
-            }
-
-            // Mostrar campos específicos según el tipo
-            const tipo = details['tipo'].toLowerCase();
-            if (deviceFields[tipo]) {
-                deviceFields[tipo].forEach(field => {
-                    if (details[field]) {
-                        const div = document.createElement('div');
-                        div.className = 'feature-item';
-                        div.innerHTML = `<span class="feature-name">${fieldNames[field]}</span><span class="feature-value">${details[field]}</span>`;
-                        modalProductDetails.appendChild(div);
-                    }
-                });
-            }
-
-            // Agregar clase modal-open y compensar el ancho de la barra
-            document.body.classList.add('modal-open');
-            document.body.style.marginRight = `${scrollbarWidth}px`;
-            modal.style.display = 'flex';
-        });
-    });
-
-    // Cerrar el modal
-    closeModal.addEventListener('click', function () {
-        document.body.classList.remove('modal-open');
-        document.body.style.marginRight = '0px';
-        modal.style.display = 'none';
-    });
-
-    // Cerrar el modal al clicar fuera de él
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            document.body.classList.remove('modal-open');
-            document.body.style.marginRight = '0px';
-            modal.style.display = 'none';
-        }
-    });
-});
-</script>
-
 {% endblock %}

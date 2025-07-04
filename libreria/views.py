@@ -11,6 +11,7 @@ from docx import Document
 from openpyxl.styles import Font
 from django.db.models.functions import TruncDate
 from django.db.models import DateField
+from django.views.decorators.http import require_POST
 
 def historico_equipos(request):
     # Obtener todos los registros ordenados por fecha de eliminación
@@ -308,22 +309,29 @@ def desasignar(request, id):
         messages.error(request, 'No se pudo encontrar la asignación.')
     return redirect('equipos')  # Cambiado de 'asignar' a 'equipos'
 
+@require_POST
 def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     if request.method == 'POST':
-        historial = HistorialEquipo(
-            tipo=equipo.tipo,
-            marca=equipo.marca,
-            modelo=equipo.modelo,
-            serial=equipo.serial,
-            usuario_eliminacion=request.user if request.user.is_authenticated else None,
-        )
-        historial.save()
-        Asignacion.objects.filter(equipo=equipo).delete()
-        equipo.delete()
-        messages.success(request, f"El equipo {equipo.marca} {equipo.modelo} ha sido eliminado correctamente.")
-        return redirect('equipos')
-    return render(request, 'Equipos/confirmar_eliminacion.html', {'equipo': equipo})
+        try:
+            # Registrar en HistorialEquipo
+            historial = HistorialEquipo(
+                tipo=equipo.tipo,
+                marca=equipo.marca,
+                modelo=equipo.modelo,
+                serial=equipo.serial,
+                usuario_eliminacion=request.user if request.user.is_authenticated else None,
+            )
+            historial.save()
+            # Eliminar asignaciones relacionadas
+            Asignacion.objects.filter(equipo=equipo).delete()
+            # Eliminar el equipo
+            equipo.delete()
+            messages.success(request, f"El equipo {equipo.marca} {equipo.modelo} ha sido eliminado correctamente.")
+            return JsonResponse({'status': 'success', 'message': 'Equipo eliminado correctamente'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error al eliminar el equipo: {str(e)}'}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
 def liberar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)

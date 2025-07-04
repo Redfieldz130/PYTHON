@@ -10,7 +10,7 @@
             {% elif tipo == 'monitor' %}<i class="fa-solid fa-tv"></i>
             {% elif tipo == 'proyector' %}<i class="fas fa-projector"></i>
             {% elif tipo == 'ups' %}<i class="fas fa-battery-full"></i>
-            {% elif tipo == 'scanner' %}<i class="fas fa-scanner"></i>
+            {% elif tipo == 'scanner' %}<i class="fa-solid fa-barcode"></i>
             {% elif tipo == 'pantalla_proyector' %}<i class="fas fa-tv"></i>
             {% elif tipo == 'tablet' %}<i class="fas fa-tablet-alt"></i>
             {% elif tipo == 'server' %}<i class="fas fa-server"></i>
@@ -54,13 +54,13 @@
         </div>
         </div>
         <div class="product-actions">
-            <button class="btn-details" data-details='{{ equipo.detalles_json }}'>Detalles</button>
+            <button class="btn-details" data-equipo-id="{{ equipo.id }}">Detalles</button>
             {% if perms.libreria.change_equipo %}
             <a href="{% url 'editar_equipo' equipo.id %}" class="btn-edit">Editar</a>
             {% endif %}
             {% if perms.libreria.delete_equipo %}
-            <a href="{% url 'borrar_equipo' equipo.id %}" class="btn-delete">Eliminar</a>
-            {% endif %}            
+            <button class="btn-delete" data-equipo-id="{{ equipo.id }}" onclick="confirmDelete(event, {{ equipo.id }})">Eliminar</button>
+        {% endif %}            
         </div>
     </div>
 </div>
