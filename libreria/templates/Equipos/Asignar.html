@@ -8,13 +8,7 @@
         <h4 class="mb-0 font-weight-bold">Asignación de Equipos</h4>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-success alert-flotante mt-3">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+    
 
     {% if perms.libreria.asignar_equipo %}
     <div class="text-center mt-4">
@@ -24,7 +18,7 @@
 
     <div id="formularioAsignacion" class="mt-4 d-none">
         {% if perms.libreria.asignar_equipo %}
-        <form method="post">
+        <form id="form-asignar" method="post">
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -35,6 +29,10 @@
                 <div class="col-md-6 mb-3">
                     <label for="correo_institucional" class="form-label">Correo Institucional</label>
                     <input type="email" class="form-control form-control-sm" name="correo_institucional" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="colaborador_cedula" class="form-label">Cedula del colaborador</label>
+                    <input type="text" class="form-control form-control-sm" name="colaborador_cedula" required>
                 </div>
 
                 <!-- Filtro por tipo -->

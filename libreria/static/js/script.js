@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const checkLista = document.querySelector('.check-lista');
     const todosSection = document.getElementById('todos-section');
+    const exportBtn = document.getElementById('exportar-excel-btn');
 
     // Función para mostrar detalles del equipo en el modal
     function showEquipmentDetails(data) {
@@ -133,27 +134,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para manejar la visibilidad de tarjetas respetando el modo y el límite inicial
     function updateCardVisibility(section) {
         const grid = section.querySelector('.products-grid');
-        const cards = grid.querySelectorAll('.product-card');
+        const cards = Array.from(grid.querySelectorAll('.product-card')).filter(card => card.style.display !== 'none');
         const loadMoreBtn = section.querySelector('.load-more-btn');
-        let visibleCount = parseInt(loadMoreBtn.dataset.visibleCount) || maxCards; // Forzar inicialización a maxCards si no está definido
+        let visibleCount = parseInt(loadMoreBtn.dataset.visibleCount) || maxCards;
         const isListMode = checkLista ? checkLista.checked : false;
 
+        Array.from(grid.querySelectorAll('.product-card')).forEach(card => {
+            if (card.style.display !== 'none') {
+                card.style.display = isListMode ? 'flex' : 'block';
+            }
+        });
+
         cards.forEach((card, index) => {
-            // Restaurar display y aplicar límite de visibilidad
-            card.style.display = isListMode ? 'flex' : 'block'; // Aplicar display según modo
             if (index >= visibleCount) {
-                card.classList.add('hidden'); // Forzar ocultar las excedentes
+                card.classList.add('hidden');
             } else {
-                card.classList.remove('hidden'); // Mostrar las primeras 6
+                card.classList.remove('hidden');
             }
         });
 
         loadMoreBtn.style.display = visibleCount < cards.length ? 'block' : 'none';
-
-        const noResults = grid.querySelector('.no-results');
-        if (noResults) {
-            noResults.style.display = cards.length === 0 ? 'block' : 'none';
-        }
+        // No tocar el mensaje .no-results aquí
     }
 
     // Inicializar visibilidad para todas las secciones, asegurando que todos-section sea visible
@@ -206,7 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.classList.remove('hidden');
                 card.style.display = checkLista ? checkLista.checked ? 'flex' : 'block' : 'block'; // Restaurar display según modo
             });
-            document.querySelectorAll('.no-results').forEach(noResult => noResult.style.display = 'none');
+            const activeSection = document.getElementById(`${category}-section`);
+            const cards = activeSection.querySelectorAll('.product-card');
+            const noResults = activeSection.querySelector('.no-results');
+            if (noResults) {
+                noResults.style.display = cards.length === 0 ? 'block' : 'none';
+            }
+            exportBtn.setAttribute('data-category', this.getAttribute('data-category'));
         });
     });
 
@@ -217,22 +224,42 @@ document.addEventListener('DOMContentLoaded', function() {
         const cards = activeSection.querySelectorAll('.product-card');
         let visibleCount = 0;
 
+        // Filtra y cuenta las visibles
         cards.forEach(card => {
-            const brand = card.querySelector('.product-brand').textContent.toLowerCase();
-            const category = card.querySelector('.product-category').textContent.toLowerCase();
-            const model = card.querySelector('.product-name').textContent.toLowerCase();
-            const serial = card.querySelector('.product-serial').textContent.toLowerCase();
+            const brand = card.querySelector('.product-brand')?.textContent.trim().toLowerCase() || '';
+            const category = card.querySelector('.product-category')?.textContent.trim().toLowerCase() || '';
+            const model = card.querySelector('.product-name')?.textContent.trim().toLowerCase() || '';
+            const serial = card.querySelector('.product-serial')?.textContent.trim().toLowerCase() || '';
             const matches = brand.includes(searchTerm) || model.includes(searchTerm) || serial.includes(searchTerm) || category.includes(searchTerm);
-            card.style.display = matches ? (checkLista ? checkLista.checked ? 'flex' : 'block' : 'block') : 'none'; // Aplicar display según modo
+
+            card.style.display = matches ? (checkLista ? checkLista.checked ? 'flex' : 'block' : 'block') : 'none';
             if (matches) visibleCount++;
         });
 
+        // Mostrar/ocultar mensaje de no resultados según las cards visibles
         const noResults = activeSection.querySelector('.no-results');
-        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        if (noResults) {
+            // Solo cuenta las cards realmente visibles (no display:none)
+            const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+            if (visibleCards.length === 0) {
+                if (searchTerm) {
+                    noResults.querySelector('h3').textContent = 'No hay coincidencias';
+                    noResults.querySelector('p').textContent = 'No se encontraron resultados para tu búsqueda.';
+                } else {
+                    noResults.querySelector('h3').textContent = noResults.dataset.defaultTitle || noResults.querySelector('h3').textContent;
+                    noResults.querySelector('p').textContent = noResults.dataset.defaultText || noResults.querySelector('p').textContent;
+                }
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
 
         const loadMoreBtn = activeSection.querySelector('.load-more-btn');
-        loadMoreBtn.dataset.visibleCount = maxCards; // Reiniciar a 6 tras búsqueda
-        updateCardVisibility(activeSection);
+        if (loadMoreBtn) {
+            loadMoreBtn.dataset.visibleCount = maxCards;
+            updateCardVisibility(activeSection);
+        }
     });
 
     // Activar/desactivar modo lista con checkbox
@@ -250,10 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
     window.confirmDelete = function(event, equipoId) {
         event.preventDefault(); // Prevenir cualquier comportamiento predeterminado
-        console.log('ConfirmDelete llamado para equipoId:', equipoId); // Depuración
-
         Swal.fire({
             title: '¿Estás seguro?',
             text: '¡Esta acción eliminará el equipo permanentemente!',
@@ -265,32 +291,25 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log('Enviando solicitud a /equipo/borrar/' + equipoId + '/'); // Depuración
                 fetch(`/equipo/borrar/${equipoId}/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken') // Obtener el token CSRF
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
                 .then(response => {
-                    console.log('Respuesta recibida:', response); // Depuración
                     if (!response.ok) {
                         throw new Error('Respuesta no exitosa: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Datos recibidos:', data); // Depuración
                     if (data.status === 'success') {
                         Swal.fire('Eliminado', data.message, 'success').then(() => {
-                            console.log('Eliminando tarjeta del DOM para equipoId:', equipoId); // Depuración
                             const card = document.querySelector(`[data-equipo-id="${equipoId}"]`).closest('.product-card');
                             if (card) {
                                 card.remove();
-                                console.log('Tarjeta eliminada del DOM'); // Depuración
-                            } else {
-                                console.log('No se encontró la tarjeta para eliminar'); // Depuración
                             }
                             updateCardVisibility(document.querySelector('div[id$="-section"]:not([style*="display: none"])'));
                         });
@@ -299,27 +318,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .catch(error => {
-                    console.error('Error en la solicitud:', error); // Depuración
                     Swal.fire('Error', 'Ocurrió un problema al eliminar el equipo: ' + error.message, 'error');
                 });
             }
         });
     };
 
-    // Función para obtener cookie (necesaria para CSRF)
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+    exportBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const categoria = exportBtn.getAttribute('data-category');
+        window.location.href = `/equipos/exportar-excel/?categoria=${categoria}`;
+    });
+
+    // Script para el formulario de asignar equipo
+    const form = document.getElementById('form-asignar');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            fetch("{% url 'asignar_equipo_ajax' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({
+                    icon: data.status === 'success' ? 'success' : 'error',
+                    title: data.message
+                });
+                if (data.status === 'success') {
+                    setTimeout(() => window.location.reload(), 1500);
                 }
-            }
-        }
-        console.log('CSRF Token para', name, ':', cookieValue); // Depuración
-        return cookieValue;
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Ocurrió un error al asignar el equipo.', 'error');
+            });
+        });
     }
 });

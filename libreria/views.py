@@ -12,6 +12,8 @@ from openpyxl.styles import Font
 from django.db.models.functions import TruncDate
 from django.db.models import DateField
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
 
 def historico_equipos(request):
     # Obtener todos los registros ordenados por fecha de eliminación
@@ -136,6 +138,19 @@ def eliminar_equipos_seleccionados(request):
     return redirect('equipos')
 
 def exportar_excel(request):
+    categoria = request.GET.get('categoria', 'todos')
+    equipos = Equipo.objects.all()
+    if categoria != 'todos':
+        categorias_dict = {
+            'equipos': ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'access_point', 'camara_web', 'disco_duro'],
+            'accesorios': ['mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'generador_tono', 'tester', 'multimetro'],
+            'licencias': ['licencia_informatica'],
+            'materiales': ['cartucho', 'toner', 'botella_tinta'],
+        }
+        if categoria in categorias_dict:
+            equipos = equipos.filter(tipo__in=categorias_dict[categoria])
+        else:
+            equipos = Equipo.objects.none()
     # Crear un libro de trabajo y una hoja
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -150,9 +165,6 @@ def exportar_excel(request):
         cell = ws.cell(row=1, column=col_num)
         cell.value = header
         cell.font = Font(bold=True)
-
-    # Obtener todos los equipos
-    equipos = Equipo.objects.all()
 
     # Llenar datos
     for row_num, equipo in enumerate(equipos, 2):
@@ -268,19 +280,23 @@ def asignar(request):
     asignaciones = Asignacion.objects.all()
 
     if request.method == 'POST':
+        print(request.POST)  # Depuración: imprime los datos enviados
         formulario = AsignacionForm(request.POST)
         if formulario.is_valid():
+            print(formulario.cleaned_data)  # Depuración: imprime los datos validados
             equipo = formulario.cleaned_data['equipo']
             if Asignacion.objects.filter(equipo=equipo, fecha_final__isnull=True).exists():
                 messages.error(request, f'El equipo "{equipo.modelo}" ya está asignado actualmente.')
                 return redirect('asignar')
             asignacion = formulario.save()
+            print(f"Asignación creada: ID={asignacion.id}, Cédula={asignacion.colaborador_cedula}")  # Depuración
             equipo.estado = 'Asignado'
             equipo.save()
-            messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado correctamente.')
+            messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado a {asignacion.colaborador_nombre} (Cédula: {asignacion.colaborador_cedula}).')
             return redirect('asignar')
         else:
             messages.error(request, 'Error en el formulario de asignación. Por favor, revise los campos.')
+            print(formulario.errors)  # Depuración: imprime errores del formulario
     else:
         formulario = AsignacionForm()
     return render(request, 'Equipos/Asignar.html', {
@@ -290,7 +306,6 @@ def asignar(request):
         'fecha_hoy': timezone.now().date(),
         'formulario': formulario,
     })
-
 def Listadeasignados(request):
     asignaciones = Asignacion.objects.all()
     return render(request, 'Equipos/Listadeasignados.html', {'asignaciones': asignaciones})
@@ -380,17 +395,17 @@ def generar_constancia(request, asignacion_id):
     fecha_entrega = asignacion.fecha_entrega.strftime("%d de %B de %Y")
     fecha_final = asignacion.fecha_final.strftime("%d de %B de %Y") if asignacion.fecha_final else "No aplica"
     mac_address = equipo.mac_address if equipo.mac_address else "No disponible"
-
+    colaborador_cedula = asignacion.colaborador_cedula if asignacion.colaborador_cedula else "No disponible"
+    print(f"Colaborador Cedula: '{colaborador_cedula}'")  # Depuración
     plantilla_path = 'C:/Users/efrain.delacruz/Desktop/PYTHON-1/static/Word.docx'
     doc = Document(plantilla_path)
-
     reemplazar_texto(doc, '{{ nombreempleado }}', nombre_empleado)
     reemplazar_texto(doc, '{{ equipodescripcion }}', f'{equipo.marca} {equipo.modelo}')
     reemplazar_texto(doc, '{{ equiposerial }}', equipo.serial)
     reemplazar_texto(doc, '{{ macaddress }}', mac_address)
     reemplazar_texto(doc, '{{ fecha_entrega }}', fecha_entrega)
     reemplazar_texto(doc, '{{ fecha_final }}', fecha_final)
-
+    reemplazar_texto(doc, '{{ cedulaempleado }}', colaborador_cedula)
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename=constancia_salida_{equipo.id}.docx'
     doc.save(response)
@@ -398,14 +413,26 @@ def generar_constancia(request, asignacion_id):
 
 def reemplazar_texto(doc, marcador, texto):
     """ Reemplaza texto en el documento, incluyendo párrafos y tablas. """
+    texto = str(texto)  # Asegura que el texto sea string
     for p in doc.paragraphs:
         if marcador in p.text:
-            for run in p.runs:
-                run.text = run.text.replace(marcador, texto)
+            print(f"Reemplazando '{marcador}' con '{texto}' en párrafo: {p.text}")  # Depuración
+            p.text = p.text.replace(marcador, texto)
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for p in cell.paragraphs:
                     if marcador in p.text:
-                        for run in p.runs:
-                            run.text = run.text.replace(marcador, texto)
+                        print(f"Reemplazando '{marcador}' con '{texto}' en celda: {p.text}")  # Depuración
+                        p.text = p.text.replace(marcador, texto)
+
+@csrf_exempt
+def asignar_equipo_ajax(request):
+    if request.method == 'POST':
+        # Procesa los datos del formulario
+        # ...
+        if equipo_ya_asignado:
+            return JsonResponse({'status': 'error', 'message': 'El equipo ya está asignado.'})
+        # Si todo está bien:
+        return JsonResponse({'status': 'success', 'message': 'Equipo asignado correctamente.'})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})

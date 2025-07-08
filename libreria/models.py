@@ -139,7 +139,7 @@ class Asignacion(models.Model):
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
     fecha_entrega = models.DateField(default=timezone.now)
     fecha_final = models.DateField(null=True, blank=True)
-
+    colaborador_cedula = models.CharField(max_length=13, null=True, blank=True)
     def __str__(self):
         return f"{self.colaborador_nombre} - {self.equipo.marca} {self.equipo.modelo}"
     

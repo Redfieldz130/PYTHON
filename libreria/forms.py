@@ -130,9 +130,12 @@ class EquipoForm(forms.ModelForm):
 class AsignacionForm(forms.ModelForm):
     class Meta:
         model = Asignacion
-        fields = ['colaborador_nombre', 'correo_institucional', 'equipo']
+        fields = ['colaborador_nombre', 'correo_institucional', 'colaborador_cedula', 'equipo', 'fecha_entrega', 'fecha_final']
         widgets = {
             'colaborador_nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'correo_institucional': forms.EmailInput(attrs={'class': 'form-control'}),
+            'colaborador_cedula': forms.TextInput(attrs={'class': 'form-control'}),
             'equipo': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_entrega': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_final': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
