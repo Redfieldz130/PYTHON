@@ -6,29 +6,6 @@ import re
 from django.db import models
 from django.contrib.auth.models import User
 
-class HistorialEquipo(models.Model):
-    tipo = models.CharField(max_length=100, blank=True, null=True)
-    marca = models.CharField(max_length=100, blank=True, null=True)
-    modelo = models.CharField(max_length=100, blank=True, null=True)
-    serial = models.CharField(max_length=100, blank=True, null=True)
-    fecha_eliminacion = models.DateTimeField(auto_now_add=True)
-    usuario_eliminacion = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='equipos_eliminados')
-
-    def __str__(self):
-        return f"{self.marca} {self.modelo} (Serial: {self.serial})"
-
-    class Meta:
-        verbose_name = "Historial de Equipo"
-        verbose_name_plural = "Historial de Equipos"
-def validate_mac_address(value):
-    """Valida que el valor sea un MAC address válido."""
-    if value:  # Permitir vacío porque es opcional
-        mac_address_regex = re.compile(r'^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$')
-        if not mac_address_regex.match(value):
-            raise ValidationError('El MAC address debe tener el formato XX:XX:XX:XX:XX:XX.')
-
-from django.db import models
-
 class Equipo(models.Model):
     TIPOS = (
         ('laptop', 'Laptop'),
@@ -132,6 +109,35 @@ class Equipo(models.Model):
     def __str__(self):
         return f"{self.marca} {self.modelo} ({self.serial})"
 
+class HistorialEquipo(models.Model):
+    ACCION_CHOICES = [
+        ('creado', 'Creado'),
+        ('editado', 'Editado'),
+        ('eliminado', 'Eliminado'),
+        ('asignado', 'Asignado'),
+        ('desasignado', 'Desasignado'),
+    ]
+    equipo = models.ForeignKey('libreria.Equipo', on_delete=models.SET_NULL, null=True, blank=True)
+    accion = models.CharField(max_length=20, choices=ACCION_CHOICES)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    tipo = models.CharField(max_length=100, blank=True, null=True)
+    marca = models.CharField(max_length=100, blank=True, null=True)
+    modelo = models.CharField(max_length=100, blank=True, null=True)
+    serial = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.get_accion_display()} - {self.marca} {self.modelo} ({self.serial})"
+
+    class Meta:
+        verbose_name = "Historial de Equipo"
+        verbose_name_plural = "Historial de Equipos"
+def validate_mac_address(value):
+    """Valida que el valor sea un MAC address válido."""
+    if value:  # Permitir vacío porque es opcional
+        mac_address_regex = re.compile(r'^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$')
+        if not mac_address_regex.match(value):
+            raise ValidationError('El MAC address debe tener el formato XX:XX:XX:XX:XX:XX.')
 class Asignacion(models.Model):
     equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
     colaborador_nombre = models.CharField(max_length=100)
@@ -139,7 +145,6 @@ class Asignacion(models.Model):
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
     fecha_entrega = models.DateField(default=timezone.now)
     fecha_final = models.DateField(null=True, blank=True)
-    colaborador_cedula = models.CharField(max_length=13, null=True, blank=True)
+    colaborador_cedula = models.CharField(max_length=20, blank=True, null=True)
     def __str__(self):
         return f"{self.colaborador_nombre} - {self.equipo.marca} {self.equipo.modelo}"
-    

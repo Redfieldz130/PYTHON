@@ -126,11 +126,13 @@
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s ease;
+            pointer-events: none;
             
         }
 
         .footer.visible {
             opacity: 1;
+            pointer-events: auto;
         }
 
         .logo-img {
@@ -153,8 +155,83 @@
         }
         .modal-dialog {
             pointer-events: auto !important;
+            margin: auto;
+            max-width: 800px;
+            /* Elimina estas dos líneas para centrar el modal */
+            /* margin-right: 0; */
+            /* margin-left: auto; */
         }
 
+        .modal-content {
+            background-color: #fff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 32px 32px 24px 32px;
+    box-shadow: 0 8px 32px rgba(67, 97, 238, 0.18), 0 1.5px 8px rgba(0,0,0,0.08);
+    position: relative;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: none;
+    background: linear-gradient(90deg, #4361ee 60%, #4895ef 100%);
+    color: #fff;
+    border-radius: 16px 16px 0 0;
+    padding: 24px 32px 16px 32px;
+}
+
+.modal-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.modal-body {
+    padding: 24px 0 0 0;
+}
+
+.feature-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.05rem;
+}
+
+.feature-item:last-child {
+    border-bottom: none;
+}
+
+.feature-name {
+    color: #3f37c9;
+    font-weight: 500;
+}
+
+.feature-value {
+    font-weight: 600;
+    color: #212529;
+}
+
+.close-modal, .btn-close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    font-size: 1.5rem;
+    color: #fff;
+    background: none;
+    border: none;
+    opacity: 0.8;
+    z-index: 10;
+}
+
+.close-modal:hover, .btn-close:hover {
+    opacity: 1;
+    color: #f94144;
+}
+       
     </style>
     
 </head>
@@ -279,248 +356,109 @@
         });
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const footer = document.querySelector('.footer');
-        const marker = document.getElementById('end-of-page-marker');
+        document.addEventListener("DOMContentLoaded", function () {
+            const footer = document.querySelector('.footer');
+            const marker = document.getElementById('end-of-page-marker');
 
-        // Mostrar el footer si el contenido es más corto que la ventana
-        if (document.documentElement.scrollHeight <= window.innerHeight) {
-            footer.classList.add('visible');
-        }
-
-        const observer = new IntersectionObserver(function(entries) {
-            console.log('Marcador visible:', entries[0].isIntersecting); // Para depuración
-            if (entries[0].isIntersecting) {
+            // Mostrar el footer si el contenido es más corto que la ventana
+            if (document.documentElement.scrollHeight <= window.innerHeight) {
                 footer.classList.add('visible');
-            } else {
-                footer.classList.remove('visible');
             }
-        }, { threshold: 0 }); // Umbral 0 para detectar cualquier intersección
 
-        observer.observe(marker);
-    });
-</script>
-<div class="modal fade" id="detalleEquipoModal" tabindex="-1" aria-labelledby="detalleEquipoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="detalleEquipoModalLabel">Detalles del Equipo</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            const observer = new IntersectionObserver(function(entries) {
+                console.log('Marcador visible:', entries[0].isIntersecting); // Para depuración
+                if (entries[0].isIntersecting) {
+                    footer.classList.add('visible');
+                } else {
+                    footer.classList.remove('visible');
+                }
+            }, { threshold: 0 }); // Umbral 0 para detectar cualquier intersección
+
+            observer.observe(marker);
+        });
+    </script>
+    <div class="modal fade" id="detalleEquipoModal" tabindex="-1" aria-labelledby="detalleEquipoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+        <div class="modal-content border-3 border-primary rounded-4 shadow" style=" !important; padding: 0;">
+            <div class="modal-header rounded-top-4 py-2 px-3" style="background: linear-gradient(90deg, #4361ee 60%, #4895ef 100%); color: #fff;">
+                <h5 class="modal-title fw-bold" id="detalleEquipoModalLabel" style="font-size: 1.50rem;">Detalles del Equipo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
-                <!-- Sección de Información Básica -->
-                <div class="accordion" id="accordionDetails">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBasic">
+            <div class="modal-body px-3 py-2" style="background: #fff;">
+                <div class="accordion" id="accordionEquipoDetalles">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header" id="headingBasico">
+                            <button class="accordion-button px-0 py-2 bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBasico" aria-expanded="true" aria-controls="collapseBasico" style="background: none; box-shadow: none;">
                                 Información Básica
                             </button>
                         </h2>
-                        <div id="collapseBasic" class="accordion-collapse collapse show" data-bs-parent="#accordionDetails">
-                            <div class="accordion-body">
-                                <table class="table table-hover table-striped">
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">Marca:</th>
-                                            <td><span id="detalle-marca" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Modelo:</th>
-                                            <td><span id="detalle-modelo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Serial:</th>
-                                            <td><span id="detalle-serial" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tipo:</th>
-                                            <td><span id="detalle-tipo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Estado:</th>
-                                            <td><span id="detalle-estado" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Ubicación:</th>
-                                            <td><span id="detalle-ubicacion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Responsable:</th>
-                                            <td><span id="detalle-empleado" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">MAC Address:</th>
-                                            <td><span id="detalle-mac_address" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Observaciones:</th>
-                                            <td><span id="detalle-observaciones" class="text-dark"></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div id="collapseBasico" class="accordion-collapse collapse show" aria-labelledby="headingBasico" data-bs-parent="#accordionEquipoDetalles">
+                            <div class="accordion-body p-0" id="modal-features-basic">
+                                <div class="list-group list-group-flush">
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Marca</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-marca"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Modelo</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-modelo"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Serial</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-serial"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Tipo</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-tipo"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Estado</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-estado"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Ubicación</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-ubicacion"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Mac Address</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-mac"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Observaciones</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-observaciones"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Sección de Detalles Avanzados -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdvanced">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header" id="headingAvanzado">
+                            <button class="accordion-button collapsed px-0 py-2 bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAvanzado" aria-expanded="false" aria-controls="collapseAvanzado" style="background: none; box-shadow: none;">
                                 Detalles Avanzados
                             </button>
                         </h2>
-                        <div id="collapseAdvanced" class="accordion-collapse collapse" data-bs-parent="#accordionDetails">
-                            <div class="accordion-body">
-                                <table class="table table-hover table-striped">
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">Fecha de Fabricación:</th>
-                                            <td><span id="detalle-fecha_fabricacion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Vida Útil (Años):</th>
-                                            <td><span id="detalle-vida_util_anios" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Nombre en Red:</th>
-                                            <td><span id="detalle-nombre_red" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Proveedor:</th>
-                                            <td><span id="detalle-proveedor" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Valor de Compra:</th>
-                                            <td><span id="detalle-valor_compra" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Fecha de Compra:</th>
-                                            <td><span id="detalle-fecha_compra" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Fecha de Recepción:</th>
-                                            <td><span id="detalle-fecha_recepcion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Fecha de Mantenimiento:</th>
-                                            <td><span id="detalle-fecha_mantenimiento" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tamaño de Pantalla:</th>
-                                            <td><span id="detalle-size_pantalla" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Resolución:</th>
-                                            <td><span id="detalle-resolucion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Procesador (Marca):</th>
-                                            <td><span id="detalle-procesador_marca" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Procesador (Velocidad):</th>
-                                            <td><span id="detalle-procesador_velocidad" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Procesador (Generación):</th>
-                                            <td><span id="detalle-procesador_generacion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Sistema Operativo:</th>
-                                            <td><span id="detalle-sistema_operativo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Versión SO:</th>
-                                            <td><span id="detalle-sistema_operativo_version" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Bits SO:</th>
-                                            <td><span id="detalle-sistema_operativo_bits" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Capacidad de Almacenamiento:</th>
-                                            <td><span id="detalle-almacenamiento_capacidad" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Memoria:</th>
-                                            <td><span id="detalle-memoria" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tipo de Impresora:</th>
-                                            <td><span id="detalle-impresora_tipo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Velocidad de Impresión (PPM):</th>
-                                            <td><span id="detalle-impresora_velocidad_ppm" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Impresora a Color:</th>
-                                            <td><span id="detalle-impresora_color" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Conexión de Impresora:</th>
-                                            <td><span id="detalle-impresora_conexion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Formato Diseño CPU:</th>
-                                            <td><span id="detalle-cpu_formato_diseno" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Lúmenes Proyector:</th>
-                                            <td><span id="detalle-proyector_lumens" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Vatios UPS:</th>
-                                            <td><span id="detalle-ups_vatios" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Fecha Batería UPS:</th>
-                                            <td><span id="detalle-ups_fecha_bateria" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Velocidad Scanner:</th>
-                                            <td><span id="detalle-scanner_velocidad" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Scanner a Color:</th>
-                                            <td><span id="detalle-scanner_color" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tipo Pantalla Proyector:</th>
-                                            <td><span id="detalle-pantalla_proyector_tipo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Número de Procesadores Server:</th>
-                                            <td><span id="detalle-server_numero_procesadores" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tipo de Licencia:</th>
-                                            <td><span id="detalle-licencia_tipo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Clase de Licencia:</th>
-                                            <td><span id="detalle-licencia_clase" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Tipo de Mouse:</th>
-                                            <td><span id="detalle-mouse_tipo" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Conexión de Mouse:</th>
-                                            <td><span id="detalle-mouse_conexion" class="text-dark"></span></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Clase de Disco:</th>
-                                            <td><span id="detalle-clase_disco" class="text-dark"></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div id="collapseAvanzado" class="accordion-collapse collapse" aria-labelledby="headingAvanzado" data-bs-parent="#accordionEquipoDetalles">
+                            <div class="accordion-body p-0" id="modal-features-advanced">
+                                <div class="list-group list-group-flush">
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Procesador</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-procesador"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item border-bottom border-1 border-primary d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">RAM</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-ram"></span>
+                                    </div>
+                                    <div class="feature-item list-group-item d-flex justify-content-between align-items-center bg-white py-2 px-0">
+                                        <span class="feature-name">Disco Duro</span>
+                                        <span class="feature-value text-end fw-bold" id="detalle-disco"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer bg-light">
+            <div class="modal-footer bg-light rounded-bottom-4 px-3 py-2">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>

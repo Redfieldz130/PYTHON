@@ -1,0 +1,29 @@
+{% extends 'Paginas/Base.html' %}
+{% block contenido %}
+<div class="container">
+    <h2>Importar Equipos desde Excel</h2>
+    <p>Suba un archivo Excel con los siguientes encabezados (los nombres pueden variar, por ejemplo, "Marca" o "brand"):</p>
+    <ul>
+        <li><strong>tipo</strong>: laptop, impresora, cpu, etc.</li>
+        <li><strong>marca</strong>: Marca del equipo (por ejemplo, Dell, HP).</li>
+        <li><strong>modelo</strong>: Modelo del equipo.</li>
+        <li><strong>serial</strong>: Número de serie único.</li>
+        <li><strong>estado</strong>: disponible, asignado, mantenimiento, baja.</li>
+        <li><strong>ubicacion</strong>: Ubicación del equipo (opcional).</li>
+        <li><strong>fecha_compra</strong>: Fecha en formato YYYY-MM-DD o DD/MM/YYYY (opcional).</li>
+        <li><strong>valor_compra</strong>: Valor numérico (opcional).</li>
+        <li><strong>empleado_responsable</strong>: Nombre del responsable (opcional).</li>
+        <li><strong>observaciones</strong>: Notas adicionales (opcional).</li>
+        <li><strong>mac_address</strong>: Dirección MAC, formato XX:XX:XX:XX:XX:XX (opcional).</li>
+        <!-- Añade más campos si los soportas -->
+    </ul>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="archivo_excel" class="form-label">Seleccione el archivo Excel</label>
+            <input type="file" class="form-control" id="archivo_excel" name="archivo_excel" accept=".xlsx,.xls">
+        </div>
+        <button type="submit" class="btn btn-primary">Importar</button>
+    </form>
+</div>
+{% endblock %}

@@ -22,7 +22,7 @@ urlpatterns = [
     path('eliminar-equipos/', views.eliminar_equipos_seleccionados, name='eliminar_equipos_seleccionados'),
     path('equipos/detalles/<int:equipo_id>/', views.detalle_equipo_json, name='detalle_equipo_json'),
     path('accounts/login/', views.login_view, name='login'),
-    
+    path('equipos/importar/', views.importar_excel, name='importar_excel'),
     path('historico/', views.historico_equipos, name='historico'),
 ]
 

@@ -4,27 +4,27 @@
 
 {% block contenido %}
 <style>
-    .errorlist {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
+    .errorlist { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
+    .form-label { font-weight: 500; }
+    .device-specific { display: none; }
+    .alert-danger ul { margin-bottom: 0; }
+    .btn-cancel { margin-left: 10px; }
+    /* Centrar la card y limitar el ancho */
+    .edit-card-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 80vh;
+        width: 100%;
     }
-    .form-label {
-        font-weight: 500;
-    }
-    .device-specific {
-        display: none;
-    }
-    .alert-danger ul {
-        margin-bottom: 0;
-    }
-    .btn-cancel {
-        margin-left: 10px;
+    .edit-card {
+        width: 100%;
+        max-width: 900px;
     }
 </style>
 
-<div class="container mt-4">
-    <div class="card shadow p-4" style="max-width: 100%; width: 100%; max-width: 900px; margin: 0 auto;">
+<div class="edit-card-wrapper">
+    <div class="card shadow p-4 edit-card">
         <div class="card-header text-center bg-primary text-white">
             <h4 class="mb-0">Editar equipo: {{ equipo.marca }} {{ equipo.modelo }} ({{ equipo.serial }})</h4>
         </div>
@@ -425,4 +425,5 @@
     });
 </script>
 {% endblock JS %}
+<div style="height: 85px;"></div> <!-- Espaciador para el footer fijo -->
 {% endblock %}

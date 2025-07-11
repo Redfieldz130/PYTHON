@@ -89,6 +89,7 @@
                     <th>MAC Address</th>
                     <th>Fecha de entrega</th>
                     <th>Fecha final</th>
+                    <th>Cedula</th>
                     {% if perms.libreria.asignar_equipo %}
                     <th>Acciones</th>
                     {% endif %}
@@ -104,6 +105,7 @@
                         <td>{{ asignacion.equipo.mac_address|default:"No disponible" }}</td>
                         <td>{{ asignacion.fecha_entrega }}</td>
                         <td>{{ asignacion.fecha_final|default:"-" }}</td>
+                        <td>{{ asignacion.colaborador_cedula }}</td>
                         {% if perms.libreria.asignar_equipo %}
                         <td class="d-flex justify-content-center">
                             <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">

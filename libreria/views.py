@@ -16,58 +16,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def historico_equipos(request):
-    # Obtener todos los registros ordenados por fecha de eliminación
-    historial = HistorialEquipo.objects.all().order_by('-fecha_eliminacion')
-    
-    # Obtener fechas únicas de eliminación (solo la parte de la fecha)
-    fechas_con_registros = HistorialEquipo.objects.annotate(
-        fecha_truncada=TruncDate('fecha_eliminacion', output_field=DateField())
-    ).values('fecha_truncada').distinct()
-    
-    # Convertir las fechas a formato YYYY-MM-DD, filtrando None
-    fechas_formateadas = [fecha['fecha_truncada'].strftime('%Y-%m-%d') for fecha in fechas_con_registros if fecha['fecha_truncada'] is not None]
-    
-    # Obtener modelos únicos (excluyendo nulos o vacíos)
+    historial = HistorialEquipo.objects.all().order_by('-fecha')
     modelos = HistorialEquipo.objects.filter(modelo__isnull=False, modelo__gt='').values('modelo').distinct()
-    modelos_formateados = [modelo['modelo'] for modelo in modelos]
-    
-    # Obtener tipos únicos (excluyendo nulos)
     tipos = HistorialEquipo.objects.filter(tipo__isnull=False).values('tipo').distinct()
-    tipos_formateados = []
-    for tipo in tipos:
-        try:
-            # Intentar obtener el nombre legible usando get_tipo_display
-            tipo_display = HistorialEquipo.TIPOS[tipo['tipo']][1] if hasattr(HistorialEquipo, 'TIPOS') else tipo['tipo']
-        except (KeyError, IndexError):
-            tipo_display = tipo['tipo'] or 'Desconocido'
-        tipos_formateados.append({'valor': tipo['tipo'], 'display': tipo_display})
-    
-    # Depuración: Verificar registros con fecha_eliminacion o tipo nulos
-    registros_nulos_fecha = HistorialEquipo.objects.filter(fecha_eliminacion__isnull=True)
-    if registros_nulos_fecha.exists():
-        print(f"Registros con fecha_eliminacion nula: {registros_nulos_fecha.count()}")
-        for registro in registros_nulos_fecha:
-            print(f"ID: {registro.id}, Marca: {registro.marca}, Modelo: {registro.modelo}, Serial: {registro.serial}, Tipo: {registro.tipo}")
-    
-    registros_sin_tipo = HistorialEquipo.objects.filter(tipo__isnull=True)
-    if registros_sin_tipo.exists():
-        print(f"Registros con tipo nulo: {registros_sin_tipo.count()}")
-        for registro in registros_sin_tipo:
-            print(f"ID: {registro.id}, Marca: {registro.marca}, Modelo: {registro.modelo}, Serial: {registro.serial}, Tipo: {registro.tipo}")
-    
-    print(f"Total registros: {historial.count()}")
-    print(f"Fechas con registros: {fechas_formateadas}")
-    print(f"Modelos únicos: {modelos_formateados}")
-    print(f"Tipos únicos: {tipos_formateados}")
-    for item in historial:
-        tipo_display = 'Nulo'
-        if item.tipo:
-            try:
-                tipo_display = item.get_tipo_display() if hasattr(item, 'get_tipo_display') else item.tipo
-            except (KeyError, IndexError):
-                tipo_display = item.tipo or 'Desconocido'
-        print(f"ID: {item.id}, Marca: {item.marca}, Modelo: {item.modelo}, Tipo: {tipo_display}, Fecha: {item.fecha_eliminacion}, Fecha formateada: {item.fecha_eliminacion.date() if item.fecha_eliminacion else 'Nula'}")
-    
+    modelos_formateados = [modelo['modelo'] for modelo in modelos]
+    tipos_formateados = [{'valor': tipo['tipo'], 'display': tipo['tipo']} for tipo in tipos]
+    fechas_formateadas = [item.fecha.strftime('%Y-%m-%d') for item in historial if item.fecha]
     return render(request, 'Equipos/historico.html', {
         'historial': historial,
         'fechas_con_registros': fechas_formateadas,
@@ -78,15 +32,15 @@ def historico_equipos(request):
 def detalle_equipo_json(request, equipo_id):
     equipo = get_object_or_404(Equipo, pk=equipo_id)
     data = {
-        'modelo': equipo.modelo,
-        'marca': equipo.marca,
-        'serial': equipo.serial,
+        'modelo': equipo.modelo or 'N/A',
+        'marca': equipo.marca or 'N/A',
+        'serial': equipo.serial or 'N/A',
         'mac_address': equipo.mac_address or 'N/A',
-        'estado': equipo.estado,
+        'estado': equipo.get_estado_display() or 'N/A',  # Usar get_estado_display()
         'observaciones': equipo.observaciones or 'Sin observaciones',
-        'tipo': equipo.get_tipo_display(),
+        'tipo': equipo.get_tipo_display() or 'N/A',
         'fecha_fabricacion': equipo.fecha_fabricacion.strftime('%Y-%m-%d') if equipo.fecha_fabricacion else 'N/A',
-        'vida_util_anios': equipo.vida_util_anios or 'N/A',
+        'vida_util_anios': str(equipo.vida_util_anios) if equipo.vida_util_anios else 'N/A',
         'nombre_red': equipo.nombre_red or 'N/A',
         'ubicacion': equipo.ubicacion or 'N/A',
         'empleado_responsable': equipo.empleado_responsable or 'N/A',
@@ -95,28 +49,28 @@ def detalle_equipo_json(request, equipo_id):
         'fecha_compra': equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else 'N/A',
         'fecha_recepcion': equipo.fecha_recepcion.strftime('%Y-%m-%d') if equipo.fecha_recepcion else 'N/A',
         'fecha_mantenimiento': equipo.fecha_mantenimiento.strftime('%Y-%m-%d') if equipo.fecha_mantenimiento else 'N/A',
-        'size_pantalla': equipo.size_pantalla or 'N/A',
+        'size_pantalla': str(equipo.size_pantalla) if equipo.size_pantalla else 'N/A',
         'resolucion': equipo.resolucion or 'N/A',
         'procesador_marca': equipo.procesador_marca or 'N/A',
-        'procesador_velocidad': equipo.procesador_velocidad or 'N/A',
+        'procesador_velocidad': str(equipo.procesador_velocidad) if equipo.procesador_velocidad else 'N/A',
         'procesador_generacion': equipo.procesador_generacion or 'N/A',
         'sistema_operativo': equipo.sistema_operativo or 'N/A',
         'sistema_operativo_version': equipo.sistema_operativo_version or 'N/A',
         'sistema_operativo_bits': equipo.sistema_operativo_bits or 'N/A',
-        'almacenamiento_capacidad': equipo.almacenamiento_capacidad or 'N/A',
-        'memoria': equipo.memoria or 'N/A',
+        'almacenamiento_capacidad': str(equipo.almacenamiento_capacidad) if equipo.almacenamiento_capacidad else 'N/A',
+        'memoria': str(equipo.memoria) if equipo.memoria else 'N/A',
         'impresora_tipo': equipo.impresora_tipo or 'N/A',
-        'impresora_velocidad_ppm': equipo.impresora_velocidad_ppm or 'N/A',
-        'impresora_color': equipo.impresora_color or 'N/A',
+        'impresora_velocidad_ppm': str(equipo.impresora_velocidad_ppm) if equipo.impresora_velocidad_ppm else 'N/A',
+        'impresora_color': equipo.impresora_color or 'N/A',  # Usar directamente
         'impresora_conexion': equipo.impresora_conexion or 'N/A',
         'cpu_formato_diseno': equipo.cpu_formato_diseno or 'N/A',
-        'proyector_lumens': equipo.proyector_lumens or 'N/A',
-        'ups_vatios': equipo.ups_vatios or 'N/A',
+        'proyector_lumens': str(equipo.proyector_lumens) if equipo.proyector_lumens else 'N/A',
+        'ups_vatios': str(equipo.ups_vatios) if equipo.ups_vatios else 'N/A',
         'ups_fecha_bateria': equipo.ups_fecha_bateria.strftime('%Y-%m-%d') if equipo.ups_fecha_bateria else 'N/A',
-        'scanner_velocidad': equipo.scanner_velocidad or 'N/A',
-        'scanner_color': equipo.scanner_color or 'N/A',
+        'scanner_velocidad': str(equipo.scanner_velocidad) if equipo.scanner_velocidad else 'N/A',
+        'scanner_color': equipo.scanner_color or 'N/A',  # Usar directamente
         'pantalla_proyector_tipo': equipo.pantalla_proyector_tipo or 'N/A',
-        'server_numero_procesadores': equipo.server_numero_procesadores or 'N/A',
+        'server_numero_procesadores': str(equipo.server_numero_procesadores) if equipo.server_numero_procesadores else 'N/A',
         'licencia_tipo': equipo.licencia_tipo or 'N/A',
         'licencia_clase': equipo.licencia_clase or 'N/A',
         'mouse_tipo': equipo.mouse_tipo or 'N/A',
@@ -136,71 +90,6 @@ def eliminar_equipos_seleccionados(request):
         messages.success(request, 'Los equipos seleccionados fueron eliminados con éxito.')
         return redirect('equipos')
     return redirect('equipos')
-
-def exportar_excel(request):
-    categoria = request.GET.get('categoria', 'todos')
-    equipos = Equipo.objects.all()
-    if categoria != 'todos':
-        categorias_dict = {
-            'equipos': ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'access_point', 'camara_web', 'disco_duro'],
-            'accesorios': ['mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'generador_tono', 'tester', 'multimetro'],
-            'licencias': ['licencia_informatica'],
-            'materiales': ['cartucho', 'toner', 'botella_tinta'],
-        }
-        if categoria in categorias_dict:
-            equipos = equipos.filter(tipo__in=categorias_dict[categoria])
-        else:
-            equipos = Equipo.objects.none()
-    # Crear un libro de trabajo y una hoja
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Inventario de Tecnología"
-
-    # Definir encabezados
-    headers = [
-        'Tipo', 'Marca', 'Modelo', 'Serial', 'Estado', 'Ubicación',
-        'Fecha de Compra', 'Valor de Compra', 'Empleado Responsable', 'Observaciones'
-    ]
-    for col_num, header in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col_num)
-        cell.value = header
-        cell.font = Font(bold=True)
-
-    # Llenar datos
-    for row_num, equipo in enumerate(equipos, 2):
-        ws.cell(row=row_num, column=1).value = equipo.get_tipo_display()
-        ws.cell(row=row_num, column=2).value = equipo.marca
-        ws.cell(row=row_num, column=3).value = equipo.modelo
-        ws.cell(row=row_num, column=4).value = equipo.serial
-        ws.cell(row=row_num, column=5).value = equipo.estado
-        ws.cell(row=row_num, column=6).value = equipo.ubicacion
-        ws.cell(row=row_num, column=7).value = equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else ''
-        ws.cell(row=row_num, column=8).value = str(equipo.valor_compra) if equipo.valor_compra else ''
-        ws.cell(row=row_num, column=9).value = equipo.empleado_responsable
-        ws.cell(row=row_num, column=10).value = equipo.observaciones
-
-    # Ajustar el ancho de las columnas
-    for col in ws.columns:
-        max_length = 0
-        column = col[0].column_letter
-        for cell in col:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[column].width = adjusted_width
-
-    # Preparar la respuesta HTTP
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = f'attachment; filename="Inventario_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
-    
-    # Guardar el libro en la respuesta
-    wb.save(response)
-    return response
 
 def actualizar_estado(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
@@ -240,16 +129,20 @@ def crear_equipos(request):
     if request.method == 'POST':
         formulario = EquipoForm(request.POST)
         if formulario.is_valid():
-            serial = formulario.cleaned_data['serial']
-            if Equipo.objects.filter(serial=serial).exists():
-                messages.error(request, "El serial ya está registrado.")
-            else:
-                formulario.save()
-                messages.success(request, "Equipo agregado exitosamente.")
-                return redirect('equipos')
+            equipo = formulario.save()
+            HistorialEquipo.objects.create(
+                equipo=equipo,
+                accion='creado',
+                usuario=request.user,
+                tipo=equipo.tipo,
+                marca=equipo.marca,
+                modelo=equipo.modelo,
+                serial=equipo.serial,
+            )
+            messages.success(request, "Equipo agregado exitosamente.")
+            return redirect('equipos')
         else:
             messages.error(request, "Error en el formulario. Por favor, revise los campos.")
-            print(formulario.errors)  # Para depuración, pero los errores ya se mostrarán en el formulario
     else:
         formulario = EquipoForm()
     return render(request, 'Equipos/Crear.html', {'formulario': formulario})
@@ -259,16 +152,20 @@ def editar_equipo(request, equipo_id):
     if request.method == 'POST':
         formulario = EquipoForm(request.POST, instance=equipo)
         if formulario.is_valid():
-            serial = formulario.cleaned_data['serial']
-            if Equipo.objects.filter(serial=serial).exclude(id=equipo_id).exists():
-                messages.error(request, "El serial ya está registrado en otro equipo.")
-            else:
-                formulario.save()
-                messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
-                return redirect('equipos')
+            equipo = formulario.save()
+            HistorialEquipo.objects.create(
+                equipo=equipo,
+                accion='editado',
+                usuario=request.user,
+                tipo=equipo.tipo,
+                marca=equipo.marca,
+                modelo=equipo.modelo,
+                serial=equipo.serial,
+            )
+            messages.success(request, f'El equipo "{equipo.modelo}" ha sido actualizado con éxito.')
+            return redirect('equipos')
         else:
             messages.error(request, "Error en el formulario. Por favor, revise los campos.")
-            print(formulario.errors)
     else:
         formulario = EquipoForm(instance=equipo)
     return render(request, 'Equipos/Editar.html', {'formulario': formulario, 'equipo': equipo})
@@ -292,6 +189,15 @@ def asignar(request):
             print(f"Asignación creada: ID={asignacion.id}, Cédula={asignacion.colaborador_cedula}")  # Depuración
             equipo.estado = 'Asignado'
             equipo.save()
+            HistorialEquipo.objects.create(
+                equipo=equipo,
+                accion='asignado',
+                usuario=request.user,
+                tipo=equipo.tipo,
+                marca=equipo.marca,
+                modelo=equipo.modelo,
+                serial=equipo.serial,
+            )
             messages.success(request, f'El equipo "{equipo.modelo}" ha sido asignado a {asignacion.colaborador_nombre} (Cédula: {asignacion.colaborador_cedula}).')
             return redirect('asignar')
         else:
@@ -318,6 +224,15 @@ def desasignar(request, id):
         asignacion.delete()
         equipo.estado = "Disponible"
         equipo.save()
+        HistorialEquipo.objects.create(
+            equipo=equipo,
+            accion='desasignado',
+            usuario=request.user,
+            tipo=equipo.tipo,
+            marca=equipo.marca,
+            modelo=equipo.modelo,
+            serial=equipo.serial,
+        )
         messages.success(request, f'El equipo "{equipo.modelo}" ha sido desasignado.')
     except Asignacion.DoesNotExist:
         print(f"No se encontró asignación con ID: {id}")  # Depuración
@@ -329,14 +244,14 @@ def borrar_equipo(request, equipo_id):
     equipo = get_object_or_404(Equipo, id=equipo_id)
     if request.method == 'POST':
         try:
-            # Registrar en historial antes de eliminar (opcional)
             HistorialEquipo.objects.create(
+                equipo=None,
+                accion='eliminado',
+                usuario=request.user,
+                tipo=equipo.tipo,
                 marca=equipo.marca,
                 modelo=equipo.modelo,
                 serial=equipo.serial,
-                tipo=equipo.tipo,
-                fecha_eliminacion=timezone.now(),
-                # Agrega aquí otros campos necesarios según tu modelo
             )
             equipo.delete()
             return JsonResponse({'status': 'success', 'message': 'Equipo eliminado correctamente'})
@@ -425,14 +340,196 @@ def reemplazar_texto(doc, marcador, texto):
                     if marcador in p.text:
                         print(f"Reemplazando '{marcador}' con '{texto}' en celda: {p.text}")  # Depuración
                         p.text = p.text.replace(marcador, texto)
+def exportar_excel(request):
+    categoria = request.GET.get('categoria', 'todos')
+    equipos = Equipo.objects.all()
+    if categoria != 'todos':
+        categorias_dict = {
+            'equipos': ['laptop', 'impresora', 'cpu', 'monitor', 'proyector', 'ups', 'scanner', 'pantalla_proyector', 'tablet', 'server', 'router', 'access_point', 'camara_web', 'disco_duro'],
+            'accesorios': ['mouse', 'teclado', 'headset', 'bocina', 'brazo_monitor', 'memoria_usb', 'pointer', 'kit_herramientas', 'generador_tono', 'tester', 'multimetro'],
+            'licencias': ['licencia_informatica'],
+            'materiales': ['cartucho', 'toner', 'botella_tinta'],
+        }
+        if categoria in categorias_dict:
+            equipos = equipos.filter(tipo__in=categorias_dict[categoria])
+        else:
+            equipos = Equipo.objects.none()
+    # Crear un libro de trabajo y una hoja
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inventario de Tecnología"
 
-@csrf_exempt
-def asignar_equipo_ajax(request):
+    # Definir encabezados
+    headers = [
+        'Tipo', 'Marca', 'Modelo', 'Serial', 'Estado', 'Ubicación',
+        'Fecha de Compra', 'Valor de Compra', 'Empleado Responsable', 'Observaciones'
+    ]
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.font = Font(bold=True)
+
+    # Llenar datos
+    for row_num, equipo in enumerate(equipos, 2):
+        ws.cell(row=row_num, column=1).value = equipo.get_tipo_display()
+        ws.cell(row=row_num, column=2).value = equipo.marca
+        ws.cell(row=row_num, column=3).value = equipo.modelo
+        ws.cell(row=row_num, column=4).value = equipo.serial
+        ws.cell(row=row_num, column=5).value = equipo.estado
+        ws.cell(row=row_num, column=6).value = equipo.ubicacion
+        ws.cell(row=row_num, column=7).value = equipo.fecha_compra.strftime('%Y-%m-%d') if equipo.fecha_compra else ''
+        ws.cell(row=row_num, column=8).value = str(equipo.valor_compra) if equipo.valor_compra else ''
+        ws.cell(row=row_num, column=9).value = equipo.empleado_responsable
+        ws.cell(row=row_num, column=10).value = equipo.observaciones
+
+    # Ajustar el ancho de las columnas
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Preparar la respuesta HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="Inventario_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    
+    # Guardar el libro en la respuesta
+    wb.save(response)
+    return response
+
+# libreria/views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Equipo, HistorialEquipo
+from .forms import EquipoForm
+import openpyxl
+from datetime import datetime
+import re
+
+def importar_excel(request):
     if request.method == 'POST':
-        # Procesa los datos del formulario
-        # ...
-        if equipo_ya_asignado:
-            return JsonResponse({'status': 'error', 'message': 'El equipo ya está asignado.'})
-        # Si todo está bien:
-        return JsonResponse({'status': 'success', 'message': 'Equipo asignado correctamente.'})
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+        archivo = request.FILES.get('archivo_excel')
+        if not archivo:
+            messages.error(request, 'No se ha seleccionado ningún archivo.')
+            return redirect('equipos')
+
+        try:
+            wb = openpyxl.load_workbook(archivo)
+            ws = wb.active
+            errors = []
+            success_count = 0
+
+            # Mapear encabezados del Excel a campos del modelo
+            header_map = {
+                'tipo': ['tipo', 'type', 'category'],
+                'marca': ['marca', 'brand'],
+                'modelo': ['modelo', 'model'],
+                'serial': ['serial', 'serie', 'numero de serie'],
+                'estado': ['estado', 'status'],
+                'ubicacion': ['ubicacion', 'ubicación', 'location'],
+                'fecha_compra': ['fecha_compra', 'fecha de compra', 'purchase_date'],
+                'valor_compra': ['valor_compra', 'valor de compra', 'purchase_value', 'cost'],
+                'empleado_responsable': ['empleado_responsable', 'responsable', 'assigned_to'],
+                'observaciones': ['observaciones', 'observación', 'comments', 'notes'],
+                'mac_address': ['mac_address', 'mac', 'direccion_mac'],
+                'procesador_marca': ['procesador_marca', 'processor_brand'],
+                # Agrega más campos avanzados si deseas soportarlos
+            }
+
+            # Obtener encabezados de la primera fila
+            headers = [str(cell.value).lower().strip() if cell.value else '' for cell in ws[1]]
+            if not headers:
+                messages.error(request, 'El archivo Excel está vacío o no tiene encabezados.')
+                return redirect('equipos')
+
+            # Mapear encabezados a nombres de campos del modelo
+            field_mapping = {}
+            for model_field, possible_headers in header_map.items():
+                for header in possible_headers:
+                    if header.lower() in headers:
+                        field_mapping[headers.index(header.lower())] = model_field
+                        break
+
+            if not field_mapping:
+                messages.error(request, 'No se encontraron encabezados válidos en el archivo Excel.')
+                return redirect('equipos')
+
+            # Procesar cada fila
+            for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                if not any(row):  # Saltar filas vacías
+                    continue
+
+                try:
+                    # Crear diccionario de datos basado en el mapeo
+                    data = {}
+                    for col_idx, model_field in field_mapping.items():
+                        value = row[col_idx] if col_idx < len(row) else None
+
+                        # Convertir fechas
+                        if model_field == 'fecha_compra' and value:
+                            if isinstance(value, str):
+                                try:
+                                    value = datetime.strptime(value, '%Y-%m-%d').date()
+                                except ValueError:
+                                    try:
+                                        value = datetime.strptime(value, '%d/%m/%Y').date()
+                                    except ValueError:
+                                        errors.append(f'Fila {row_num}: Formato de fecha_compra inválido ({value}). Use YYYY-MM-DD o DD/MM/YYYY.')
+                                        continue
+                            elif isinstance(value, datetime):
+                                value = value.date()
+                            elif value is None:
+                                value = None
+                            else:
+                                errors.append(f'Fila {row_num}: fecha_compra inválida ({value}).')
+                                continue
+
+                        # Convertir valores numéricos
+                        if model_field == 'valor_compra' and value:
+                            try:
+                                value = float(value) if value is not None else None
+                            except (ValueError, TypeError):
+                                errors.append(f'Fila {row_num}: valor_compra debe ser un número ({value}).')
+                                continue
+
+                        data[model_field] = value
+
+                    # Usar EquipoForm para validar
+                    form = EquipoForm(data)
+                    if form.is_valid():
+                        equipo = form.save()
+                        # Crear registro en HistorialEquipo
+                        HistorialEquipo.objects.create(
+                            equipo=equipo,
+                            accion='creado',
+                            usuario=request.user,
+                            tipo=data.get('tipo', equipo.tipo),
+                            marca=data.get('marca', equipo.marca),
+                            modelo=data.get('modelo', equipo.modelo),
+                            serial=data.get('serial', equipo.serial)
+                        )
+                        success_count += 1
+                    else:
+                        errors.append(f'Fila {row_num}: {form.errors.as_text()}')
+                except Exception as e:
+                    errors.append(f'Fila {row_num}: Error al procesar ({str(e)}).')
+
+            if success_count > 0:
+                messages.success(request, f'{success_count} equipos importados exitosamente.')
+            if errors:
+                messages.error(request, 'Errores en las siguientes filas: ' + '; '.join(errors))
+            return redirect('equipos')
+
+        except Exception as e:
+            messages.error(request, f'Error al cargar el archivo Excel: {str(e)}')
+            return redirect('equipos')
+
+    return render(request, 'Equipos/importar_excel.html')

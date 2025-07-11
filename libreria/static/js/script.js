@@ -12,106 +12,77 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para mostrar detalles del equipo en el modal
     function showEquipmentDetails(data) {
-        document.getElementById('detalle-marca').textContent = data.marca || 'N/A';
-        document.getElementById('detalle-modelo').textContent = data.modelo || 'N/A';
-        document.getElementById('detalle-serial').textContent = data.serial || 'N/A';
-        document.getElementById('detalle-tipo').textContent = data.tipo || 'N/A';
-        document.getElementById('detalle-estado').textContent = data.estado || 'N/A';
-        document.getElementById('detalle-ubicacion').textContent = data.ubicacion || 'N/A';
-        document.getElementById('detalle-empleado').textContent = data.empleado || 'N/A';
-        document.getElementById('detalle-mac_address').textContent = data.mac_address || 'N/A';
-        document.getElementById('detalle-observaciones').textContent = data.observaciones || 'N/A';
-        document.getElementById('detalle-fecha_fabricacion').textContent = data.fecha_fabricacion || 'N/A';
-        document.getElementById('detalle-vida_util_anios').textContent = data.vida_util_anios || 'N/A';
-        document.getElementById('detalle-nombre_red').textContent = data.nombre_red || 'N/A';
-        document.getElementById('detalle-proveedor').textContent = data.proveedor || 'N/A';
-        document.getElementById('detalle-valor_compra').textContent = data.valor_compra || 'N/A';
-        document.getElementById('detalle-fecha_compra').textContent = data.fecha_compra || 'N/A';
-        document.getElementById('detalle-fecha_recepcion').textContent = data.fecha_recepcion || 'N/A';
-        document.getElementById('detalle-fecha_mantenimiento').textContent = data.fecha_mantenimiento || 'N/A';
-        document.getElementById('detalle-size_pantalla').textContent = data.size_pantalla || 'N/A';
-        document.getElementById('detalle-resolucion').textContent = data.resolucion || 'N/A';
-        document.getElementById('detalle-procesador_marca').textContent = data.procesador_marca || 'N/A';
-        document.getElementById('detalle-procesador_velocidad').textContent = data.procesador_velocidad || 'N/A';
-        document.getElementById('detalle-procesador_generacion').textContent = data.procesador_generacion || 'N/A';
-        document.getElementById('detalle-sistema_operativo').textContent = data.sistema_operativo || 'N/A';
-        document.getElementById('detalle-sistema_operativo_version').textContent = data.sistema_operativo_version || 'N/A';
-        document.getElementById('detalle-sistema_operativo_bits').textContent = data.sistema_operativo_bits || 'N/A';
-        document.getElementById('detalle-almacenamiento_capacidad').textContent = data.almacenamiento_capacidad || 'N/A';
-        document.getElementById('detalle-memoria').textContent = data.memoria || 'N/A';
-        document.getElementById('detalle-impresora_tipo').textContent = data.impresora_tipo || 'N/A';
-        document.getElementById('detalle-impresora_velocidad_ppm').textContent = data.impresora_velocidad_ppm || 'N/A';
-        document.getElementById('detalle-impresora_color').textContent = data.impresora_color || 'N/A';
-        document.getElementById('detalle-impresora_conexion').textContent = data.impresora_conexion || 'N/A';
-        document.getElementById('detalle-cpu_formato_diseno').textContent = data.cpu_formato_diseno || 'N/A';
-        document.getElementById('detalle-proyector_lumens').textContent = data.proyector_lumens || 'N/A';
-        document.getElementById('detalle-ups_vatios').textContent = data.ups_vatios || 'N/A';
-        document.getElementById('detalle-ups_fecha_bateria').textContent = data.ups_fecha_bateria || 'N/A';
-        document.getElementById('detalle-scanner_velocidad').textContent = data.scanner_velocidad || 'N/A';
-        document.getElementById('detalle-scanner_color').textContent = data.scanner_color || 'N/A';
-        document.getElementById('detalle-pantalla_proyector_tipo').textContent = data.pantalla_proyector_tipo || 'N/A';
-        document.getElementById('detalle-server_numero_procesadores').textContent = data.server_numero_procesadores || 'N/A';
-        document.getElementById('detalle-licencia_tipo').textContent = data.licencia_tipo || 'N/A';
-        document.getElementById('detalle-licencia_clase').textContent = data.licencia_clase || 'N/A';
-        document.getElementById('detalle-mouse_tipo').textContent = data.mouse_tipo || 'N/A';
-        document.getElementById('detalle-mouse_conexion').textContent = data.mouse_conexion || 'N/A';
-        document.getElementById('detalle-clase_disco').textContent = data.clase_disco || 'N/A';
+        // Define los campos básicos y avanzados según tu modelo
+        const camposBasicos = [
+            'marca', 'modelo', 'serial', 'tipo', 'estado', 'ubicacion', 'empleado', 'mac_address', 'observaciones'
+        ];
+        // El resto se consideran avanzados
+        const camposAvanzados = Object.keys(data).filter(key => !camposBasicos.includes(key));
 
-        const bootstrapModal = new bootstrap.Modal(modal, { backdrop: true, keyboard: true });
-        bootstrapModal.show();
+        let basicHTML = '';
+        let advancedHTML = '';
+
+        camposBasicos.forEach(key => {
+            const value = data[key];
+            if (value && value !== 'N/A') {
+                basicHTML += `
+                    <div class="feature-item">
+                        <span class="feature-name">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        <span class="feature-value">${value}</span>
+                    </div>
+                `;
+            }
+        });
+
+        camposAvanzados.forEach(key => {
+            const value = data[key];
+            if (value && value !== 'N/A') {
+                advancedHTML += `
+                    <div class="feature-item">
+                        <span class="feature-name">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        <span class="feature-value">${value}</span>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById('modal-features-basic').innerHTML = basicHTML || '<div class="text-muted">Sin información básica.</div>';
+        document.getElementById('modal-features-advanced').innerHTML = advancedHTML || '<div class="text-muted">Sin detalles avanzados.</div>';
+
+        // Mostrar el modal Bootstrap
+        const modal = new bootstrap.Modal(document.getElementById('detalleEquipoModal'));
+        modal.show();
     }
 
     // Manejador de eventos para el botón de detalles
     document.querySelectorAll('.btn-details').forEach(button => {
         button.addEventListener('click', function() {
             const card = this.closest('.product-card');
-            const data = {
-                marca: card.querySelector('.product-brand').textContent,
-                modelo: card.querySelector('.product-name').textContent,
-                serial: card.querySelector('.product-serial').textContent,
-                tipo: card.querySelector('.product-category').textContent,
-                estado: card.querySelector('.product-status').textContent,
-                ubicacion: card.dataset.ubicacion || 'N/A',
-                empleado: card.dataset.empleado || 'N/A',
-                mac_address: card.dataset.macAddress || 'N/A',
-                observaciones: card.dataset.observaciones || 'N/A',
-                fecha_fabricacion: card.dataset.fechaFabricacion || 'N/A',
-                vida_util_anios: card.dataset.vidaUtilAnios || 'N/A',
-                nombre_red: card.dataset.nombreRed || 'N/A',
-                proveedor: card.dataset.proveedor || 'N/A',
-                valor_compra: card.dataset.valorCompra || 'N/A',
-                fecha_compra: card.dataset.fechaCompra || 'N/A',
-                fecha_recepcion: card.dataset.fechaRecepcion || 'N/A',
-                fecha_mantenimiento: card.dataset.fechaMantenimiento || 'N/A',
-                size_pantalla: card.dataset.sizePantalla || 'N/A',
-                resolucion: card.dataset.resolucion || 'N/A',
-                procesador_marca: card.dataset.procesadorMarca || 'N/A',
-                procesador_velocidad: card.dataset.procesadorVelocidad || 'N/A',
-                procesador_generacion: card.dataset.procesadorGeneracion || 'N/A',
-                sistema_operativo: card.dataset.sistemaOperativo || 'N/A',
-                sistema_operativo_version: card.dataset.sistemaOperativoVersion || 'N/A',
-                sistema_operativo_bits: card.dataset.sistemaOperativoBits || 'N/A',
-                almacenamiento_capacidad: card.dataset.almacenamientoCapacidad || 'N/A',
-                memoria: card.dataset.memoria || 'N/A',
-                impresora_tipo: card.dataset.impresoraTipo || 'N/A',
-                impresora_velocidad_ppm: card.dataset.impresoraVelocidadPpm || 'N/A',
-                impresora_color: card.dataset.impresoraColor || 'N/A',
-                impresora_conexion: card.dataset.impresoraConexion || 'N/A',
-                cpu_formato_diseno: card.dataset.cpuFormatoDiseno || 'N/A',
-                proyector_lumens: card.dataset.proyectorLumens || 'N/A',
-                ups_vatios: card.dataset.upsVatios || 'N/A',
-                ups_fecha_bateria: card.dataset.upsFechaBateria || 'N/A',
-                scanner_velocidad: card.dataset.scannerVelocidad || 'N/A',
-                scanner_color: card.dataset.scannerColor || 'N/A',
-                pantalla_proyector_tipo: card.dataset.pantallaProyectorTipo || 'N/A',
-                server_numero_procesadores: card.dataset.serverNumeroProcesadores || 'N/A',
-                licencia_tipo: card.dataset.licenciaTipo || 'N/A',
-                licencia_clase: card.dataset.licenciaClase || 'N/A',
-                mouse_tipo: card.dataset.mouseTipo || 'N/A',
-                mouse_conexion: card.dataset.mouseConexion || 'N/A',
-                clase_disco: card.dataset.claseDisco || 'N/A'
-            };
-            showEquipmentDetails(data);
+            const equipoId = card.dataset.equipoId; // Obtener el ID del equipo
+            const csrftoken = getCookie('csrftoken');
+
+            // Realizar solicitud AJAX para obtener los detalles del equipo
+            fetch(`/equipos/detalles/${equipoId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error al obtener los detalles del equipo: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data); // Depuración
+                showEquipmentDetails(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudieron cargar los detalles del equipo.', 'error');
+            });
         });
     });
 

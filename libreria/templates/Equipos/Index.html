@@ -5,7 +5,11 @@
 {% block JS %}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% if messages %}
+    
+{% endblock %}
+
+{% block contenido %}
+{% if messages %}
         {% for message in messages %}
             <script>
                 Swal.fire({
@@ -16,9 +20,6 @@
             </script>
         {% endfor %}
     {% endif %}
-{% endblock %}
-
-{% block contenido %}
 <style>
     :root {
         --excel-green: #217346;
@@ -145,6 +146,9 @@
         overflow: hidden;
         box-shadow: var(--box-shadow);
         transition: var(--transition);
+         /* <-- Esto hace que todo el card sea interactivo */
+        position: relative;
+        z-index: 1;
     }
 
     .product-card.hidden {
@@ -288,26 +292,33 @@
         flex: 1;
         text-align: center;
         text-decoration: none;
+        z-index: 2;
+        position: relative;
     }
 
     .btn-details:hover {
         background-color: var(--secondary-color);
+        color: #fff;
     }
 
-    .btn-edit {
+    .btn-edit:hover {
         background-color: var(--warning-color);
+        color: #fff;
     }
 
-    .btn-delete {
+    .btn-delete:hover {
         background-color: var(--danger-color);
+        color: #fff;
     }
 
-    .btn-assign {
+    .btn-assign:hover {
         background-color: var(--success-color);
+        color: #fff;
     }
 
-    .btn-release {
+    .btn-release:hover {
         background-color: var(--primary-color);
+        color: #fff;
     }
 
     .no-results {
@@ -372,7 +383,6 @@
         justify-content: center;
         align-items: center;
     }
-
     .modal-content {
         background-color: white;
         border-radius: var(--border-radius);
@@ -395,10 +405,11 @@
     }
 
     .feature-item {
-        padding: 8px 0;
-        border-bottom: 1px solid #eee;
+        padding: 12px 0;
+        border-bottom: none !important;
         display: flex;
         justify-content: space-between;
+        font-size: 1.05rem;
     }
 
     .feature-item:last-child {
@@ -412,6 +423,27 @@
     .feature-value {
         font-weight: 600;
     }
+
+    /* Quita el borde del acordeón y de los items */
+.accordion-item,
+.accordion-button,
+.accordion-body {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Opcional: Quita el fondo gris del header del acordeón */
+.accordion-button:not(.collapsed) {
+    background: transparent !important;
+    color: #4361ee;
+    box-shadow: none !important;
+}
+
+/* Opcional: Quita el borde del modal-footer */
+.modal-footer {
+    border-top: none !important;
+}
 
     @media (max-width: 768px) {
         .products-grid {
@@ -588,6 +620,13 @@
         flex-wrap: wrap;
     }
     
+    @media (min-width: 992px) {
+    .modal .modal-dialog {
+        left: 120px;
+        transform: translateX(0);
+        position: relative;
+    }
+}
 </style>
 
 <div class="inventory-container">
@@ -616,6 +655,7 @@
         <a href="#" id="exportar-excel-btn" class="action-btn btn btn-export-excel" data-category="todos">
         <i class="fas fa-file-excel"></i> Exportar a Excel
         </a>
+        <a href="{% url 'importar_excel' %}" class="action-btn btn btn-export-excel"><i class="fas fa-file-excel"></i> Importar excel</a>
     </div>
     {% endif %}
 
@@ -666,7 +706,7 @@
                 {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results" data-default-title="No se encontraron accesorios" data-default-text="No hay accesorios registrados.">
-                    <h4>No hay accesorios registrados.4</h4>
+                    <h4>No hay accesorios registrados.</h4>
                 </div>
             {% endfor %}
         </div>
