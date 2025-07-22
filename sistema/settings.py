@@ -17,6 +17,7 @@ ALLOWED_HOSTS = [
     '10.80.20.41',
     'localhost',
     'localhost', '127.0.0.1', 'redfieldz.pythonanywhere.com'
+    'https://python-tk8x.onrender.com'
     
 ]
 
