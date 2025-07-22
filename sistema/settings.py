@@ -11,17 +11,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-o0#_c#drwr46m!hv*k*8p5&igkvl=h_+bvy#q5is3!m#gr-vz9'
 DEBUG = False
-ALLOWED_HOSTS = [
-     'inventario.ideice.gob.do',
-    'www.inventario.ideice.gob.do',
-    '10.80.20.41',
-    'localhost',
-    '127.0.0.1',
-    'redfieldz.pythonanywhere.com',
-    'python-production-7022.up.railway.app',
-    'python-tk8x.onrender.com',
+#ALLOWED_HOSTS = [
+    #'inventario.ideice.gob.do',
+    #'www.inventario.ideice.gob.do',
+    #'10.80.20.41',
+    #'localhost',
+    #'127.0.0.1',
+    #'redfieldz.pythonanywhere.com',
+    #'python-production-7022.up.railway.app',]
+ALLOWED_HOSTS = ['*']
     
-]
+
 
 # Authentication redirects
 LOGIN_URL = '/accounts/login/'
