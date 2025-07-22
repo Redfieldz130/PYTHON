@@ -194,7 +194,7 @@
     }
 
     .product-actions {
-        transform: translateX(100%);
+        transform: translateX(150%);
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;
         display: flex;
@@ -440,7 +440,7 @@
     box-shadow: none !important;
 }
 
-/* Opcional: Quita el borde del modal-footer */
+
 .modal-footer {
     border-top: none !important;
 }
@@ -538,6 +538,7 @@
 
     :has(.check-lista:checked) .product-info {
         font-size: .9em;
+        align-items: center;
         display: flex;
         justify-content: flex-start;
         flex: 1;
@@ -566,8 +567,14 @@
     }
 
     :has(.check-lista:checked) .product-actions {
+        margin-right: 1.5em;
         margin-left: auto;
         display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        /* Elimina cualquier width extra o justify-content */
+        position: static;
     }
 
     :has(.check-lista:checked) .product-brand {
@@ -627,6 +634,23 @@
         position: relative;
     }
 }
+.show-less-btn {
+    margin: 20px auto;
+    padding: 10px 25px;
+    border-radius: 50px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    cursor: pointer;
+    display: none;
+}
+.show-less-btn:hover {
+    background-color: var(--primary-color);
+}
 </style>
 
 <div class="inventory-container">
@@ -675,11 +699,12 @@
                 {% include 'Equipos/partials/teclado_equipo.html' with equipo=equipo %}
             {% empty %}
                 <div class="no-results" data-default-title="No se encontraron elementos" data-default-text="No hay elementos registrados en el inventario.">
-                    <h4>4No hay elementos registrados en el inventario.</h4>
+                    <h4>No hay elementos registrados en el inventario.</h4>
                 </div>
             {% endfor %}
         </div>
         <button class="load-more-btn" data-section="todos">Cargar más</button>
+        <button class="show-less-btn" data-section="todos" style="display:none;">Mostrar menos</button>
     </div>
 
     <!-- Sección: Equipos -->
@@ -692,7 +717,7 @@
             <div class="no-results" style="display:none"
                  data-default-title="No se encontraron equipos"
                  data-default-text="No hay equipos registrados.">
-                <h4>N4o hay equipos registrados.</h4>
+                <h4>No hay equipos registrados.</h4>
             </div>
         </div>
         <button class="load-more-btn" data-section="equipos">Cargar más</button>

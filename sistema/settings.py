@@ -11,7 +11,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-o0#_c#drwr46m!hv*k*8p5&igkvl=h_+bvy#q5is3!m#gr-vz9'
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'inventario.ideice.gob.do',
+    'www.inventario.ideice.gob.do',
+    '10.80.20.41',
+    'localhost',
+    'localhost', '127.0.0.1', 'https://mi-proyecto.loca.lt'
+    
+]
 
 # Authentication redirects
 LOGIN_URL = '/accounts/login/'
@@ -26,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'libreria',  # tu app principal
+    'libreria',  
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -51,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'sistema.urls'
@@ -66,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
@@ -119,6 +128,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

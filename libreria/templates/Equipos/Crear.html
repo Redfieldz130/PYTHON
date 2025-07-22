@@ -64,6 +64,11 @@
                     <div class="col-12 col-md-6 mb-3">
                         <label for="id_tipo" class="form-label">Tipo de Dispositivo</label>
                         {{ formulario.tipo }}
+                        {% if formulario.tipo.errors %}
+                            <div class="text-danger small">
+                                {{ formulario.tipo.errors.0 }}
+                            </div>
+                        {% endif %}
                         <div class="invalid-feedback">Por favor selecciona un tipo de dispositivo.</div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">

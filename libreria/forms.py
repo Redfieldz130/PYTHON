@@ -87,6 +87,7 @@ class EquipoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.required = False  # Todos los campos son opcionales por defecto
+        self.fields['tipo'].required = True  # EXCEPCIÓN: tipo es obligatorio
 
     def clean_mac_address(self):
         mac = self.cleaned_data.get('mac_address')

@@ -1,19 +1,16 @@
 from hashlib import new as hashlib_new
 from Crypto.Hash import MD4
 import hashlib
-
+from django.contrib.auth.backends import BaseBackend
+from django.contrib.auth.models import User
+from ldap3 import Server, Connection, NTLM, ALL
+import logging
 def md4(data=b''):
     h = MD4.new()
     h.update(data)
     return h
 
 hashlib.new = lambda name, data=b'': md4(data) if name.lower() == 'md4' else hashlib_new(name, data)
-
-
-from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.models import User
-from ldap3 import Server, Connection, NTLM, ALL
-import logging
 
 logger = logging.getLogger(__name__)
 

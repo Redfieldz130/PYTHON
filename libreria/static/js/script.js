@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const grid = section.querySelector('.products-grid');
         const cards = Array.from(grid.querySelectorAll('.product-card')).filter(card => card.style.display !== 'none');
         const loadMoreBtn = section.querySelector('.load-more-btn');
+        const showLessBtn = section.querySelector('.show-less-btn');
         let visibleCount = parseInt(loadMoreBtn.dataset.visibleCount) || maxCards;
         const isListMode = checkLista ? checkLista.checked : false;
 
@@ -125,6 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         loadMoreBtn.style.display = visibleCount < cards.length ? 'block' : 'none';
+        // Mostrar "Mostrar menos" solo si hay más de maxCards visibles
+        if (showLessBtn) {
+            showLessBtn.style.display = visibleCount > maxCards ? 'block' : 'none';
+        }
         // No tocar el mensaje .no-results aquí
     }
 
@@ -149,6 +154,16 @@ document.addEventListener('DOMContentLoaded', function() {
             let visibleCount = parseInt(loadMoreBtn.dataset.visibleCount) || maxCards;
             visibleCount += cardsPerLoad;
             loadMoreBtn.dataset.visibleCount = visibleCount;
+            updateCardVisibility(section);
+        });
+    });
+
+    // Mostrar menos
+    document.querySelectorAll('.show-less-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const section = this.closest('div[id$="-section"]');
+            const loadMoreBtn = section.querySelector('.load-more-btn');
+            loadMoreBtn.dataset.visibleCount = maxCards; // Vuelve al valor inicial
             updateCardVisibility(section);
         });
     });
@@ -235,7 +250,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Activar/desactivar modo lista con checkbox
     if (checkLista) {
+        // Al cargar la página, revisa si hay un valor guardado
+        const savedListMode = localStorage.getItem('modoLista');
+        if (savedListMode === 'true') {
+            checkLista.checked = true;
+        } else {
+            checkLista.checked = false;
+        }
+
+        // Aplica el modo correcto al cargar
+        const cards = document.querySelectorAll('.product-card');
+        if (cards.length > 0) {
+            cards.forEach(card => {
+                card.style.display = checkLista.checked ? 'flex' : 'block';
+            });
+            document.querySelectorAll('div[id$="-section"]').forEach(section => {
+                updateCardVisibility(section);
+            });
+        }
+
+        // Guarda el estado cuando el usuario cambia el modo
         checkLista.addEventListener('change', function() {
+            localStorage.setItem('modoLista', this.checked ? 'true' : 'false');
             const isListMode = this.checked;
             const cards = document.querySelectorAll('.product-card');
             if (cards.length > 0) {
