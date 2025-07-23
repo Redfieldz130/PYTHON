@@ -5,13 +5,13 @@ Django settings for sistema project.
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import os
-print("ALLOWED_HOSTS:", os.environ.get('DJANGO_ALLOWED_HOSTS'))
+
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = 'django-insecure-o0#_c#drwr46m!hv*k*8p5&igkvl=h_+bvy#q5is3!m#gr-vz9'
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = [
     'inventario.ideice.gob.do',
     'www.inventario.ideice.gob.do',
