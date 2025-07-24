@@ -1,39 +1,31 @@
 {% extends "Paginas/Base.html" %}
+
 {% load static %}
 
 {% block titulo %}Nosotros{% endblock %}
 
 {% block contenido %}
-    <!-- Mostrar mensajes con SweetAlert -->
-    {% if messages %}
-        {% for message in messages %}
-            <script>
-                Swal.fire({
-                    title: "Mensaje",
-                    text: "{{ message }}",
-                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
-                });
-            </script>
-        {% endfor %}
-    {% endif %}
-
+    <link rel="stylesheet" href="{% static 'css/nosotros.css' %}?v=1.0">
     <div class="container-fluid py-4">
         
-        <div class="header-section mb-5">
+        
             <div class="header-content p-5 text-white rounded-3" style="background: linear-gradient(135deg,rgb(15, 34, 141),rgb(11, 79, 143));">
-                <h1 class="display-4 mb-4">Quiénes Somos</h1>
+                <h1 class="display-4 mb-4">Video tutorial de como utilizar nuestra APP de inventario</h1>
                 <p class="lead mb-4">
                     Nuestra aplicación de inventario es una plataforma desarrollada para optimizar la gestión de equipos tecnológicos, facilitando el control de préstamos y devoluciones dentro de instituciones.
                 </p>
-                <p class="lead">
-                    Somos una herramienta técnica con el objetivo de mejorar la eficiencia y transparencia del manejo de activos tecnológicos en entornos educativos o administrativos.
-                </p>
+                
             </div>
-        </div>
+       
 
-        <!-- Secciones principales -->
-        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-stretch">
-            <!-- Sección Misión -->
+
+    <div class="video-seccion">
+        <video width="1080" height="720" controls>
+            <source src={%static 'media/videoplayback.mp4'%} type="video/mp4">
+            Tu navegador no soporta la reproducción de videos.
+        </video>
+    </div>
+        <!-- 
             <div class="col">
                 <div class="h-100 p-5 bg-light border rounded-3">
                     <h3 class="mb-3">📍 Misión</h3>
@@ -43,7 +35,6 @@
                 </div>
             </div>
 
-            <!-- Sección Visión -->
             <div class="col">
                 <div class="h-100 p-5 bg-light border rounded-3">
                     <h3 class="mb-3">🔭 Visión</h3>
@@ -53,7 +44,7 @@
                 </div>
             </div>
 
-            <!-- Sección Valores -->
+            
             <div class="col">
                 <div class="h-100 p-5 bg-light border rounded-3">
                     <h3 class="mb-3">🏆 Valores</h3>
@@ -65,5 +56,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 {% endblock %}

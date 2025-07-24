@@ -75,3 +75,9 @@ h2, h3 {
     font-size: 1.25rem;
     font-weight: 400;
 }
+
+.video-seccion {
+    margin-top: auto;
+    text-align: center;
+    margin-bottom: 50px;
+}
