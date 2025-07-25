@@ -558,7 +558,7 @@ def importar_excel(request):
                 messages.success(request, f'{success_count} equipos importados exitosamente.')
             if errors:
                 messages.error(request, 'Errores en las siguientes filas: ' + '; '.join(errors))
-            return redirect('equipos')
+                return redirect('equipos')
 
         except Exception as e:
             messages.error(request, f'Error al cargar el archivo Excel: {str(e)}')

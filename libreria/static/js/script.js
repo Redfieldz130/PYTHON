@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Script cargado');
+    
+        document.querySelectorAll('.btn-actions').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const productInfo = this.closest('.product-info');
+
+            // Cerrar cualquier otro menú abierto
+            document.querySelectorAll('.product-info.show-actions').forEach(info => {
+                if (info !== productInfo) {
+                    info.classList.remove('show-actions');
+                }
+            });
+
+            // Alternar este menú
+            productInfo.classList.toggle('show-actions');
+        });
+    });
 
     // Variables globales
     const maxCards = 6;

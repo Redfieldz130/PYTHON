@@ -171,6 +171,19 @@
     }
 
     .product-actions {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    }
+
+    .product-info.show-actions .product-actions {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .product-actions {
         transform: translateX(150%);
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;

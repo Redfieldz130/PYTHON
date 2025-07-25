@@ -96,21 +96,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const items = document.querySelectorAll('.history-item');
     const noResults = document.querySelector('.no-results');
 
-    // Fechas con registros desde el contexto de Django
     const fechasConRegistros = {{ fechas_con_registros|safe|default:'[]' }};
 
-    // Depuración inicial
-    console.log('Total de registros:', items.length);
-    console.log('Fechas con registros:', fechasConRegistros);
+    // Construir modelosPorTipo dinámicamente desde los items del DOM
+    const modelosPorTipo = {};
     items.forEach(item => {
-        console.log('Item:', {
-            fecha: item.getAttribute('data-fecha-eliminacion'),
-            modelo: item.getAttribute('data-modelo'),
-            tipo: item.getAttribute('data-tipo')
-        });
+        const tipo = item.getAttribute('data-tipo') || '';
+        const modelo = item.getAttribute('data-modelo') || '';
+
+        if (tipo && modelo) {
+            if (!modelosPorTipo[tipo]) {
+                modelosPorTipo[tipo] = new Set();
+            }
+            modelosPorTipo[tipo].add(modelo);
+        }
     });
 
-    // Inicializar Flatpickr
+    // Convertir Sets a Arrays
+    Object.keys(modelosPorTipo).forEach(tipo => {
+        modelosPorTipo[tipo] = Array.from(modelosPorTipo[tipo]);
+    });
+
     flatpickr(fechaInput, {
         dateFormat: 'Y-m-d',
         allowInput: true,
@@ -123,16 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
         onChange: applyFilter
     });
 
-    // Función para aplicar el filtro
     function applyFilter() {
         const selectedFecha = fechaInput.value;
         const selectedModelo = modeloSelect.value.toLowerCase().trim();
         const selectedTipo = tipoSelect.value;
-        console.log('Filtros seleccionados:', {
-            fecha: selectedFecha,
-            modelo: selectedModelo,
-            tipo: selectedTipo
-        });
         let visibleItems = 0;
 
         items.forEach(item => {
@@ -145,12 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const matchesTipo = !selectedTipo || itemTipo === selectedTipo;
 
             const matchesAll = matchesFecha && matchesModelo && matchesTipo;
-            console.log('Comparando:', {
-                itemFecha: itemFecha,
-                itemModelo: itemModelo,
-                itemTipo: itemTipo,
-                matchesAll: matchesAll
-            });
 
             if (matchesAll) {
                 item.classList.remove('hidden');
@@ -158,29 +152,36 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 item.classList.add('hidden');
             }
-            console.log('Estado del item:', item.className, 'Clases:', item.classList.contains('hidden'));
         });
 
-        console.log('Elementos visibles:', visibleItems);
         noResults.style.display = visibleItems === 0 ? 'block' : 'none';
     }
 
-    // Eventos para los filtros
+    // Al cambiar el tipo, actualizamos los modelos disponibles
+    tipoSelect.addEventListener('change', () => {
+        const tipoSeleccionado = tipoSelect.value;
+        const modelos = modelosPorTipo[tipoSeleccionado] || [];
+
+        modeloSelect.innerHTML = '<option value="">Todos</option>';
+        modelos.forEach(modelo => {
+            const option = document.createElement('option');
+            option.value = modelo;
+            option.textContent = modelo;
+            modeloSelect.appendChild(option);
+        });
+
+        applyFilter();
+    });
+
     fechaInput.addEventListener('input', () => {
-        console.log('Evento input (fecha) disparado:', fechaInput.value);
         applyFilter();
     });
 
     modeloSelect.addEventListener('change', () => {
-        console.log('Evento change (modelo) disparado:', modeloSelect.value);
-        applyFilter();
-    });
-
-    tipoSelect.addEventListener('change', () => {
-        console.log('Evento change (tipo) disparado:', tipoSelect.value);
         applyFilter();
     });
 });
 </script>
+
 <div style="height: 60px;"></div> <!-- Espaciador para el footer fijo -->
 {% endblock %}

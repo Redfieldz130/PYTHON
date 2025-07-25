@@ -1,8 +1,9 @@
 {% extends "Paginas/Base.html" %}
-
+{% load static %}
 {% block titulo %}Asignar equipo{% endblock %}
 
 {% block contenido %}
+<link rel="stylesheet" href="{% static 'css/asignar.css' %}?v=11.0">
 <div class="container-fluid py-4">
     <div class="header text-center bg-primary text-white py-3 shadow-sm rounded-3">
         <h4 class="mb-0 font-weight-bold">Asignación de Equipos</h4>

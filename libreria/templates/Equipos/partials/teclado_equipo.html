@@ -36,11 +36,11 @@
         {% endwith %}
     </div>
     <div class="product-info">
-        <input type="checkbox" class="select-item" style="display: none;">
+        
         <input type="checkbox" class="toggle-actions" id="toggle-{{ equipo.id }}" style="display: none;">
-        <label for="toggle-{{ equipo.id }}" class="btn-actions" title="Acciones">
+        <button type="button" class="btn-actions" title="Acciones">
             <i class="fas fa-ellipsis-v"></i>
-        </label>
+        </button>
         <div class="product-desc">
             <div class="product-tags">
                 <span class="product-category {{ equipo.tipo|lower }}">{{ equipo.get_tipo_display }}</span>
