@@ -84,6 +84,14 @@
     window.addEventListener('offline', () => {
       showConnectionStatus('❌ Sin conexión con el servidor', 'error', '#dc3545'); // rojo Bootstrap
     });
+    {% for message in messages %}
+        Swal.fire({
+            title: "{% if message.tags == 'success' %}Éxito{% elif message.tags == 'error' %}Error{% else %}Aviso{% endif %}",
+            text: "{{ message|escapejs }}",
+            icon: "{{ message.tags }}",
+            showConfirmButton: true
+        });
+    {% endfor %}
   </script>
 </body>
 </html>

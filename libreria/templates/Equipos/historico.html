@@ -14,14 +14,15 @@ Histórico de Equipos
 {% block contenido %}
 <div class="container-fluid py-4">
     <div class="header text-center py-3 shadow-sm rounded-3 bg-primary text-white">
-        <h4 class="mb-0 font-weight-bold">Historial de Equipos Eliminados</h4>
+        <h4 class="mb-0 font-weight-bold">Historial de Equipos</h4>
     </div>
    
     <div class="filter-section mt-4">
         <div class="row justify-content-center">
             <div class="col-md-4 col-sm-6 mb-3">
-                <label for="fecha-eliminacion" class="form-label fw-bold">Fecha de eliminación</label>
-                <input type="text" id="fecha-eliminacion" class="form-control form-control-sm border-primary" placeholder="Seleccionar fecha">
+                <label for="fecha-eliminacion" class="form-label fw-bold">Fecha</label>
+                <input type="text" id="fecha-eliminacion" class="form-control form-control-sm border-primary" placeholder="Seleccionar fecha" readonly>
+                <button type="button" class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#fechaModal">Abrir Calendario</button>
             </div>
             <div class="col-md-4 col-sm-6 mb-3">
                 <label for="tipo-filtro" class="form-label fw-bold">Tipo de equipo</label>
@@ -41,7 +42,25 @@ Histórico de Equipos
                     {% endfor %}
                 </select>
             </div>
-            
+        </div>
+    </div>
+
+    <!-- Modal para el calendario -->
+    <div class="modal fade" id="fechaModal" tabindex="-1" aria-labelledby="fechaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fechaModalLabel">Seleccionar Fecha</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <input type="text" id="calendario-input" class="form-control mx-auto" style="max-width: 300px;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="aplicar-fecha">Aplicar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -91,19 +110,32 @@ Histórico de Equipos
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const fechaInput = document.getElementById('fecha-eliminacion');
+    const calendarioInput = document.getElementById('calendario-input');
     const modeloSelect = document.getElementById('modelo-filtro');
     const tipoSelect = document.getElementById('tipo-filtro');
     const items = document.querySelectorAll('.history-item');
     const noResults = document.querySelector('.no-results');
+    const aplicarFechaBtn = document.getElementById('aplicar-fecha');
 
-    const fechasConRegistros = {{ fechas_con_registros|safe|default:'[]' }};
+    // Obtener fechas con acciones desde el contexto
+    const fechasConAcciones = {{ fechas_con_acciones|safe|default:'{}' }};
+    console.log('fechasConAcciones:', fechasConAcciones); // Para depuración
+
+    // Verificar si las fechas coinciden con el formato esperado
+    const verificarFechas = () => {
+        for (let fecha in fechasConAcciones) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+                console.error('Formato de fecha inválido:', fecha);
+            }
+        }
+    };
+    verificarFechas();
 
     // Construir modelosPorTipo dinámicamente desde los items del DOM
     const modelosPorTipo = {};
     items.forEach(item => {
         const tipo = item.getAttribute('data-tipo') || '';
         const modelo = item.getAttribute('data-modelo') || '';
-
         if (tipo && modelo) {
             if (!modelosPorTipo[tipo]) {
                 modelosPorTipo[tipo] = new Set();
@@ -117,17 +149,54 @@ document.addEventListener("DOMContentLoaded", function () {
         modelosPorTipo[tipo] = Array.from(modelosPorTipo[tipo]);
     });
 
-    flatpickr(fechaInput, {
+    // Inicializar Flatpickr en el modal
+    const flatpickrInstance = flatpickr(calendarioInput, {
+        inline: true, // Mostrar calendario directamente
         dateFormat: 'Y-m-d',
-        allowInput: true,
         onDayCreate: function(dObj, dStr, fp, dayElem) {
-            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
-            if (fechasConRegistros.includes(dateStr)) {
-                dayElem.classList.add('has-registros');
+            const dateStr = dayElem.dateObj.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            const acciones = fechasConAcciones[dateStr];
+            if (acciones && acciones.length > 0) {
+                dayElem.classList.remove('has-registros', 'registro-creado', 'registro-eliminado'); // Limpiar clases previas
+                if (acciones.includes("eliminado")) {
+                    dayElem.classList.add("registro-eliminado");
+                } else if (acciones.includes("creado")) {
+                    dayElem.classList.add("registro-creado");
+                } else {
+                    dayElem.classList.add("has-registros");
+                }
+                console.log(`Fecha: ${dateStr}, Acciones: ${acciones}, Clase aplicada: ${dayElem.className}`);
             }
         },
-        onChange: applyFilter
+        onChange: function(selectedDates, dateStr) {
+            fechaInput.value = dateStr; // Actualizar el input principal
+        }
     });
+
+    // Aplicar fecha y cerrar modal
+    aplicarFechaBtn.addEventListener('click', () => {
+        applyFilter();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('fechaModal'));
+        modal.hide();
+    });
+
+    // Al cambiar el tipo, actualizamos los modelos disponibles
+    tipoSelect.addEventListener('change', () => {
+        const tipoSeleccionado = tipoSelect.value;
+        const modelos = modelosPorTipo[tipoSeleccionado] || [];
+        modeloSelect.innerHTML = '<option value="">Todos</option>';
+        modelos.forEach(modelo => {
+            const option = document.createElement('option');
+            option.value = modelo;
+            option.textContent = modelo;
+            modeloSelect.appendChild(option);
+        });
+        applyFilter();
+    });
+
+    // Escuchar cambios en los filtros
+    modeloSelect.addEventListener('change', applyFilter);
+    tipoSelect.addEventListener('change', applyFilter);
 
     function applyFilter() {
         const selectedFecha = fechaInput.value;
@@ -136,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let visibleItems = 0;
 
         items.forEach(item => {
-            const itemFecha = item.getAttribute('data-fecha-eliminacion') || '';
+            const itemFecha = item.getAttribute('data-fecha') || '';
             const itemModelo = (item.getAttribute('data-modelo') || '').toLowerCase();
             const itemTipo = item.getAttribute('data-tipo') || '';
 
@@ -156,30 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         noResults.style.display = visibleItems === 0 ? 'block' : 'none';
     }
-
-    // Al cambiar el tipo, actualizamos los modelos disponibles
-    tipoSelect.addEventListener('change', () => {
-        const tipoSeleccionado = tipoSelect.value;
-        const modelos = modelosPorTipo[tipoSeleccionado] || [];
-
-        modeloSelect.innerHTML = '<option value="">Todos</option>';
-        modelos.forEach(modelo => {
-            const option = document.createElement('option');
-            option.value = modelo;
-            option.textContent = modelo;
-            modeloSelect.appendChild(option);
-        });
-
-        applyFilter();
-    });
-
-    fechaInput.addEventListener('input', () => {
-        applyFilter();
-    });
-
-    modeloSelect.addEventListener('change', () => {
-        applyFilter();
-    });
 });
 </script>
 

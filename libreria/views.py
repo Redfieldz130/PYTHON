@@ -13,7 +13,8 @@ from django.db.models.functions import TruncDate
 from django.db.models import DateField
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-
+from collections import defaultdict
+import json
 
 def historico_equipos(request):
     historial = HistorialEquipo.objects.all().order_by('-fecha')
@@ -98,7 +99,7 @@ def actualizar_estado(request, equipo_id):
     return JsonResponse({'estado': equipo.estado})
 
 def Inicio(request):
-    return render(request, 'Paginas/inicio.html')
+    return render(request, 'Paginas/Inicio.html')
 
 def nosotros(request):
     return render(request, 'Paginas/nosotros.html')
@@ -266,22 +267,6 @@ def liberar_equipo(request, equipo_id):
     messages.success(request, f'Equipo {equipo.modelo} ahora está disponible.')
     return redirect('equipos')
 
-def registro(request):
-    if request.method == 'POST':
-        formulario = CustomUserCreationForm(request.POST)
-        if formulario.is_valid():
-            formulario.save()
-            user = authenticate(username=formulario.cleaned_data["username"], password=formulario.cleaned_data["password1"])
-            login(request, user)
-            messages.success(request, "¡Registro exitoso!")
-            return redirect('inicio')
-        else:
-            messages.error(request, "Error en el formulario de registro. Por favor, revise los campos.")
-    else:
-        formulario = CustomUserCreationForm()
-    return render(request, 'registration/registro.html', {'form': formulario})
-
-
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -289,15 +274,17 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, f'¡Bienvenido {user.first_name}!')
+            nombre = user.first_name or user.username
+            messages.success(request, f'¡Bienvenido de nuevo {nombre}!')              
             return redirect('inicio')
         else:
             messages.error(request, 'Usuario o contraseña inválidos')
     return render(request, 'registration/login.html')
 
 def logout_view(request):
+    nombre = request.user.first_name or request.user.username
     logout(request)
-    messages.success(request, "Has cerrado sesión correctamente.")
+    messages.success(request, f"Hasta luego, {nombre}. Has cerrado sesion correctamente.")
     return redirect("login")
 
 def inicio_view(request):
@@ -565,3 +552,25 @@ def importar_excel(request):
             return redirect('equipos')
 
     return render(request, 'Equipos/importar_excel.html')
+
+def historial_equipos(request):
+    historial = HistorialEquipo.objects.all().order_by('-fecha')
+    tipos = HistorialEquipo.objects.values_list('tipo', flat=True).distinct()
+    modelos = HistorialEquipo.objects.values_list('modelo', flat=True).distinct()
+
+    # Construir fechas con acciones
+    fechas_con_acciones = defaultdict(set)
+    for item in historial:
+        fecha_str = item.fecha.strftime('%Y-%m-%d')
+        fechas_con_acciones[fecha_str].add(item.accion)
+
+    fechas_con_acciones = {fecha: list(acciones) for fecha, acciones in fechas_con_acciones.items()}
+
+    context = {
+        'historial': historial,
+        'tipos': tipos,
+        'modelos': modelos,
+        'fechas_con_acciones': json.dumps(fechas_con_acciones)
+    }
+
+    return render(request, 'Equipos/historico.html', context)

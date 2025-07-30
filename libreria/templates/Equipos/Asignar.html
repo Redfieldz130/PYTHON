@@ -9,15 +9,13 @@
         <h4 class="mb-0 font-weight-bold">Asignación de Equipos</h4>
     </div>
 
-    
-
     {% if perms.libreria.asignar_equipo %}
     <div class="text-center mt-4">
-        <button class="btn btn-primary btn-sm text-uppercase" onclick="toggleFormulario()">Asignar Nuevo Equipo</button>
+        <button class="btn btn-primary btn-sm text-uppercase toggle-form-btn-asignar">Asignar Nuevo Equipo</button>
     </div>
     {% endif %}
 
-    <div id="formularioAsignacion" class="mt-4 d-none">
+    <div id="formularioAsignacion" class="mt-4 d-none slide-form">
         {% if perms.libreria.asignar_equipo %}
         <form id="form-asignar" method="post">
             {% csrf_token %}
@@ -26,7 +24,6 @@
                     <label for="colaborador_nombre" class="form-label">Nombre y apellido del colaborador</label>
                     <input type="text" class="form-control form-control-sm" name="colaborador_nombre" required>
                 </div>
-
                 <div class="col-md-6 mb-3">
                     <label for="correo_institucional" class="form-label">Correo Institucional</label>
                     <input type="email" class="form-control form-control-sm" name="correo_institucional" required>
@@ -35,8 +32,6 @@
                     <label for="colaborador_cedula" class="form-label">Cedula del colaborador</label>
                     <input type="text" class="form-control form-control-sm" name="colaborador_cedula" required>
                 </div>
-
-                <!-- Filtro por tipo -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Filtrar por tipo de equipo</label>
                     <select id="filtro_tipo" class="form-select form-select-sm">
@@ -46,8 +41,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
-                <!-- Select de equipos con búsqueda -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Seleccionar equipo</label>
                     <select id="select_equipo" class="form-select form-select-sm" name="equipo" required>
@@ -59,68 +52,75 @@
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-3 mb-3">
                     <label for="fecha_entrega" class="form-label">Fecha de entrega</label>
                     <input type="date" class="form-control form-control-sm" name="fecha_entrega" value="{{ fecha_hoy }}" required>
                 </div>
-
                 <div class="col-md-3 mb-3">
                     <label for="fecha_final" class="form-label">Fecha final (opcional)</label>
                     <input type="date" class="form-control form-control-sm" name="fecha_final">
                 </div>
             </div>
-
             <div class="text-center mt-2">
                 <button type="submit" class="btn btn-success btn-sm text-uppercase">Guardar Asignación</button>
             </div>
         </form>
         {% endif %}
     </div>
-
+    
     <div class="mt-5">
         <h5 class="text-center">Equipos ya asignados</h5>
-        <table class="table table-striped table-sm mt-3">
-            <thead>
-                <tr>
-                    <th>Colaborador</th>
-                    <th>Correo</th>
-                    <th>Equipo</th>
-                    <th>Serial</th>
-                    <th>MAC Address</th>
-                    <th>Fecha de entrega</th>
-                    <th>Fecha final</th>
-                    <th>Cedula</th>
-                    {% if perms.libreria.asignar_equipo %}
-                    <th>Acciones</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
+        <div class="text-center mb-3">
+            <input type="text" id="filtroBusqueda" class="form-control form-control-sm w-50" placeholder="Buscar por nombre o cédula...">
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="asignaciones-list">
                 {% for asignacion in asignaciones %}
-                    <tr>
-                        <td>{{ asignacion.colaborador_nombre }}</td>
-                        <td>{{ asignacion.correo_institucional }}</td>
-                        <td>{{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}</td>
-                        <td>{{ asignacion.equipo.serial }}</td>
-                        <td>{{ asignacion.equipo.mac_address|default:"No disponible" }}</td>
-                        <td>{{ asignacion.fecha_entrega }}</td>
-                        <td>{{ asignacion.fecha_final|default:"-" }}</td>
-                        <td>{{ asignacion.colaborador_cedula }}</td>
-                        {% if perms.libreria.asignar_equipo %}
-                        <td class="d-flex justify-content-center">
-                            <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">
-                                <i class="fas fa-times"></i>
-                            </a>
-                            <a href="{% url 'generar_constancia' asignacion.id %}" class="btn btn-success btn-sm">
-                                <i class="fas fa-print"></i>
-                            </a>
-                        </td>
-                        {% endif %}
-                    </tr>
+                <div class="card mb-3 shadow-sm" data-nombre="{{ asignacion.colaborador_nombre|lower }}" data-cedula="{{ asignacion.colaborador_cedula|lower }}">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Colaborador:</strong> {{ asignacion.colaborador_nombre }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Correo:</strong> {{ asignacion.correo_institucional }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Equipo:</strong> {{ asignacion.equipo.marca }} {{ asignacion.equipo.modelo }} - {{ asignacion.equipo.tipo }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Serial:</strong> {{ asignacion.equipo.serial }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>MAC Address:</strong> {{ asignacion.equipo.mac_address|default:"No disponible" }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Fecha entrega:</strong> {{ asignacion.fecha_entrega }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Fecha final:</strong> {{ asignacion.fecha_final|default:"-" }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Cédula:</strong> {{ asignacion.colaborador_cedula }}
+                            </div>
+                            {% if perms.libreria.asignar_equipo %}
+                            <div class="accion-btn">
+                                <a href="{% url 'desasignar' asignacion.id %}" class="btn btn-danger btn-sm me-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                <a href="{% url 'generar_constancia' asignacion.id %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No hay asignaciones registradas.</p>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -129,37 +129,48 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    function toggleFormulario() {
-        const form = document.getElementById('formularioAsignacion');
-        form.classList.toggle('d-none');
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
-        const selectEquipo = $('#select_equipo');
+        const toggleButton = document.querySelector('.toggle-form-btn-asignar');
+        const form = document.getElementById('formularioAsignacion');
 
-        // Guardamos todas las opciones originales (menos la primera vacía)
+        if (toggleButton && form) {
+            toggleButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                form.classList.toggle('show');
+                if (form.classList.contains('show')) {
+                    form.classList.remove('d-none');
+                    const height = form.scrollHeight;
+                    form.style.maxHeight = height + 'px';
+                    form.style.transition = 'max-height 0.3s ease-in-out, opacity 0.2s ease-in-out';
+                } else {
+                    form.style.transition = 'max-height 0.3s ease-in-out, opacity 0.2s ease-in-out';
+                    form.style.maxHeight = '0px';
+                    form.addEventListener('transitionend', function handleTransitionEnd() {
+                        form.classList.add('d-none');
+                        form.removeEventListener('transitionend', handleTransitionEnd);
+                    }, { once: true });
+                }
+            });
+        }
+
+        const selectEquipo = $('#select_equipo');
         const allEquipos = [...selectEquipo.find('option')].map(opt => ({
             id: opt.value,
             text: opt.textContent,
             tipo: opt.dataset.tipo
         }));
 
-        // Inicializar Select2
         selectEquipo.select2({
             placeholder: "Seleccione un equipo",
             width: '100%'
         });
 
-        // Filtro por tipo
         document.getElementById('filtro_tipo').addEventListener('change', function () {
             const tipoSeleccionado = this.value;
-
-            // Filtrar equipos según el tipo
             const opcionesFiltradas = tipoSeleccionado
                 ? allEquipos.filter(eq => eq.tipo === tipoSeleccionado)
                 : allEquipos;
 
-            // Limpiar y agregar nuevas opciones
             selectEquipo.empty().append('<option value="">Seleccione un equipo</option>');
             opcionesFiltradas.forEach(eq => {
                 selectEquipo.append(new Option(eq.text, eq.id));
@@ -167,8 +178,24 @@
 
             selectEquipo.val('').trigger('change');
         });
+
+        const filtroBusqueda = document.getElementById('filtroBusqueda');
+        const cards = document.querySelectorAll('.asignaciones-list .card');
+
+        filtroBusqueda.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+
+            cards.forEach(card => {
+                const nombre = card.dataset.nombre;
+                const cedula = card.dataset.cedula;
+                if (query === '' || nombre.includes(query) || cedula.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     });
 </script>
-
-
-{% endblock %}
+<div style="height: 85px;"></div> 
+{%endblock%}
